@@ -5,7 +5,7 @@ export default {
   redirect: "/tag/index",
   meta: {
     icon: TablerTagFilled,
-    title: "标签",
+    title: "标签管理",
     rank: 3
   },
   children: [
@@ -14,7 +14,7 @@ export default {
       name: "Tag",
       component: () => import("@/views/tag/index.vue"),
       meta: {
-        title: "标签"
+        title: "标签管理"
       }
     }
   ]

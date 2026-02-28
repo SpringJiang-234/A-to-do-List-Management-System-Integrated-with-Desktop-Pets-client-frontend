@@ -59,7 +59,7 @@ const {
                 :icon="LogoutCircleRLine"
                 style="margin: 5px"
               />
-              退出系统
+              退出登录
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>

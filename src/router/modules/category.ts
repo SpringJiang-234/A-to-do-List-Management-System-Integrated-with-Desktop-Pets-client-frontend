@@ -5,7 +5,7 @@ export default {
   redirect: "/category/index",
   meta: {
     icon: DashiconsCategory,
-    title: "分类",
+    title: "分类管理",
     rank: 2
   },
   children: [
@@ -14,7 +14,7 @@ export default {
       name: "Category",
       component: () => import("@/views/category/index.vue"),
       meta: {
-        title: "分类"
+        title: "分类管理"
       }
     }
   ]
