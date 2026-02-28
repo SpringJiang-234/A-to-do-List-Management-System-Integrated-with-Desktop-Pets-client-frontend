@@ -41,11 +41,5 @@ function onFormOneClick() {
 </script>
 
 <template>
-  <el-card shadow="never">
-    <el-space wrap>
-      <el-button @click="onFormOneClick">
-        <IconifyIconOffline :icon="Setting" />
-      </el-button>
-    </el-space>
-  </el-card>
+  <el-button :icon="Setting" @click="onFormOneClick" circle> </el-button>
 </template>

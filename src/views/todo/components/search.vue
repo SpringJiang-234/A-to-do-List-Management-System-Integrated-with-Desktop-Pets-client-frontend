@@ -1,0 +1,36 @@
+<template>
+  <el-form :inline="true" :model="formInline" class="demo-form-inline">
+    <el-form-item>
+      <el-input v-model="formInline.title" placeholder="搜索标题" clearable />
+    </el-form-item>
+    <el-form-item>
+      <el-button :icon="HeroiconsArrowPath" circle type="primary" />
+    </el-form-item>
+    <el-form-item>
+      <el-button
+        :icon="IconamoonSearchLight"
+        circle
+        type="primary"
+        @click="onSubmit"
+      />
+    </el-form-item>
+    <el-form-item>
+      <DialogPage />
+    </el-form-item>
+  </el-form>
+</template>
+
+<script lang="ts" setup>
+import { reactive } from "vue";
+import IconamoonSearchLight from "~icons/iconamoon/search-light";
+import HeroiconsArrowPath from "~icons/heroicons/arrow-path";
+import DialogPage from "@/views/todo/components/dialog.vue";
+
+const formInline = reactive({
+  title: ""
+});
+
+const onSubmit = () => {
+  console.log(formInline);
+};
+</script>
