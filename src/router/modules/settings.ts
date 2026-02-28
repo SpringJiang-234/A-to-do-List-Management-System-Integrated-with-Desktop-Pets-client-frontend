@@ -1,10 +1,10 @@
-import UilSetting from '~icons/uil/setting';
+import LetsIconsSettingFill from '~icons/lets-icons/setting-fill';
 
 export default {
   path: "/settings",
   redirect: "/settings/index",
   meta: {
-    icon: UilSetting,
+    icon: LetsIconsSettingFill,
     title: "设置",
     rank: 10
   },
