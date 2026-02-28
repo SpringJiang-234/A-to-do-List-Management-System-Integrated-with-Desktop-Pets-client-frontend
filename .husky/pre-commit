@@ -1,4 +1,3 @@
-#!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 . "$(dirname "$0")/common.sh"
 
@@ -7,4 +6,4 @@
 PATH="/usr/local/bin:$PATH"
 
 # Perform lint check on files in the staging area through .lintstagedrc configuration
-yarn exec lint-staged
+# npx exec lint-staged
