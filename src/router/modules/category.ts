@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: DashiconsCategory,
     title: "分类",
-    rank: 1
+    rank: 2
   },
   children: [
     {

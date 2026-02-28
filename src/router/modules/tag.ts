@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: TablerTagFilled,
     title: "标签",
-    rank: 2
+    rank: 3
   },
   children: [
     {

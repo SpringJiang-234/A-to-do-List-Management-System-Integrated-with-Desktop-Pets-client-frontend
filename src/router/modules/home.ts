@@ -1,6 +1,5 @@
 const { VITE_HIDE_HOME } = import.meta.env;
 const Layout = () => import("@/layout/index.vue");
-import RiTodoFill from '~icons/ri/todo-fill';
 
 export default {
   path: "/",
@@ -8,9 +7,10 @@ export default {
   component: Layout,
   redirect: "/welcome",
   meta: {
-    icon: RiTodoFill,
-    title: "任务",
-    rank: 0
+    icon: "ep/home-filled",
+    title: "首页",
+    rank: 0,
+    showLink: false
   },
   children: [
     {
@@ -18,7 +18,7 @@ export default {
       name: "Welcome",
       component: () => import("@/views/welcome/index.vue"),
       meta: {
-        title: "任务",
+        title: "首页",
         showLink: VITE_HIDE_HOME === "true" ? false : true
       }
     }

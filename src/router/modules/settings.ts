@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: UilSetting,
     title: "设置",
-    rank: 5
+    rank: 6
   },
   children: [
     {

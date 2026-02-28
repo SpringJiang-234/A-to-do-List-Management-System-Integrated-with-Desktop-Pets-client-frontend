@@ -1,9 +1,9 @@
 <script setup lang="ts">
 defineOptions({
-  name: "Welcome"
+  name: "Soonstart"
 });
 </script>
 
 <template>
-  <h1>快速开始</h1>
+  <h1>快速开始计时</h1>
 </template>

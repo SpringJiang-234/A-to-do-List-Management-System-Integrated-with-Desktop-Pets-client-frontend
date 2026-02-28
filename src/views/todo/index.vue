@@ -1,9 +1,9 @@
 <script setup lang="ts">
 defineOptions({
-  name: "Settings"
+  name: "Todo"
 });
 </script>
 
 <template>
-  <h1>设置</h1>
+  <h1>待办</h1>
 </template>
