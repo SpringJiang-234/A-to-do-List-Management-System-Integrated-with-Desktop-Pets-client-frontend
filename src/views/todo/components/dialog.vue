@@ -2,6 +2,7 @@
 import { message } from "@/utils/message";
 import forms, { type FormProps } from "./form.vue";
 import { addDialog } from "@/components/ReDialog";
+import Setting from "~icons/ri/settings-3-line";
 
 defineOptions({
   name: "DialogPage"
@@ -11,7 +12,7 @@ defineOptions({
 function onFormOneClick() {
   addDialog({
     width: "30%",
-    title: "结合Form表单（第一种方式）",
+    title: "筛选待办",
     contentRenderer: () => forms,
     props: {
       // 赋默认值
@@ -23,7 +24,7 @@ function onFormOneClick() {
     closeCallBack: ({ options, args }) => {
       // options.props 是响应式的
       const { formInline } = options.props as FormProps;
-      const text = `姓名：${formInline.user} 城市：${formInline.region}`;
+      const text = `类别：${formInline.categories} 标签：${formInline.tags} 视图：${formInline.timeRule}`;
       if (args?.command === "cancel") {
         // 您点击了取消按钮
         message(`您点击了取消按钮，当前表单数据为 ${text}`);
@@ -43,7 +44,7 @@ function onFormOneClick() {
   <el-card shadow="never">
     <el-space wrap>
       <el-button @click="onFormOneClick">
-        结合Form表单（第一种方式）
+        <IconifyIconOffline :icon="Setting" />
       </el-button>
     </el-space>
   </el-card>

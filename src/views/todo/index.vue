@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Select from "@/views/todo/components/select.vue";
 import DialogPage from "@/views/todo/components/dialog.vue";
 
 defineOptions({
@@ -8,6 +7,5 @@ defineOptions({
 </script>
 
 <template>
-  <Select />
   <DialogPage />
 </template>
