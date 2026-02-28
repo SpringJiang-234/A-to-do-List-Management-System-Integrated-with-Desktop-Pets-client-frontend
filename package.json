@@ -7,11 +7,11 @@
   "main": "dist-electron/main/index.js",
   "scripts": {
     "dev": "vite",
+    "browser:dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vite",
     "serve": "vite",
     "icon": "esno build/icon.ts --input=public/icon.png --output=dist",
     "build": "rimraf dist && rimraf release && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build && yarn icon && electron-builder",
     "build:staging": "rimraf dist && rimraf release && vite build --mode staging && yarn icon && electron-builder",
-    "browser:dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vite",
     "browser:build": "rimraf dist && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "preview": "vite preview",
     "preview:build": "yarn browser:build && vite preview",

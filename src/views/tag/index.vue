@@ -5,5 +5,5 @@ defineOptions({
 </script>
 
 <template>
-  <h1>任务</h1>
+  <h1>标签</h1>
 </template>
