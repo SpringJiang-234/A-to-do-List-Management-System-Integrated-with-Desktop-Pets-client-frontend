@@ -1,8 +1,12 @@
+import UilSetting from '~icons/uil/setting';
+
 export default {
   path: "/settings",
   redirect: "/settings/index",
   meta: {
-    title: "设置"
+    icon: UilSetting,
+    title: "设置",
+    rank: 5
   },
   children: [
     {

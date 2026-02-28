@@ -1,8 +1,12 @@
+import MdiClockOutline from '~icons/mdi/clock-outline';
+
 export default {
   path: "/soonstart",
   redirect: "/soonstart/index",
   meta: {
-    title: "快速开始"
+    icon: MdiClockOutline,
+    title: "快速开始",
+    rank: 3
   },
   children: [
     {

@@ -1,8 +1,12 @@
+import TablerReportAnalytics from '~icons/tabler/report-analytics';
+
 export default {
   path: "/report",
   redirect: "/report/index",
   meta: {
-    title: "报告"
+    icon: TablerReportAnalytics,
+    title: "报告",
+    rank: 4
   },
   children: [
     {

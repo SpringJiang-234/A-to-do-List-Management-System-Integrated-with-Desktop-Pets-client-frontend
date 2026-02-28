@@ -1,8 +1,12 @@
+import DashiconsCategory from '~icons/dashicons/category';
+
 export default {
   path: "/category",
   redirect: "/category/index",
   meta: {
-    title: "分类"
+    icon: DashiconsCategory,
+    title: "分类",
+    rank: 1
   },
   children: [
     {

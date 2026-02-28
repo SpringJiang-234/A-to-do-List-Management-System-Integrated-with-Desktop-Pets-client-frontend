@@ -1,8 +1,12 @@
+import TablerTagFilled from '~icons/tabler/tag-filled';
+
 export default {
   path: "/tag",
   redirect: "/tag/index",
   meta: {
-    title: "标签"
+    icon: TablerTagFilled,
+    title: "标签",
+    rank: 2
   },
   children: [
     {
