@@ -5,6 +5,14 @@ import IconamoonSearchLight from "~icons/iconamoon/search-light";
 import HeroiconsArrowPath from "~icons/heroicons/arrow-path";
 import DialogPage from "@/views/todo/components/Dialog.vue";
 
+interface Props {
+  showTimeViewButton?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showTimeViewButton: true
+});
+
 const resetForm = () => {
   formInline.title = "";
   formInline.content = "";
@@ -286,7 +294,7 @@ const onSubmit = () => {
                       @click="onSubmit"
                     />
                   </el-form-item>
-                  <el-form-item>
+                  <el-form-item v-if="showTimeViewButton">
                     <DialogPage />
                   </el-form-item>
                 </el-form>

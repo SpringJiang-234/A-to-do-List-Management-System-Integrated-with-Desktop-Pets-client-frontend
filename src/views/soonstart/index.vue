@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { message } from "@/utils/message";
 import Countdown from "@/views/soonstart/components/CountDown.vue";
-import { spawn } from "child_process";
 import { ref } from "vue";
+import SearchCard from "@/components/SearchCard.vue";
 
 defineOptions({
   name: "Soonstart"
@@ -80,14 +80,14 @@ const handleChangeDate = (date: string) => {
           </div>
         </div>
       </template>
+      <SearchCard :show-time-view-button="false" />
     </el-card>
     <el-card shadow="never">
       <h1>快速开始番茄钟、正计时或倒计时</h1>
       <!-- 要实现可能需要todo加一个计时字段 -->
       <template #header>
         <div class="card-header">
-          <div class="header-content">
-          </div>
+          <div class="header-content"></div>
         </div>
       </template>
 
