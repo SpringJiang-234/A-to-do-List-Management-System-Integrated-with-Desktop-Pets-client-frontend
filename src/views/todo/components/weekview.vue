@@ -17,56 +17,21 @@ interface Activity {
 }
 
 const value = ref("");
-const { lastBuildTime } = __APP_INFO__;
-const activities = ref<Activity[]>([
-  {
-    title: "支持默认颜色测试测试测试",
-    content: "支持默认颜色测试测试测试",
-    timestamp: lastBuildTime,
-    isCompleted: false
-  },
-  {
-    title: "支持自定义颜色",
-    content: "支持自定义颜色",
-    timestamp: lastBuildTime,
-    isCompleted: false,
-    color: "#F56C6C"
-  },
-  {
-    title: "支持自定义颜色",
-    content: "支持自定义颜色",
-    timestamp: lastBuildTime,
-    isCompleted: false,
-    color: "#66CCFF"
-  }
-]);
 
-/** 分段控制器选项 */
-const options = [
-  { label: "周一", value: 1 },
-  { label: "周二", value: 2 },
-  { label: "周三", value: 3 },
-  { label: "周四", value: 4 },
-  { label: "周五", value: 5 },
-  { label: "周六", value: 6 },
-  { label: "周日", value: 0 }
+const tableData = [
+  {
+    sunday: ["完成周报", "团队会议"],
+    monday: ["项目评审", "代码审查"],
+    tuesday: ["需求分析"],
+    wednesday: ["开发任务", "测试"],
+    thursday: ["文档编写"],
+    friday: ["部署上线", "总结"],
+    saturday: ["学习新技术"]
+  }
 ];
 
-/** change 事件 */
-function onChange(value: any) {
-  const option = options.find(opt => opt.value === value);
-  const index = options.indexOf(option);
-  message(`当前选中项索引为：${index}，名字为${option.label}，值为${value}`, {
-    type: "success"
-  });
-}
-
-function handleTodoClick(activity: Activity) {
-  console.log("待办项被点击:", activity);
-}
-
-function handleTextClick(activity: Activity) {
-  console.log("文字被点击:", activity);
+function handleClickTodo(todo: string) {
+  message(`点击了待办：${todo}`);
 }
 </script>
 
@@ -85,15 +50,92 @@ function handleTextClick(activity: Activity) {
         </div>
       </div>
     </template>
-    <!-- 分段控制器：周一到周日 选择 -->
-    <el-segmented v-model="value" :options="options" block @change="onChange" />
-    <div style="margin-top: 20px">
-      <TodoList
-        :activities="activities"
-        @click="handleTodoClick"
-        @textClick="handleTextClick"
-      />
-    </div>
+    <el-table :data="tableData" border style="width: 100%">
+      <el-table-column prop="sunday" label="周日" min-width="14.2%">
+        <template #default="{ row }">
+          <div
+            v-for="(item, index) in row.sunday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(item)"
+          >
+            {{ item }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="monday" label="周一" min-width="14.2%">
+        <template #default="{ row }">
+          <div
+            v-for="(item, index) in row.monday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(item)"
+          >
+            {{ item }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="tuesday" label="周二" min-width="14.2%">
+        <template #default="{ row }">
+          <div
+            v-for="(item, index) in row.tuesday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(item)"
+          >
+            {{ item }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="wednesday" label="周三" min-width="14.2%">
+        <template #default="{ row }">
+          <div
+            v-for="(item, index) in row.wednesday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(item)"
+          >
+            {{ item }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="thursday" label="周四" min-width="14.2%">
+        <template #default="{ row }">
+          <div
+            v-for="(item, index) in row.thursday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(item)"
+          >
+            {{ item }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="friday" label="周五" min-width="14.2%">
+        <template #default="{ row }">
+          <div
+            v-for="(item, index) in row.friday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(item)"
+          >
+            {{ item }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="saturday" label="周六" min-width="14.2%">
+        <template #default="{ row }">
+          <div
+            v-for="(item, index) in row.saturday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(item)"
+          >
+            {{ item }}
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
   </el-card>
 </template>
 
@@ -103,5 +145,28 @@ function handleTextClick(activity: Activity) {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+}
+
+:deep(.el-table .cell) {
+  text-align: left;
+  vertical-align: top;
+}
+
+:deep(.el-table td.el-table__cell) {
+  vertical-align: top;
+}
+
+.todo-item {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 2px 4px;
+  margin: 2px 0;
+  background-color: var(--el-color-primary-light-9);
+  border-radius: 2px;
+  cursor: pointer;
 }
 </style>
