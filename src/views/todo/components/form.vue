@@ -80,10 +80,6 @@ const timeRules = [
   {
     value: "3",
     label: "月视图"
-  },
-  {
-    value: "4",
-    label: "年视图"
   }
 ];
 </script>

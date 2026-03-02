@@ -5,7 +5,6 @@ import { useTodoStoreHook } from "@/store/modules/todo";
 import DayView from "@/views/todo/components/dayview.vue";
 import WeekView from "@/views/todo/components/weekview.vue";
 import MonthView from "@/views/todo/components/monthview.vue";
-import YearView from "@/views/todo/components/yearview.vue";
 
 defineOptions({
   name: "Todo"
@@ -25,9 +24,6 @@ const currentView = computed(() => {
   }
   if (timeRule === "3") {
     return MonthView;
-  }
-  if (timeRule === "4") {
-    return YearView;
   }
   return DayView;
 });
