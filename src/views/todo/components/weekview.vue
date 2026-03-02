@@ -74,7 +74,7 @@ function onChange({ index, option }) {
       @change="onChange"
     />
     <el-card style="margin-top: 20px" shadow="hover">
-      <!-- 放圆点（12×12）、标题、时间和一小行灰色内容 -->
+      <!-- 放圆点（12×12）、标题、时间。换行再放一小行灰色内容 -->
     </el-card>
   </el-card>
 </template>

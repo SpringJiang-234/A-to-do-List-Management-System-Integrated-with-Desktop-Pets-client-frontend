@@ -34,6 +34,11 @@ function handleClick(activity: Activity) {
   activity.isCompleted = !activity.isCompleted;
   message(`点击了待办：${activity.content}`);
 }
+
+/** 点击文字内容事件 */
+function handleTextClick(activity: Activity) {
+  message(`点击了文字：${activity.content}`);
+}
 </script>
 
 <template>
@@ -70,7 +75,9 @@ function handleClick(activity: Activity) {
               }"
             ></div>
           </template>
-          <span>这是一个{{ activity.color }}边框的空心节点</span>
+          <span class="todo-text" @click.stop="handleTextClick(activity)"
+            >这是一个{{ activity.color }}边框的空心节点</span
+          >
         </el-timeline-item>
       </el-timeline>
     </div>
@@ -111,10 +118,15 @@ function handleClick(activity: Activity) {
 }
 
 .custom-node {
-  width: 12px; /* 控制圆点大小 */
+  width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid var(--el-color-info-light-7); /* 默认灰色 */
-  background-color: white; /* 背景白色，时间线不穿过 */
+  border: 2px solid var(--el-color-info-light-7);
+  background-color: white;
+  cursor: pointer;
+}
+
+.todo-text {
+  cursor: pointer;
 }
 </style>

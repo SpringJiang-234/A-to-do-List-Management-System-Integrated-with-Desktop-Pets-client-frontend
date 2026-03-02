@@ -32,8 +32,9 @@
         <p :class="data.isSelected ? 'is-selected' : ''" class="date-text">
           {{ data.day.split("-").slice(2).join("-") }}
         </p>
-        <!-- 待办事项标题 -->
-        <div class="todo-item">测测试测试测试测试测试试</div>
+        <!-- 待办事项 -->
+        <!-- 点击进入详情页 -->
+        <div class="todo-item" @click="() => handleClickTodo('测试')">测试</div>
         <div class="todo-item">测试</div>
         <div class="todo-item">测试</div>
         <div class="todo-item">测试</div>
@@ -51,6 +52,10 @@ const calendar = ref<CalendarInstance>();
 const selectDate = (val: CalendarDateType) => {
   if (!calendar.value) return;
   calendar.value.selectDate(val);
+};
+
+const handleClickTodo = (todo: string) => {
+  console.log("点击了待办事项:", todo);
 };
 </script>
 
