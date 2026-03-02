@@ -28,6 +28,10 @@ const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
+import { getMockCategories } from "@/api/category";
+import { generateCategoryRoutes } from "@/router/modules/category";
+import { getMockTags } from "@/api/tag";
+import { generateTagRoutes } from "@/router/modules/tag";
 
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
@@ -199,20 +203,23 @@ function handleAsyncRoutes(routeList) {
 /** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
 function initRouter() {
   if (getConfig()?.CachingAsyncRoutes) {
-    // 开启动态路由缓存本地localStorage
     const key = "async-routes";
     const asyncRouteList = storageLocal().getItem(key) as any;
     if (asyncRouteList && asyncRouteList?.length > 0) {
       return new Promise(resolve => {
         handleAsyncRoutes(asyncRouteList);
-        resolve(router);
+        loadCategoryRoutes().then(() => {
+          loadTagRoutes().then(() => resolve(router));
+        });
       });
     } else {
       return new Promise(resolve => {
         getAsyncRoutes().then(({ data }) => {
           handleAsyncRoutes(cloneDeep(data));
           storageLocal().setItem(key, data);
-          resolve(router);
+          loadCategoryRoutes().then(() => {
+            loadTagRoutes().then(() => resolve(router));
+          });
         });
       });
     }
@@ -220,9 +227,99 @@ function initRouter() {
     return new Promise(resolve => {
       getAsyncRoutes().then(({ data }) => {
         handleAsyncRoutes(cloneDeep(data));
-        resolve(router);
+        loadCategoryRoutes().then(() => {
+          loadTagRoutes().then(() => resolve(router));
+        });
       });
     });
+  }
+}
+
+async function loadCategoryRoutes() {
+  try {
+    const { data: categories } = await getMockCategories();
+    const categoryRoutes = generateCategoryRoutes(categories);
+
+    if (categoryRoutes.length > 0) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const rootRoute = router.getRoutes().find(r => r.path === "/");
+      if (rootRoute && rootRoute.children) {
+        const categoryParent = rootRoute.children.find(r => r.name === "CategoryParent");
+
+        if (categoryParent && categoryParent.children) {
+          categoryRoutes.forEach(route => {
+            if (!router.hasRoute(route.name as string)) {
+              categoryParent.children.push(route);
+            }
+          });
+
+          ascending(categoryParent.children);
+
+          const flattenRouters = router.getRoutes().find(n => n.path === "/");
+          if (flattenRouters) {
+            flattenRouters.children = rootRoute.children;
+            router.addRoute(flattenRouters);
+          }
+
+          const allRoutes = router.getRoutes();
+          const categoryChildren = allRoutes.filter(r =>
+            r.path.startsWith("/category") && r.path !== "/category" && r.path !== "/category/index"
+          );
+
+          usePermissionStoreHook().handleWholeMenus(categoryChildren);
+
+          console.log("动态分类路由已加载:", categoryRoutes);
+          console.log("CategoryParent 子路由:", categoryChildren);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("加载分类路由失败:", error);
+  }
+}
+
+async function loadTagRoutes() {
+  try {
+    const { data: tags } = await getMockTags();
+    const tagRoutes = generateTagRoutes(tags);
+
+    if (tagRoutes.length > 0) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const rootRoute = router.getRoutes().find(r => r.path === "/");
+      if (rootRoute && rootRoute.children) {
+        const tagParent = rootRoute.children.find(r => r.name === "TagParent");
+
+        if (tagParent && tagParent.children) {
+          tagRoutes.forEach(route => {
+            if (!router.hasRoute(route.name as string)) {
+              tagParent.children.push(route);
+            }
+          });
+
+          ascending(tagParent.children);
+
+          const flattenRouters = router.getRoutes().find(n => n.path === "/");
+          if (flattenRouters) {
+            flattenRouters.children = rootRoute.children;
+            router.addRoute(flattenRouters);
+          }
+
+          const allRoutes = router.getRoutes();
+          const tagChildren = allRoutes.filter(r =>
+            r.path.startsWith("/tag") && r.path !== "/tag" && r.path !== "/tag/index"
+          );
+
+          usePermissionStoreHook().handleWholeMenus(tagChildren);
+
+          console.log("动态标签路由已加载:", tagRoutes);
+          console.log("TagParent 子路由:", tagChildren);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("加载标签路由失败:", error);
   }
 }
 
