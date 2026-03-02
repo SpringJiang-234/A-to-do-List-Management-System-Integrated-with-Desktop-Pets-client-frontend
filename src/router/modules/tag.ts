@@ -23,7 +23,7 @@ export default {
       name: "Tag",
       component: () => import("@/views/tag/index.vue"),
       meta: {
-        title: "未设置标签"
+        title: "全部"
       }
     }
   ]
