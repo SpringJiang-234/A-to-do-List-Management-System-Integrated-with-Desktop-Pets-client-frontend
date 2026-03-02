@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { message } from "@/utils/message";
-import Segmented, { type OptionsType } from "@/components/ReSegmented";
-import TodoList from "@/components/TodoList.vue";
 
 defineOptions({
   name: "WeekView"
 });
 
 interface Activity {
+  id: string;
   title: string;
   content: string;
   timestamp: string;
@@ -18,20 +17,132 @@ interface Activity {
 
 const value = ref("");
 
+const dateRange = computed(() => {
+  const current = value.value ? new Date(value.value) : new Date();
+  const year = current.getFullYear();
+  const month = current.getMonth() + 1;
+
+  const firstDayOfMonth = new Date(year, month - 1, 1);
+  const dayOfWeek = firstDayOfMonth.getDay();
+  const dayOfMonth = current.getDate();
+
+  const weekNumber = Math.ceil((dayOfMonth + dayOfWeek) / 7);
+
+  return `${year}年${month}月第${weekNumber}周`;
+});
+
+const weekDates = computed(() => {
+  const current = value.value ? new Date(value.value) : new Date();
+  const day = current.getDay();
+  const diff = current.getDate() - day;
+
+  const sunday = new Date(current);
+  sunday.setDate(diff);
+
+  const dates = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(sunday);
+    date.setDate(sunday.getDate() + i);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    dates.push(`${month}月${day}日`);
+  }
+
+  return dates;
+});
+
 const tableData = [
   {
-    sunday: ["完成周报", "团队会议"],
-    monday: ["项目评审", "代码审查"],
-    tuesday: ["需求分析"],
-    wednesday: ["开发任务", "测试"],
-    thursday: ["文档编写"],
-    friday: ["部署上线", "总结"],
-    saturday: ["学习新技术"]
+    sunday: [
+      {
+        id: "1",
+        title: "完成周报",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      },
+      {
+        id: "2",
+        title: "团队会议",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      }
+    ],
+    monday: [
+      {
+        id: "3",
+        title: "项目评审",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      },
+      {
+        id: "4",
+        title: "代码审查",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      }
+    ],
+    tuesday: [
+      {
+        id: "5",
+        title: "需求分析",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      }
+    ],
+    wednesday: [
+      {
+        id: "6",
+        title: "开发任务",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      },
+      { id: "7", title: "测试", content: "", timestamp: "", isCompleted: false }
+    ],
+    thursday: [
+      {
+        id: "8",
+        title: "文档编写",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      }
+    ],
+    friday: [
+      {
+        id: "9",
+        title: "部署上线",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      },
+      {
+        id: "10",
+        title: "总结",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      }
+    ],
+    saturday: [
+      {
+        id: "11",
+        title: "学习新技术",
+        content: "",
+        timestamp: "",
+        isCompleted: false
+      }
+    ]
   }
 ];
 
-function handleClickTodo(todo: string) {
-  message(`点击了待办：${todo}`);
+function handleClickTodo(activity: Activity) {
+  message(`点击了待办：${activity.title}，ID：${activity.id}`);
 }
 </script>
 
@@ -39,99 +150,104 @@ function handleClickTodo(todo: string) {
   <el-card shadow="never">
     <template #header>
       <div class="card-header">
-        <div class="header-content">
-          <span class="font-medium">待办-周视图</span>
-          <el-date-picker
-            v-model="value"
-            type="week"
-            format="[Week] ww"
-            placeholder="选择周"
-          />
-        </div>
+        <span>{{ dateRange }}</span>
+        <el-date-picker
+          v-model="value"
+          type="week"
+          format="[Week] ww"
+          placeholder="选择周"
+        />
       </div>
     </template>
     <el-table :data="tableData" border style="width: 100%">
       <el-table-column prop="sunday" label="周日" min-width="14.2%">
         <template #default="{ row }">
+          <div>{{ weekDates[6] }}</div>
           <div
-            v-for="(item, index) in row.sunday"
+            v-for="(activity, index) in row.sunday"
             :key="index"
             class="todo-item"
-            @click="() => handleClickTodo(item)"
+            @click="() => handleClickTodo(activity)"
           >
-            {{ item }}
+            {{ activity.title }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="monday" label="周一" min-width="14.2%">
         <template #default="{ row }">
+          <div>{{ weekDates[0] }}</div>
           <div
-            v-for="(item, index) in row.monday"
+            v-for="(activity, index) in row.monday"
             :key="index"
             class="todo-item"
-            @click="() => handleClickTodo(item)"
+            @click="() => handleClickTodo(activity)"
           >
-            {{ item }}
+            {{ activity.title }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="tuesday" label="周二" min-width="14.2%">
         <template #default="{ row }">
+          <div>{{ weekDates[1] }}</div>
           <div
-            v-for="(item, index) in row.tuesday"
+            v-for="(activity, index) in row.tuesday"
             :key="index"
             class="todo-item"
-            @click="() => handleClickTodo(item)"
+            @click="() => handleClickTodo(activity)"
           >
-            {{ item }}
+            {{ activity.title }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="wednesday" label="周三" min-width="14.2%">
         <template #default="{ row }">
+          <div>{{ weekDates[2] }}</div>
           <div
-            v-for="(item, index) in row.wednesday"
+            v-for="(activity, index) in row.wednesday"
             :key="index"
             class="todo-item"
-            @click="() => handleClickTodo(item)"
+            @click="() => handleClickTodo(activity)"
           >
-            {{ item }}
+            {{ activity.title }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="thursday" label="周四" min-width="14.2%">
         <template #default="{ row }">
+          <div>{{ weekDates[3] }}</div>
           <div
-            v-for="(item, index) in row.thursday"
+            v-for="(activity, index) in row.thursday"
             :key="index"
             class="todo-item"
-            @click="() => handleClickTodo(item)"
+            @click="() => handleClickTodo(activity)"
           >
-            {{ item }}
+            {{ activity.title }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="friday" label="周五" min-width="14.2%">
         <template #default="{ row }">
+          <div>{{ weekDates[4] }}</div>
           <div
-            v-for="(item, index) in row.friday"
+            v-for="(activity, index) in row.friday"
             :key="index"
             class="todo-item"
-            @click="() => handleClickTodo(item)"
+            @click="() => handleClickTodo(activity)"
           >
-            {{ item }}
+            {{ activity.title }}
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="saturday" label="周六" min-width="14.2%">
         <template #default="{ row }">
+          <div>{{ weekDates[5] }}</div>
           <div
-            v-for="(item, index) in row.saturday"
+            v-for="(activity, index) in row.saturday"
             :key="index"
             class="todo-item"
-            @click="() => handleClickTodo(item)"
+            @click="() => handleClickTodo(activity)"
           >
-            {{ item }}
+            {{ activity.title }}
           </div>
         </template>
       </el-table-column>
@@ -140,7 +256,7 @@ function handleClickTodo(todo: string) {
 </template>
 
 <style scoped>
-.header-content {
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
