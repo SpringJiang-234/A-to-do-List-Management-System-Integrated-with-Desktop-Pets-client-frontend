@@ -34,7 +34,7 @@ const currentView = computed(() => {
     1、如果是日视图，则展示时间线（可以选择日）
     2、如果是周视图，则展示分段控制器+卡片（一列）列表（可以选择周）
     3、如果是月视图，则展示热力图，按照待办完成数量区分颜色深度（可以选择月） -->
-      <el-main>
+      <el-main scroll="true">
         <component :is="currentView" />
       </el-main>
       <el-footer>
