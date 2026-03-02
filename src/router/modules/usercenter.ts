@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: FamiconsPerson,
     title: "个人中心",
-    rank: 8
+    rank: 9
   },
   children: [
     {

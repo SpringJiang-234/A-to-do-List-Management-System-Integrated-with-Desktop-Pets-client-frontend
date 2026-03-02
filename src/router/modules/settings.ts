@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: LetsIconsSettingFill,
     title: "设置",
-    rank: 10
+    rank: 11
   },
   children: [
     {

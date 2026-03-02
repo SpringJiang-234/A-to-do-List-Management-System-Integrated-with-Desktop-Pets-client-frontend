@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: IxFeedback,
     title: "反馈",
-    rank: 7
+    rank: 8
   },
   children: [
     {

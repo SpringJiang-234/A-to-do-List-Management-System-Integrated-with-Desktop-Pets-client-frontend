@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: MdiClockOutline,
     title: "开始计时",
-    rank: 4
+    rank: 5
   },
   children: [
     {

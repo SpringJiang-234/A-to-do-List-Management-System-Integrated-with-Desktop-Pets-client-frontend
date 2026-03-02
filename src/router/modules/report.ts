@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: TablerReportAnalytics,
     title: "报表",
-    rank: 5
+    rank: 6
   },
   children: [
     {

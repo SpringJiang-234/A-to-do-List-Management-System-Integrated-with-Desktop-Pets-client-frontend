@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: IconParkOutlineAnnouncement,
     title: "公告",
-    rank: 6
+    rank: 7
   },
   children: [
     {

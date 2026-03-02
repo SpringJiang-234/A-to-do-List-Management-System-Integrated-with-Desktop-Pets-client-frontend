@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: StreamlineFlexPetPawSolid,
     title: "我的桌宠",
-    rank: 9
+    rank: 10
   },
   children: [
     {
