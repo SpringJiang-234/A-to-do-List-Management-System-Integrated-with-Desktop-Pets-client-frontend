@@ -1,8 +1,9 @@
 <script setup lang="tsx">
+import { ref } from "vue";
 import { message } from "@/utils/message";
-import forms, { type FormProps } from "./Form.vue";
 import { addDialog } from "@/components/ReDialog";
 import MingcuteTimeLine from "~icons/mingcute/time-line?width=16px&height=16px";
+import Select from "@/components/Select.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
 
 defineOptions({
@@ -11,20 +12,46 @@ defineOptions({
 
 const todoStore = useTodoStoreHook();
 
-// 结合Form表单（第一种方式，弹框关闭立刻恢复初始值）通过 props 属性接收子组件的 prop 并赋值
+const formInline = ref({
+  timeRule: todoStore.filter.timeRule
+});
+
+const timeRules = [
+  {
+    value: "1",
+    label: "日视图"
+  },
+  {
+    value: "2",
+    label: "周视图"
+  },
+  {
+    value: "3",
+    label: "月视图"
+  }
+];
+
 function onFormOneClick() {
   addDialog({
     width: "30%",
     title: "时间视图",
-    contentRenderer: () => forms,
-    props: {
-      formInline: {
-        timeRule: todoStore.filter.timeRule
-      }
-    },
-    closeCallBack: ({ options, args }) => {
-      const { formInline } = options.props as FormProps;
-      const text = `视图：${formInline.timeRule}`;
+    contentRenderer: () => (
+      <el-form model={formInline.value}>
+        <el-form-item label="视图">
+          <Select
+            v-model={formInline.value.timeRule}
+            options={timeRules}
+            multiple={false}
+            placeholder="请选择视图"
+            all-text="全选"
+            max-collapse-tags={1}
+            width="240px"
+          />
+        </el-form-item>
+      </el-form>
+    ),
+    closeCallBack: ({ args }) => {
+      const text = `视图：${formInline.value.timeRule}`;
       if (args?.command === "cancel") {
         message(`您点击了取消按钮，当前表单数据为 ${text}`);
       } else if (args?.command === "sure") {
@@ -40,7 +67,7 @@ function onFormOneClick() {
           endTime: todoStore.filter.endTime,
           status: todoStore.filter.status,
           isTop: todoStore.filter.isTop,
-          timeRule: formInline.timeRule
+          timeRule: formInline.value.timeRule
         });
         message(`您点击了确定按钮，当前表单数据为 ${text}`);
       } else {
