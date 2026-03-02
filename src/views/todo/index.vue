@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import Search from "@/views/todo/components/search.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
 import DayView from "@/views/todo/components/dayview.vue";
+import WeekView from "@/views/todo/components/weekview.vue";
 
 defineOptions({
   name: "Todo"
@@ -10,6 +12,14 @@ defineOptions({
 const todoStore = useTodoStoreHook();
 // 可以在 index 页面中使用 todoStore.filter 来获取 DialogPage 中设置的筛选条件
 console.log("筛选条件:", todoStore.filter);
+
+const currentView = computed(() => {
+  const timeRule = todoStore.filter.timeRule;
+  if (timeRule === "2") {
+    return WeekView;
+  }
+  return DayView;
+});
 </script>
 
 <template>
@@ -25,7 +35,7 @@ console.log("筛选条件:", todoStore.filter);
     2、如果是周视图，则展示分段控制器+卡片（一列）列表（可以选择周）
     3、如果是月视图，则展示热力图，按照待办完成数量区分颜色深度（可以选择月） -->
       <el-main>
-        <DayView />
+        <component :is="currentView" />
       </el-main>
       <el-footer>
         <!-- 这里需要一个回到顶部的按钮 -->
