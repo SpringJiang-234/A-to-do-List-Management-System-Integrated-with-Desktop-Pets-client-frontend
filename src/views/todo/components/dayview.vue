@@ -26,6 +26,12 @@ const activities = ref<Activity[]>([
     timestamp: lastBuildTime,
     isCompleted: false,
     color: "#F56C6C"
+  },
+  {
+    content: "支持自定义颜色",
+    timestamp: lastBuildTime,
+    isCompleted: false,
+    color: "#66CCFF"
   }
 ]);
 
@@ -75,9 +81,9 @@ function handleTextClick(activity: Activity) {
               }"
             ></div>
           </template>
-          <span class="todo-text" @click.stop="handleTextClick(activity)"
-            >这是一个{{ activity.color }}边框的空心节点</span
-          >
+          <span class="todo-text" @click.stop="handleTextClick(activity)">
+            {{ activity.content }}
+          </span>
         </el-timeline-item>
       </el-timeline>
     </div>
