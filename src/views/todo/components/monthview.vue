@@ -1,46 +1,19 @@
-<style lang="scss" scoped>
-:deep(.el-calendar-table .el-calendar-day) {
-  height: 100px;
-  overflow: hidden;
-  position: relative;
+<script lang="ts" setup>
+import { ref } from "vue";
 
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 30px;
-    background: linear-gradient(transparent, var(--el-bg-color));
-    pointer-events: none;
-  }
-}
+import type { CalendarDateType, CalendarInstance } from "element-plus";
+import { message } from "@/utils/message";
 
-.date-text {
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin: 0;
-  padding: 0;
-  font-size: 14px;
-}
+const calendar = ref<CalendarInstance>();
+const selectDate = (val: CalendarDateType) => {
+  if (!calendar.value) return;
+  calendar.value.selectDate(val);
+};
 
-.todo-item {
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  padding: 2px 4px;
-  margin: 2px 0;
-  background-color: var(--el-color-primary-light-9);
-  border-radius: 2px;
-  cursor: pointer;
-}
-</style>
+const handleClickTodo = (todo: string) => {
+  message(`点击了待办：${todo}`);
+};
+</script>
 
 <template>
   <el-card shadow="never">
@@ -87,19 +60,46 @@
   </el-card>
 </template>
 
-<script lang="ts" setup>
-import { ref } from "vue";
+<style lang="scss" scoped>
+:deep(.el-calendar-table .el-calendar-day) {
+  height: 100px;
+  overflow: hidden;
+  position: relative;
 
-import type { CalendarDateType, CalendarInstance } from "element-plus";
-import { message } from "@/utils/message";
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(transparent, var(--el-bg-color));
+    pointer-events: none;
+  }
+}
 
-const calendar = ref<CalendarInstance>();
-const selectDate = (val: CalendarDateType) => {
-  if (!calendar.value) return;
-  calendar.value.selectDate(val);
-};
+.date-text {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
 
-const handleClickTodo = (todo: string) => {
-  message(`点击了待办：${todo}`);
-};
-</script>
+.todo-item {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 2px 4px;
+  margin: 2px 0;
+  background-color: var(--el-color-primary-light-9);
+  border-radius: 2px;
+  cursor: pointer;
+}
+</style>
