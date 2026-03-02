@@ -18,6 +18,7 @@ interface Activity {
 }
 
 const highPriorityActivities = ref<Activity[]>([
+  // 颜色和标签有关，和优先级无关
   {
     title: "完成项目报告",
     content: "需要在今天下班前提交",
@@ -106,7 +107,7 @@ function handleTextClick(activity: Activity) {
         <el-card class="grid-item" shadow="never">
           <template #header>
             <div class="grid-item-card-header">
-              <div class="grid-item-header-content priority-high">
+              <div class="grid-item-header-content">
                 <FluentImportant12Filled /><FluentAlertUrgent16Filled />重要且紧急
               </div>
             </div>
@@ -120,7 +121,7 @@ function handleTextClick(activity: Activity) {
         <el-card class="grid-item" shadow="never">
           <template #header>
             <div class="grid-item-card-header">
-              <div class="grid-item-header-content priority-medium">
+              <div class="grid-item-header-content">
                 <FluentImportant12Filled />重要不紧急
               </div>
             </div>
@@ -134,7 +135,7 @@ function handleTextClick(activity: Activity) {
         <el-card class="grid-item" shadow="never">
           <template #header>
             <div class="grid-item-card-header">
-              <div class="grid-item-header-content priority-low">
+              <div class="grid-item-header-content">
                 <FluentAlertUrgent16Filled />不重要但紧急
               </div>
             </div>
@@ -148,7 +149,7 @@ function handleTextClick(activity: Activity) {
         <el-card class="grid-item" shadow="never">
           <template #header>
             <div class="grid-item-card-header">
-              <div class="grid-item-header-content priority-none">
+              <div class="grid-item-header-content">
                 <greenImportant />不重要不紧急
               </div>
             </div>
@@ -182,21 +183,5 @@ function handleTextClick(activity: Activity) {
 .grid-item-header-content svg {
   width: 20px;
   height: 20px;
-}
-
-.priority-high {
-  color: red;
-}
-
-.priority-medium {
-  color: #e6a23c;
-}
-
-.priority-low {
-  color: #409eff;
-}
-
-.priority-none {
-  color: #67c23a;
 }
 </style>
