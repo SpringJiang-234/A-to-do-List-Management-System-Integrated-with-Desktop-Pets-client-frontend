@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Countdown from "@/views/soonstart/components/CountDown.vue";
+
 defineOptions({
   name: "Soonstart"
 });
@@ -8,5 +10,6 @@ defineOptions({
   <div>
     <h1>快速开始番茄钟、正计时或倒计时</h1>
     <!-- 要实现可能需要todo加一个计时字段 -->
+    <Countdown />
   </div>
 </template>
