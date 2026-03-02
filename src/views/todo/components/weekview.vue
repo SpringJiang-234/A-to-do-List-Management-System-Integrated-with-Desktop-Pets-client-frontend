@@ -13,6 +13,10 @@ const value = ref("");
 /** 分段控制器选项,block：将宽度调整为父元素宽度 */
 const optionsBlock: Array<OptionsType> = [
   {
+    label: "周日",
+    value: 0
+  },
+  {
     label: "周一",
     value: 1
   },
@@ -31,6 +35,10 @@ const optionsBlock: Array<OptionsType> = [
   {
     label: "周五",
     value: 5
+  },
+  {
+    label: "周六",
+    value: 6
   }
 ];
 
