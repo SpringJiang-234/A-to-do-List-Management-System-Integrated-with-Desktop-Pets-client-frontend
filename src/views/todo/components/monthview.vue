@@ -47,6 +47,7 @@
 import { ref } from "vue";
 
 import type { CalendarDateType, CalendarInstance } from "element-plus";
+import { message } from "@/utils/message";
 
 const calendar = ref<CalendarInstance>();
 const selectDate = (val: CalendarDateType) => {
@@ -55,7 +56,7 @@ const selectDate = (val: CalendarDateType) => {
 };
 
 const handleClickTodo = (todo: string) => {
-  console.log("点击了待办事项:", todo);
+  message(`点击了待办：${todo}`);
 };
 </script>
 

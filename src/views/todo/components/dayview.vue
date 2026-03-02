@@ -7,6 +7,7 @@ defineOptions({
 });
 
 interface Activity {
+  title: string;
   content: string;
   timestamp: string;
   isCompleted: boolean;
@@ -17,17 +18,20 @@ const value = ref("");
 const { lastBuildTime } = __APP_INFO__;
 const activities = ref<Activity[]>([
   {
+    title: "支持默认颜色测试测试测试",
     content: "支持默认颜色测试测试测试",
     timestamp: lastBuildTime,
     isCompleted: false
   },
   {
+    title: "支持自定义颜色",
     content: "支持自定义颜色",
     timestamp: lastBuildTime,
     isCompleted: false,
     color: "#F56C6C"
   },
   {
+    title: "支持自定义颜色",
     content: "支持自定义颜色",
     timestamp: lastBuildTime,
     isCompleted: false,
@@ -81,8 +85,9 @@ function handleTextClick(activity: Activity) {
               }"
             ></div>
           </template>
+          <!-- 只有点击标题才跳到详细页 -->
           <span class="todo-text" @click.stop="handleTextClick(activity)">
-            {{ activity.content }}
+            {{ activity.title }}
           </span>
         </el-timeline-item>
       </el-timeline>
@@ -96,31 +101,6 @@ function handleTextClick(activity: Activity) {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-}
-
-.message {
-  position: relative;
-  box-sizing: border-box;
-  width: 200px;
-  padding: 5px 12px;
-  line-height: 18px;
-  color: #fff;
-  word-break: break-all;
-  background-color: var(--el-color-primary);
-  border-color: var(--el-color-primary);
-  border-radius: 6px;
-}
-.message::after {
-  position: absolute;
-  top: 8px;
-  left: -10px;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-  content: "";
-  border-color: var(--el-color-primary) transparent transparent;
-  border-style: solid dashed dashed;
-  border-width: 10px;
 }
 
 .custom-node {
