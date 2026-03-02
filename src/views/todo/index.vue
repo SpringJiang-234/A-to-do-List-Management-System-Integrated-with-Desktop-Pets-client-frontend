@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DialogPage from "@/views/todo/components/dialog.vue";
 import Search from "@/views/todo/components/search.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
+import Timeline from "@/views/todo/components/timeline.vue";
 
 defineOptions({
   name: "Todo"
@@ -13,13 +13,23 @@ console.log("筛选条件:", todoStore.filter);
 </script>
 
 <template>
-  <el-container>
-    <el-header>
-      <Search />
-    </el-header>
-    <el-main> </el-main>
-    <el-footer></el-footer>
-  </el-container>
+  <div>
+    <el-container>
+      <el-header>
+        <Search />
+      </el-header>
+
+      <!-- 待办事项列表 -->
+      <!-- 根据筛选条件显示待办事项，特别要注意的是需要根据视图选择展示不同逻辑的列表：
+    1、如果是日视图，则展示时间线（可以选择日）
+    2、如果是周视图，则展示分段控制器+卡片（一列）列表（可以选择周）
+    3、如果是月视图，则展示热力图，按照待办完成数量区分颜色深度（可以选择月） -->
+      <el-main>
+        <timeline />
+      </el-main>
+      <el-footer></el-footer>
+    </el-container>
+  </div>
 </template>
 
 <style scoped lang="scss"></style>

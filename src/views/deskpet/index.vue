@@ -5,5 +5,7 @@ defineOptions({
 </script>
 
 <template>
-  <h1>我的桌宠</h1>
+  <div>
+    <h1>我的桌宠</h1>
+  </div>
 </template>

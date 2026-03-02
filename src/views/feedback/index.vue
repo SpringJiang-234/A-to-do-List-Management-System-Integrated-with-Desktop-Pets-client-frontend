@@ -5,5 +5,7 @@ defineOptions({
 </script>
 
 <template>
-  <h1>反馈</h1>
+  <div>
+    <h1>反馈</h1>
+  </div>
 </template>

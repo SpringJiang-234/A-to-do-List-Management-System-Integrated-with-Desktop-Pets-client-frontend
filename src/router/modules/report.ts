@@ -5,7 +5,7 @@ export default {
   redirect: "/report/index",
   meta: {
     icon: TablerReportAnalytics,
-    title: "报告",
+    title: "报表",
     rank: 5
   },
   children: [
@@ -14,7 +14,7 @@ export default {
       name: "Report",
       component: () => import("@/views/report/index.vue"),
       meta: {
-        title: "报告"
+        title: "报表"
       }
     }
   ]

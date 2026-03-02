@@ -5,5 +5,7 @@ defineOptions({
 </script>
 
 <template>
-  <h1>设置</h1>
+  <div>
+    <h1>设置</h1>
+  </div>
 </template>
