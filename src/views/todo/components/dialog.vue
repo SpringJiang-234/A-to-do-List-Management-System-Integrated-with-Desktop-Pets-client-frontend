@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { message } from "@/utils/message";
-import forms, { type FormProps } from "./form.vue";
+import forms, { type FormProps } from "./Form.vue";
 import { addDialog } from "@/components/ReDialog";
 import Setting from "~icons/ri/settings-3-line";
 import { useTodoStoreHook } from "@/store/modules/todo";

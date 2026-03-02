@@ -33,7 +33,7 @@ const resetForm = () => {
 };
 import IconamoonSearchLight from "~icons/iconamoon/search-light";
 import HeroiconsArrowPath from "~icons/heroicons/arrow-path";
-import DialogPage from "@/views/todo/components/dialog.vue";
+import DialogPage from "@/views/todo/components/Dialog.vue";
 
 const formInline = reactive({
   title: ""

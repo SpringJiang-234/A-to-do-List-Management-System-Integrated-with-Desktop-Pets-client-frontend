@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import Search from "@/views/todo/components/search.vue";
+import Search from "@/views/todo/components/Search.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
-import DayView from "@/views/todo/components/dayview.vue";
-import WeekView from "@/views/todo/components/weekview.vue";
-import MonthView from "@/views/todo/components/monthview.vue";
+import DayView from "@/views/todo/components/DayView.vue";
+import WeekView from "@/views/todo/components/WeekView.vue";
+import MonthView from "@/views/todo/components/MonthView.vue";
 
 defineOptions({
   name: "Todo"
