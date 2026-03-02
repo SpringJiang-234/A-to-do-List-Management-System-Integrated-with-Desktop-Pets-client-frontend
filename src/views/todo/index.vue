@@ -32,7 +32,7 @@ const currentView = computed(() => {
 <template>
   <div class="todo-container">
     <div class="header-wrapper">
-      <el-card>
+      <el-card shadow="never">
         <el-collapse expand-icon-position="left">
           <el-collapse-item title="搜索筛选待办">
             <template #default>
