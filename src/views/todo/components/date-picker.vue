@@ -2,7 +2,7 @@
   <el-date-picker
     v-model="value"
     type="date"
-    placeholder="Pick a day"
+    placeholder="选择日期"
     size="default"
   />
 </template>

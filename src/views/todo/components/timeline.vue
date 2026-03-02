@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { markRaw } from "vue";
-import { randomGradient } from "@pureadmin/utils";
-import { useRenderFlicker } from "@/components/ReFlicker";
-import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import Iphone from "~icons/ep/iphone";
 import DatePicker from "@/views/todo/components/date-picker.vue";
 
 defineOptions({
@@ -13,42 +8,13 @@ defineOptions({
 const { lastBuildTime } = __APP_INFO__;
 const activities = [
   {
-    content: "支持圆点发光",
-    timestamp: lastBuildTime,
-    icon: markRaw(useRenderFlicker())
-  },
-  {
-    content: "支持方形发光",
-    timestamp: lastBuildTime,
-    icon: markRaw(useRenderFlicker({ borderRadius: 0, background: "#67C23A" }))
-  },
-  {
-    content: "支持渐变发光",
-    timestamp: lastBuildTime,
-    icon: markRaw(
-      useRenderFlicker({
-        background: randomGradient({
-          randomizeHue: true
-        })
-      })
-    )
-  },
-  {
-    content: "支持默认颜色",
+    content: "支持默认颜色测试测试测试",
     timestamp: lastBuildTime
   },
   {
     content: "支持自定义颜色",
     timestamp: lastBuildTime,
     color: "#F56C6C"
-  },
-  {
-    content: "支持自定义图标",
-    timestamp: lastBuildTime,
-    color: "transparent",
-    icon: useRenderIcon(Iphone, {
-      color: "#0bbd87"
-    })
   }
 ];
 </script>
@@ -57,7 +23,10 @@ const activities = [
   <el-card shadow="never">
     <template #header>
       <div class="card-header">
-        <p class="font-medium"><span>待办-日视图</span> <date-picker /></p>
+        <div class="header-content">
+          <span class="font-medium">待办-日视图</span>
+          <date-picker />
+        </div>
       </div>
     </template>
     <div class="flex">
@@ -65,26 +34,12 @@ const activities = [
         <el-timeline-item
           v-for="(activity, index) in activities"
           :key="index"
-          :icon="activity.icon"
           :color="activity.color"
           :timestamp="activity.timestamp"
         >
+          <!-- 这里增加链接，点击即可跳到待办详情页，activity.content展示待办的标题
+          上几行的timestamp展示待办的时间 -->
           {{ activity.content }}
-        </el-timeline-item>
-      </el-timeline>
-
-      <el-timeline class="pl-40!">
-        <el-timeline-item
-          v-for="(activity, index) in activities"
-          :key="index"
-          :icon="activity.icon"
-          :color="activity.color"
-          :timestamp="activity.timestamp"
-          placement="bottom"
-        >
-          <div class="message">
-            vue-pure-admin 第{{ activities.length - index }}个版本发布啦
-          </div>
         </el-timeline-item>
       </el-timeline>
     </div>
@@ -92,6 +47,13 @@ const activities = [
 </template>
 
 <style scoped>
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .message {
   position: relative;
   box-sizing: border-box;

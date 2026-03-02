@@ -27,7 +27,9 @@ console.log("筛选条件:", todoStore.filter);
       <el-main>
         <timeline />
       </el-main>
-      <el-footer></el-footer>
+      <el-footer>
+        <!-- 这里需要一个回到顶部的按钮 -->
+      </el-footer>
     </el-container>
   </div>
 </template>
