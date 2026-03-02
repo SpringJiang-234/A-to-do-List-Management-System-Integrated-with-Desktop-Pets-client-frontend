@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import TodoList from "@/components/TodoList.vue";
 import { ref } from "vue";
+import TodoList from "@/components/TodoList.vue"; 
 
 interface Activity {
   title: string;
@@ -41,30 +41,15 @@ function handleTextClick(activity: Activity) {
   console.log("文字被点击:", activity);
 }
 </script>
+
 <template>
-  <div class="demo-collapse-position">
-    <el-collapse expand-icon-position="left">
-      <el-collapse-item title="Consistency" name="1">
-        <TodoList
-          :activities="activities"
-          @click="handleTodoClick"
-          @textClick="handleTextClick"
-        />
-      </el-collapse-item>
-      <el-collapse-item title="Feedback" name="2">
-        <TodoList
-          :activities="activities"
-          @click="handleTodoClick"
-          @textClick="handleTextClick"
-        />
-      </el-collapse-item>
-      <el-collapse-item title="Efficiency" name="3">
-        <TodoList
-          :activities="activities"
-          @click="handleTodoClick"
-          @textClick="handleTextClick"
-        />
-      </el-collapse-item>
-    </el-collapse>
+  <div>
+    <TodoList
+      :activities="activities"
+      @click="handleTodoClick"
+      @textClick="handleTextClick"
+    />
   </div>
 </template>
+
+<style lang="scss" scoped></style>

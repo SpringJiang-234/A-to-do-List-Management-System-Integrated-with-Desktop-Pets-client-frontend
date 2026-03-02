@@ -1,8 +1,20 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import Collapse from "@/views/category/components/Collapse.vue";
+import SingleCategory from "@/views/category/components/SingleCategory.vue";
 
 defineOptions({
   name: "Category"
+});
+
+const route = useRoute();
+const categoryName = computed(() => {
+  return (route.meta?.title as string) || "全部";
+});
+
+const isAllCategory = computed(() => {
+  return route.name === "Category";
 });
 </script>
 
@@ -17,9 +29,10 @@ defineOptions({
   添加待办时也可以添加分类-->
     <el-card shadow="never">
       <template #header>
-        <span>分类</span>
+        <span>{{ categoryName }}</span>
       </template>
-      <Collapse />
+      <Collapse v-if="isAllCategory" />
+      <SingleCategory v-else />
     </el-card>
   </div>
 </template>
