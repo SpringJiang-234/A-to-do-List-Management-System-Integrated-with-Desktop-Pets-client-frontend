@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { message } from "@/utils/message";
+import Segmented, { type OptionsType } from "@/components/ReSegmented";
+import TodoList from "@/components/TodoList.vue";
 
 defineOptions({
   name: "WeekView"
@@ -59,15 +61,12 @@ function onChange(value: any) {
   });
 }
 
-/** 点击事件 */
-function handleClick(activity: Activity) {
-  activity.isCompleted = !activity.isCompleted;
-  message(`切换是否完成：${activity.isCompleted}`);
+function handleTodoClick(activity: Activity) {
+  console.log("待办项被点击:", activity);
 }
 
-/** 点击文字内容事件 */
 function handleTextClick(activity: Activity) {
-  message(`点击了文字：${activity.content}`);
+  console.log("文字被点击:", activity);
 }
 </script>
 
@@ -89,37 +88,11 @@ function handleTextClick(activity: Activity) {
     <!-- 分段控制器：周一到周日 选择 -->
     <el-segmented v-model="value" :options="options" block @change="onChange" />
     <div style="margin-top: 20px">
-      <div class="todo-list">
-        <div
-          v-for="(activity, index) in activities"
-          :key="index"
-          class="todo-item"
-          @click="handleClick(activity)"
-        >
-          <div class="todo-header">
-            <div
-              :class="
-                activity.isCompleted ? 'custom-node-completed' : 'custom-node'
-              "
-              :style="{
-                borderColor: activity.color || 'var(--el-color-info-light-7)',
-                // 完成状态下，节点背景颜色与边框颜色一致
-                backgroundColor: activity.isCompleted
-                  ? activity.color || 'var(--el-color-info-light-7)'
-                  : 'white'
-              }"
-            ></div>
-            <!-- 只有点击标题才跳到详细页 -->
-            <span class="todo-title" @click.stop="handleTextClick(activity)">{{
-              activity.title
-            }}</span>
-            <span class="todo-time">{{ activity.timestamp }}</span>
-          </div>
-          <div class="todo-content">
-            {{ activity.content }}
-          </div>
-        </div>
-      </div>
+      <TodoList
+        :activities="activities"
+        @click="handleTodoClick"
+        @textClick="handleTextClick"
+      />
     </div>
   </el-card>
 </template>
@@ -130,67 +103,5 @@ function handleTextClick(activity: Activity) {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-}
-
-.todo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.todo-item {
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.todo-item:hover {
-  background-color: var(--el-color-primary-light-9);
-}
-
-.todo-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.custom-node {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid var(--el-color-info-light-7);
-  background-color: white;
-  flex-shrink: 0;
-}
-
-.custom-node-completed {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid var(--el-color-info-light-7);
-  background-color: var(--el-color-info-light-7);
-  flex-shrink: 0;
-}
-
-.todo-title {
-  font-weight: 500;
-  font-size: 14px;
-  flex: 1;
-  cursor: pointer;
-}
-
-.todo-time {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  cursor: pointer;
-}
-
-.todo-content {
-  font-size: 13px;
-  color: var(--el-text-color-regular);
-  padding-left: 20px;
-  cursor: pointer;
 }
 </style>
