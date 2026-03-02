@@ -23,7 +23,7 @@ export default {
       name: "Category",
       component: () => import("@/views/category/index.vue"),
       meta: {
-        title: "分类管理"
+        title: "未分类"
       }
     }
   ]
