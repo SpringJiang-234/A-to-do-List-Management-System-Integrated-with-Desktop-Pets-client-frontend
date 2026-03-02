@@ -47,7 +47,12 @@ const currentView = computed(() => {
     <!-- 根据筛选条件显示待办事项，特别要注意的是需要根据视图选择展示不同逻辑的列表：
     1、如果是日视图，则展示时间线（可以选择日）
     2、如果是周视图，则展示分段控制器+卡片（一列）列表（可以选择周）
-    3、如果是月视图，则展示热力图，按照待办完成数量区分颜色深度（可以选择月） -->
+    3、如果是月视图，则展示热力图，按照待办完成数量区分颜色深度（可以选择月） 
+    关于优先级：标题前加上图标
+    1、重要且紧急：<FluentImportant12Filled /><FluentAlertUrgent16Filled />
+    2、重要不紧急：<FluentImportant12Filled />
+    3、不重要但紧急：<FluentAlertUrgent16Filled />
+    -->
     <div class="main-wrapper">
       <component :is="currentView" />
     </div>
