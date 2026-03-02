@@ -7,5 +7,6 @@ defineOptions({
 <template>
   <div>
     <h1>设置</h1>
+    <!-- 细节看一下思考笔记 -->
   </div>
 </template>
