@@ -2,7 +2,7 @@
 import { message } from "@/utils/message";
 import forms, { type FormProps } from "./Form.vue";
 import { addDialog } from "@/components/ReDialog";
-import Setting from "~icons/ri/settings-3-line";
+import MingcuteTimeLine from "~icons/mingcute/time-line?width=16px&height=16px";
 import { useTodoStoreHook } from "@/store/modules/todo";
 
 defineOptions({
@@ -15,28 +15,31 @@ const todoStore = useTodoStoreHook();
 function onFormOneClick() {
   addDialog({
     width: "30%",
-    title: "筛选待办",
+    title: "时间视图",
     contentRenderer: () => forms,
     props: {
-      // 赋默认值
       formInline: {
-        categories: todoStore.filter.categories,
-        tags: todoStore.filter.tags,
         timeRule: todoStore.filter.timeRule
       }
     },
     closeCallBack: ({ options, args }) => {
-      // options.props 是响应式的
       const { formInline } = options.props as FormProps;
-      const text = `类别：${formInline.categories} 标签：${formInline.tags} 视图：${formInline.timeRule}`;
+      const text = `视图：${formInline.timeRule}`;
       if (args?.command === "cancel") {
-        // 您点击了取消按钮
         message(`您点击了取消按钮，当前表单数据为 ${text}`);
       } else if (args?.command === "sure") {
-        // 保存筛选条件到 store
         todoStore.setFilter({
-          categories: formInline.categories,
-          tags: formInline.tags,
+          title: todoStore.filter.title,
+          content: todoStore.filter.content,
+          categories: todoStore.filter.categories,
+          tags: todoStore.filter.tags,
+          priorities: todoStore.filter.priorities,
+          isContinuous: todoStore.filter.isContinuous,
+          time: todoStore.filter.time,
+          startTime: todoStore.filter.startTime,
+          endTime: todoStore.filter.endTime,
+          status: todoStore.filter.status,
+          isTop: todoStore.filter.isTop,
           timeRule: formInline.timeRule
         });
         message(`您点击了确定按钮，当前表单数据为 ${text}`);
@@ -51,5 +54,6 @@ function onFormOneClick() {
 </script>
 
 <template>
-  <el-button :icon="Setting" @click="onFormOneClick" circle> </el-button>
+  <el-button :icon="MingcuteTimeLine" @click="onFormOneClick" circle>
+  </el-button>
 </template>

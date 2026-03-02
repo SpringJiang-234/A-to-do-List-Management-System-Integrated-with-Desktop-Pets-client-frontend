@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import Search from "@/views/todo/components/Search.vue";
+import SearchCard from "@/views/todo/components/SearchCard.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
 import DayView from "@/views/todo/components/DayView.vue";
 import WeekView from "@/views/todo/components/WeekView.vue";
@@ -32,15 +32,7 @@ const currentView = computed(() => {
 <template>
   <div class="todo-container">
     <div class="header-wrapper">
-      <el-card shadow="never">
-        <el-collapse expand-icon-position="left">
-          <el-collapse-item title="搜索筛选待办">
-            <template #default>
-              <Search />
-            </template>
-          </el-collapse-item>
-        </el-collapse>
-      </el-card>
+      <SearchCard />
     </div>
 
     <!-- 待办事项列表 -->
