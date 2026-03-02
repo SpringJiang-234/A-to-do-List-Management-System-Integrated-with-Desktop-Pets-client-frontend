@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Search from "@/views/todo/components/search.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
-import Timeline from "@/views/todo/components/timeline.vue";
+import DayView from "@/views/todo/components/dayview.vue";
 
 defineOptions({
   name: "Todo"
@@ -25,7 +25,7 @@ console.log("筛选条件:", todoStore.filter);
     2、如果是周视图，则展示分段控制器+卡片（一列）列表（可以选择周）
     3、如果是月视图，则展示热力图，按照待办完成数量区分颜色深度（可以选择月） -->
       <el-main>
-        <timeline />
+        <DayView />
       </el-main>
       <el-footer>
         <!-- 这里需要一个回到顶部的按钮 -->

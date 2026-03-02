@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import DatePicker from "@/views/todo/components/date-picker.vue";
+import { ref } from "vue";
 
 defineOptions({
-  name: "TimeLine"
+  name: "DayView"
 });
 
+const value = ref("");
 const { lastBuildTime } = __APP_INFO__;
 const activities = [
   {
@@ -25,7 +26,12 @@ const activities = [
       <div class="card-header">
         <div class="header-content">
           <span class="font-medium">待办-日视图</span>
-          <date-picker />
+          <el-date-picker
+            v-model="value"
+            type="date"
+            placeholder="选择日期"
+            size="default"
+          />
         </div>
       </div>
     </template>
