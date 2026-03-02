@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import SearchCard from "@/views/todo/components/SearchCard.vue";
+import SearchCard from "@/components/SearchCard.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
 import DayView from "@/views/todo/components/DayView.vue";
 import WeekView from "@/views/todo/components/WeekView.vue";
