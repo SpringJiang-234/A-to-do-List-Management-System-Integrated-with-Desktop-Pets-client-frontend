@@ -1,3 +1,4 @@
+<script lang="ts" setup></script>
 <template>
   <div class="demo-collapse-position">
     <el-collapse expand-icon-position="left">
@@ -37,11 +38,3 @@
     </el-collapse>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ref } from "vue";
-
-import type { CollapseIconPositionType } from "element-plus";
-
-const position = ref<CollapseIconPositionType>("left");
-</script>
