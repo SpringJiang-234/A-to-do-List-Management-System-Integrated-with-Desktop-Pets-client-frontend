@@ -141,13 +141,12 @@ function handleTextClick(activity: Activity) {
 .todo-item {
   padding: 12px;
   border-radius: 8px;
-  background-color: var(--el-fill-color-light);
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .todo-item:hover {
-  background-color: var(--el-fill-color);
+  background-color: var(--el-color-primary-light-9);
 }
 
 .todo-header {
