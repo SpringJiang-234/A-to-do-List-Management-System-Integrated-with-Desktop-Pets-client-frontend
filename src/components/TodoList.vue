@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { message } from "@/utils/message";
 
 interface Activity {
@@ -21,6 +22,10 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const contextMenuVisible = ref(false);
+const menuPosition = ref({ x: 0, y: 0 });
+const currentIndex = ref(-1);
+
 function handleClick(activity: Activity) {
   activity.isCompleted = !activity.isCompleted;
   message(`切换是否完成：${activity.isCompleted}`);
@@ -31,15 +36,74 @@ function handleTextClick(activity: Activity) {
   message(`点击了文字：${activity.content}`);
   emit("textClick", activity);
 }
+
+function handleRightClick(event: MouseEvent, index: number) {
+  event.preventDefault();
+  event.stopPropagation();
+  menuPosition.value = { x: event.clientX, y: event.clientY };
+  currentIndex.value = index;
+  contextMenuVisible.value = true;
+}
+
+function handleMenuAction(action: string) {
+  contextMenuVisible.value = false;
+  if (currentIndex.value === -1) return;
+
+  switch (action) {
+    case "add":
+      message(`新增待办，index: ${currentIndex.value}`);
+      break;
+    case "edit":
+      message(`修改待办，index: ${currentIndex.value}`);
+      break;
+    case "delete":
+      message(`删除待办，index: ${currentIndex.value}`);
+      break;
+  }
+}
 </script>
 
 <template>
   <div class="todo-list">
+    <el-popover
+      ref="popover"
+      v-model:visible="contextMenuVisible"
+      placement="bottom-start"
+      width="160"
+      :popper-style="{
+        left: `${menuPosition.x}px`,
+        top: `${menuPosition.y}px`,
+        position: 'absolute'
+      }"
+    >
+      <div class="flex flex-col items-center">
+        <div
+          @click="handleMenuAction('add')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          新增待办
+        </div>
+        <div
+          @click="handleMenuAction('edit')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          修改待办
+        </div>
+        <div
+          @click="handleMenuAction('delete')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          删除待办
+        </div>
+      </div>
+    </el-popover>
+
     <div
       v-for="(activity, index) in activities"
       :key="index"
       class="todo-item"
       @click="handleClick(activity)"
+      @contextmenu.prevent="handleRightClick($event, index)"
     >
       <div class="todo-header">
         <div
