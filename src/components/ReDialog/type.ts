@@ -156,6 +156,7 @@ type ButtonProps = {
 };
 
 interface DialogOptions extends DialogProps {
+  plain?: boolean;
   /** 内容区组件的 `props`，可通过 `defineProps` 接收 */
   props?: any;
   /** 是否隐藏 `Dialog` 按钮操作区的内容 */

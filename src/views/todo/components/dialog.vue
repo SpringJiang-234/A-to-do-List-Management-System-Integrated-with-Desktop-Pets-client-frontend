@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ref } from "vue";
 import { message } from "@/utils/message";
-import { addDialog } from "@/components/ReDialog";
+import { addDialog, closeDialog } from "@/components/ReDialog";
 import MingcuteTimeLine from "~icons/mingcute/time-line?width=16px&height=16px";
 import Select from "@/components/Select.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
@@ -33,8 +33,26 @@ const timeRules = [
 
 function onFormOneClick() {
   addDialog({
-    width: "30%",
+    plain: false,
+    width: "500",
     title: "时间视图",
+    footerButtons: [
+      {
+        label: "取消",
+        text: true,
+        bg: true,
+        btnClick: ({ dialog: { options, index } }) => {
+          closeDialog(options, index, { command: "cancel" });
+        }
+      },
+      {
+        label: "确定",
+        type: "primary",
+        btnClick: ({ dialog: { options, index } }) => {
+          closeDialog(options, index, { command: "sure" });
+        }
+      }
+    ],
     contentRenderer: () => (
       <el-form model={formInline.value}>
         <el-form-item label="视图">
