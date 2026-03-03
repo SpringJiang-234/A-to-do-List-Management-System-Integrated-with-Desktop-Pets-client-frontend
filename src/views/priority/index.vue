@@ -181,6 +181,7 @@ function handleTextClick(activity: Activity) {
   align-items: center;
   gap: 8px;
   color: var(--el-color-primary);
+  margin-bottom: 8px;
 }
 
 .grid-item-header-content svg {
