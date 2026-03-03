@@ -13,14 +13,9 @@ const email = ref("");
 const gender = ref();
 const birthday = ref("");
 const editable = ref(false);
-const showSaveDialog = ref(false);
 
 const handleEdit = () => {
   editable.value = true;
-};
-
-const handleSave = () => {
-  showSaveDialog.value = true;
 };
 
 const handleSaveConfirm = () => {
