@@ -8,12 +8,30 @@ defineOptions({
   name: "Soonstart"
 });
 
-const valueTime = ref("");
-const valueType = ref("");
-const timeValue1 = ref("0");
-const timeValue2 = ref("0");
-const timeValue3 = ref("0");
-const timeValue4 = ref(0);
+const valueType = ref("番茄钟"); //选择计时方式:番茄钟、正计时、倒计时
+const timeValue1 = ref(new Date("1970-01-01T02:00:00")); //倒计时时长
+const timeValue2 = ref(new Date("1970-01-01T00:25:00")); //专注时长
+const timeValue3 = ref(new Date("1970-01-01T00:05:00")); //休息时长
+const timeValue4 = ref(4); //循环次数
+
+const formatTime = (timeValue: string | Date): string => {
+  if (!timeValue) return "0小时0分钟";
+
+  const date = typeof timeValue === "string" ? new Date(timeValue) : timeValue;
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${hours}小时${minutes}分钟`;
+};
+
+const handleConfirm = () => {
+  if (valueType.value === "倒计时") {
+    message(`倒计时时长：${formatTime(timeValue1.value)}`);
+  } else if (valueType.value === "番茄钟") {
+    message(
+      `专注时长：${formatTime(timeValue2.value)}，休息时长：${formatTime(timeValue3.value)}，循环次数：${timeValue4.value}`
+    );
+  }
+};
 
 const options = [
   {
@@ -29,23 +47,18 @@ const options = [
     label: "倒计时"
   }
 ];
-const handleChangeDate = (date: string) => {
-  message(`选择的日期是：${date}`);
-};
 </script>
 
 <template>
   <div>
     <el-card shadow="never">
-      <template #header>
-        <div class="card-header">
-          <div class="header-content">
-            <span class="font-medium">选择待办</span>
-          </div>
-        </div>
-      </template>
-      <SearchCard :show-time-view-button="false" />
+      <h1>快速开始番茄钟、正计时或倒计时</h1>
+      <!-- 要实现可能需要todo加一个计时字段 -->
+      <!-- 根据选择的计时类型弹出新的窗口用于计时 -->
+      <Countdown />
     </el-card>
+    <SearchCard :show-time-view-button="false" />
+    <!-- 直接放待办卡片 -->
     <el-card shadow="never">
       <template #header>
         <div class="card-header">
@@ -67,9 +80,16 @@ const handleChangeDate = (date: string) => {
         />
       </el-select>
       <div class="time-pickers">
+        <!-- 如果是正计时，只需要按钮开始 -->
+        <div v-if="valueType === '正计时'">
+          <el-button type="primary" @click="handleConfirm">开始</el-button>
+        </div>
+
         <div v-if="valueType === '倒计时'" class="time-picker-wrapper">
           <span class="font-small">倒计时时长：</span>
           <el-time-picker v-model="timeValue1" placeholder="选择时长" />
+          <el-button type="primary" @click="handleConfirm">确定</el-button>
+          <el-button type="primary" @click="handleConfirm">开始</el-button>
         </div>
 
         <div v-if="valueType === '番茄钟'" class="time-pickers-wrapper">
@@ -79,21 +99,9 @@ const handleChangeDate = (date: string) => {
           <el-time-picker v-model="timeValue3" placeholder="休息时长" />
           <div class="font-small">循环次数：</div>
           <el-input-number v-model="timeValue4" placeholder="循环次数" />
+          <el-button type="primary" @click="handleConfirm">开始</el-button>
         </div>
       </div>
-    </el-card>
-
-    <el-card shadow="never">
-      <h1>快速开始番茄钟、正计时或倒计时</h1>
-      <!-- 要实现可能需要todo加一个计时字段 -->
-      <!-- 根据选择的计时类型弹出新的窗口用于计时 -->
-      <template #header>
-        <div class="card-header">
-          <div class="header-content"></div>
-        </div>
-      </template>
-
-      <Countdown />
     </el-card>
   </div>
 </template>
@@ -102,6 +110,8 @@ const handleChangeDate = (date: string) => {
 .header-content {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .date-picker-wrapper {
@@ -112,15 +122,13 @@ const handleChangeDate = (date: string) => {
   margin-top: 20px;
 }
 
-.time-picker-wrapper {
-  width: 100%;
-}
-
+.time-picker-wrapper,
 .time-pickers-wrapper {
   display: flex;
-  flex-wrap: wrap;
   gap: 20px;
   width: 100%;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .font-small {
