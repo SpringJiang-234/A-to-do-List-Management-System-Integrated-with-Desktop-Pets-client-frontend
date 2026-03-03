@@ -9,7 +9,7 @@ const format = percentage => (percentage === 100 ? "Full" : `${percentage}%`);
 </script>
 
 <template>
-  <div class="deskpet-container">
+  <div>
     <!-- 桌宠数据
       养成数据：可以关闭（switch）
       待办经验：不可关闭（switch 灰色不可动）
@@ -61,19 +61,16 @@ const format = percentage => (percentage === 100 ? "Full" : `${percentage}%`);
 </template>
 
 <style scoped>
-.deskpet-container {
-  display: flex;
-  justify-content: center;
-}
-
-.deskpet-container :deep(.el-card) {
-  margin-bottom: 20px;
-}
-
 .avatar-wrapper {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+}
+
+.demo-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .demo-progress .el-progress--line {

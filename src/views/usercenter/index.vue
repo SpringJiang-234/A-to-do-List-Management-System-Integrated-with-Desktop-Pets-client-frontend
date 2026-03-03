@@ -14,7 +14,7 @@ const birthday = ref("");
 </script>
 
 <template>
-  <div class="usercenter-container">
+  <div>
     <el-card shadow="never">
       <template #header>
         <span>个人中心</span>
@@ -59,11 +59,6 @@ const birthday = ref("");
 </template>
 
 <style scoped>
-.usercenter-container {
-  display: flex;
-  justify-content: center;
-}
-
 .avatar-wrapper {
   display: flex;
   justify-content: center;
