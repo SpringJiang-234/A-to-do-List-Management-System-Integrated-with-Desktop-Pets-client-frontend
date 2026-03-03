@@ -52,7 +52,7 @@ const handleMenuAction = (action: string) => {
     <template #header>
       <div class="card-header">
         <div class="header-content">
-          <span class="font-medium">待办-月视图</span>
+          <h3>待办-月视图</h3>
         </div>
       </div>
     </template>

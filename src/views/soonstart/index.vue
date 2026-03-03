@@ -60,7 +60,7 @@ const options = [
 <template>
   <div class="soonstart-container">
     <el-card shadow="never">
-      <h1>快速开始番茄钟、正计时或倒计时</h1>
+      <h3>快速开始番茄钟、正计时或倒计时</h3>
       <!-- 要实现可能需要todo加一个计时字段 -->
       <!-- 根据选择的计时类型弹出新的窗口用于计时 -->
       <div class="icon-container">

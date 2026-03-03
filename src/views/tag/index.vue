@@ -29,7 +29,9 @@ const isAllTag = computed(() => {
   添加待办时也可以添加标签-->
     <el-card shadow="never">
       <template #header>
-        <span>{{ tagName }}</span>
+        <div class="header-content">
+          <h3>{{ tagName }}</h3>
+        </div>
       </template>
       <Collapse v-if="isAllTag" />
       <SingleTag v-else />

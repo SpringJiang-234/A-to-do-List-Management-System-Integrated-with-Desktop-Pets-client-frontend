@@ -90,14 +90,14 @@ function handleMenuAction(action: string) {
     <template #header>
       <div class="card-header">
         <div class="header-content">
-          <span class="font-medium">待办-日视图</span>
-          <el-date-picker
-            v-model="value"
-            type="date"
-            placeholder="选择日期"
-            size="default"
-          />
+          <h3>待办-日视图</h3>
         </div>
+        <el-date-picker
+          v-model="value"
+          type="date"
+          placeholder="选择日期"
+          size="default"
+        />
       </div>
     </template>
     <div class="flex">

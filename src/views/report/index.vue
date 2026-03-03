@@ -62,7 +62,7 @@ const setThisYear = () => {
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <span class="font-medium">报表</span>
+            <h3>报表</h3>
           </div>
         </div>
       </template>

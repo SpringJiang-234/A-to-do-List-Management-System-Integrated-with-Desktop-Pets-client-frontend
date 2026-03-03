@@ -36,7 +36,7 @@ const intimacyValue = ref(80);
 成长值及成长等级每天也会继承，完成待办事项时成长值增加，当成长值满100时，成长等级增加且成长值重置为0。 -->
     <el-card shadow="never">
       <template #header>
-        <span>我的桌宠</span>
+        <h3>我的桌宠</h3>
       </template>
       <div class="avatar-wrapper">
         <el-avatar size="large" :src="circleUrl" />

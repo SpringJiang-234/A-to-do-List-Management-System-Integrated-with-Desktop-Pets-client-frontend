@@ -11,7 +11,7 @@ defineOptions({
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <span class="font-medium">菜单设置</span>
+            <h4>菜单设置</h4>
           </div>
         </div>
       </template>
@@ -21,7 +21,7 @@ defineOptions({
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <span class="font-medium">桌宠设置</span>
+            <h4>桌宠设置</h4>
           </div>
         </div>
       </template>
@@ -36,7 +36,7 @@ defineOptions({
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <span class="font-medium">提醒设置</span>
+            <h4>提醒设置</h4>
           </div>
         </div>
       </template>
@@ -47,7 +47,7 @@ defineOptions({
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <span class="font-medium">分类设置</span>
+            <h4>分类设置</h4>
           </div>
         </div>
       </template>
@@ -57,7 +57,7 @@ defineOptions({
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <span class="font-medium">标签设置</span>
+            <h4>标签设置</h4>
           </div>
         </div>
       </template>

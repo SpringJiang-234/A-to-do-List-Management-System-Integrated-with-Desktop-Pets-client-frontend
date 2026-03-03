@@ -259,14 +259,14 @@ const handleMenuAction = (action: string) => {
   <el-card shadow="never">
     <template #header>
       <div class="card-header">
-        <span>{{ dateRange }}</span>
-        <el-date-picker
-          v-model="value"
-          type="week"
-          format="[Week] ww"
-          placeholder="选择周"
-        />
+        <h3>待办-周视图</h3>
       </div>
+      <el-date-picker
+        v-model="value"
+        type="week"
+        format="[Week] ww"
+        placeholder="选择周"
+      />
     </template>
     <el-table :data="tableData" border style="width: 100%">
       <el-table-column prop="sunday" label="周日" min-width="14.2%">

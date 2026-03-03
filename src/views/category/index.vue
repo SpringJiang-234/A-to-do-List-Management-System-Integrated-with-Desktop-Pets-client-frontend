@@ -29,7 +29,7 @@ const isAllCategory = computed(() => {
   添加待办时也可以添加分类-->
     <el-card shadow="never">
       <template #header>
-        <span>{{ categoryName }}</span>
+        <h3>{{ categoryName }}</h3>
       </template>
       <Collapse v-if="isAllCategory" />
       <SingleCategory v-else />

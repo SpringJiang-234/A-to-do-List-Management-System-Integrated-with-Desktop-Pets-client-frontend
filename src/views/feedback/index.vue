@@ -50,7 +50,7 @@ function handleTextClick(activity: Activity) {
   <div>
     <el-card shadow="never">
       <template #header>
-        <span>公告</span>
+        <h3>反馈</h3>
       </template>
       <FeedbackList
         :activities="activities"

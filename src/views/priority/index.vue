@@ -100,7 +100,9 @@ function handleTextClick(activity: Activity) {
     <el-card shadow="never">
       <template #header>
         <div class="card-header">
-          <div class="header-content">优先级</div>
+          <div class="header-content">
+            <h3>优先级</h3>
+          </div>
         </div>
       </template>
       <div class="grid-container">

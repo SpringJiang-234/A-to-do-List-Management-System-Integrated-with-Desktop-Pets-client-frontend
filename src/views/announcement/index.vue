@@ -47,7 +47,7 @@ function handleTextClick(activity: any) {
   所以后端的新增和详细页修改也要端上来 -->
     <el-card shadow="never">
       <template #header>
-        <span>公告</span>
+        <h3>公告</h3>
       </template>
       <AnnounceList
         :activities="activities"

@@ -27,7 +27,9 @@ const handleSaveConfirm = () => {
   <div>
     <el-card shadow="never">
       <template #header>
-        <span>个人中心</span>
+        <div class="header-content">
+          <h3>个人中心</h3>
+        </div>
       </template>
       <div class="avatar-wrapper">
         <el-avatar size="large" :src="circleUrl" />
