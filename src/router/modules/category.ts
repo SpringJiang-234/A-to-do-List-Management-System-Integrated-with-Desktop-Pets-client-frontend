@@ -1,4 +1,5 @@
 import DashiconsCategory from '~icons/dashicons/category';
+import MaterialSymbolsLightDocsOutlineRounded from '~icons/material-symbols-light/docs-outline-rounded?width=16px&height=16px';
 import type { RouteRecordRaw } from "vue-router";
 
 interface Category {
@@ -23,6 +24,7 @@ export default {
       name: "Category",
       component: () => import("@/views/category/index.vue"),
       meta: {
+        icon: DashiconsCategory,
         title: "全部"
       }
     }
@@ -35,6 +37,7 @@ export function generateCategoryRoutes(categories: Category[]): RouteRecordRaw[]
     name: category.name.charAt(0).toUpperCase() + category.name.slice(1),
     component: () => import("@/views/category/index.vue"),
     meta: {
+      icon: MaterialSymbolsLightDocsOutlineRounded,
       title: category.title
     }
   }));

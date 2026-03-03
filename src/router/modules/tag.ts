@@ -1,4 +1,5 @@
 import TablerTagFilled from '~icons/tabler/tag-filled';
+import TablerTag from '~icons/tabler/tag?width=16px&height=16px';
 import type { RouteRecordRaw } from "vue-router";
 
 interface Tag {
@@ -23,6 +24,7 @@ export default {
       name: "Tag",
       component: () => import("@/views/tag/index.vue"),
       meta: {
+        icon: TablerTagFilled,
         title: "全部"
       }
     }
@@ -35,6 +37,7 @@ export function generateTagRoutes(tags: Tag[]): RouteRecordRaw[] {
     name: tag.name.charAt(0).toUpperCase() + tag.name.slice(1),
     component: () => import("@/views/tag/index.vue"),
     meta: {
+      icon: TablerTag,
       title: tag.title
     }
   }));
