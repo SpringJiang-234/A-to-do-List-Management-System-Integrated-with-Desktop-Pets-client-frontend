@@ -325,13 +325,18 @@ const onSubmit = () => {
                   class="demo-form-inline"
                 >
                   <el-form-item>
-                    <el-button
-                      :icon="HeroiconsArrowPath"
-                      circle
-                      type="primary"
-                      title="重置除时间视图外的条件"
-                      @click="resetForm"
-                    />
+                    <el-tooltip
+                      content="重置除时间视图外的条件"
+                      placement="top"
+                      effect="light"
+                    >
+                      <el-button
+                        :icon="HeroiconsArrowPath"
+                        circle
+                        type="primary"
+                        @click="resetForm"
+                      />
+                    </el-tooltip>
                   </el-form-item>
                   <el-form-item>
                     <el-button
