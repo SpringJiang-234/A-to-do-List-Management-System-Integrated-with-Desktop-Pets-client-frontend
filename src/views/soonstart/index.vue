@@ -36,6 +36,11 @@ const handleConfirm = () => {
   }
 };
 
+const handleIconClick = (type: string) => {
+  valueType.value = type;
+  message(`已选择：${type}`);
+};
+
 const options = [
   {
     value: "番茄钟",
@@ -53,15 +58,27 @@ const options = [
 </script>
 
 <template>
-  <div>
+  <div class="soonstart-container">
     <el-card shadow="never">
       <h1>快速开始番茄钟、正计时或倒计时</h1>
       <!-- 要实现可能需要todo加一个计时字段 -->
       <!-- 根据选择的计时类型弹出新的窗口用于计时 -->
       <div class="icon-container">
-        <GameIconsTomato width="64" height="64" />
-        <StreamlineSharpResetClockSolid width="64" height="64" />
-        <MeteorIconsClockRotate width="64" height="64" />
+        <GameIconsTomato
+          width="64"
+          height="64"
+          @click="handleIconClick('番茄钟')"
+        />
+        <StreamlineSharpResetClockSolid
+          width="64"
+          height="64"
+          @click="handleIconClick('正计时')"
+        />
+        <MeteorIconsClockRotate
+          width="64"
+          height="64"
+          @click="handleIconClick('倒计时')"
+        />
       </div>
     </el-card>
     <SearchCard :show-time-view-button="false" />
@@ -114,6 +131,10 @@ const options = [
 </template>
 
 <style scoped>
+.soonstart-container :deep(.el-card) {
+  margin-bottom: 20px;
+}
+
 .header-content {
   display: flex;
   align-items: center;

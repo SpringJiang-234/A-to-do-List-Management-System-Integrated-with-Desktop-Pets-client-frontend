@@ -5,7 +5,7 @@ defineOptions({
 </script>
 
 <template>
-  <div>
+  <div class="settings-container">
     <!-- 细节看一下思考笔记 -->
     <el-card shadow="never">
       <template #header>
@@ -65,3 +65,9 @@ defineOptions({
     </el-card>
   </div>
 </template>
+
+<style scoped>
+.settings-container :deep(.el-card) {
+  margin-bottom: 20px;
+}
+</style>

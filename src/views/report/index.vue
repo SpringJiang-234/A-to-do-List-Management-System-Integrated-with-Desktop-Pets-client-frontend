@@ -54,7 +54,7 @@ const setThisYear = () => {
 </script>
 
 <template>
-  <div>
+  <div class="report-container">
     <!-- 还没想好具体展示什么数据，但是年热力图是一定要有的
   可以导出报表
   时间段自定义也是一定要有的 -->
@@ -91,6 +91,10 @@ const setThisYear = () => {
 </template>
 
 <style scoped>
+.report-container :deep(.el-card) {
+  margin-bottom: 20px;
+}
+
 .font-small {
   display: inline-block;
   margin-left: 50px;
