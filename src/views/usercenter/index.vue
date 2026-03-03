@@ -54,6 +54,14 @@ const birthday = ref("");
           placeholder="选择生日"
         />
       </div>
+      <div class="form-item">
+        <el-button type="primary" style="width: 115px">修改</el-button>
+        <el-button type="primary" style="width: 115px">保存</el-button>
+      </div>
+      <div class="form-item">
+        <el-button type="primary" style="width: 115px">退出登录</el-button>
+        <el-button type="danger" style="width: 115px">注销账户</el-button>
+      </div>
     </el-card>
   </div>
 </template>

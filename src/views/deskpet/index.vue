@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
 
 defineOptions({
@@ -6,6 +7,21 @@ defineOptions({
 });
 
 const format = percentage => (percentage === 100 ? "Full" : `${percentage}%`);
+
+const formatProgress = (label: string, percentage: number) => {
+  return percentage === 100 ? `${label}:MAX` : `${label}:${percentage}%`;
+};
+
+const getProgressStatus = (percentage: number) => {
+  if (percentage > 60) return "success";
+  if (percentage > 30) return "warning";
+  return "exception";
+};
+
+const growthValue = ref(90);
+const vitalityValue = ref(100);
+const moodValue = ref(60);
+const intimacyValue = ref(80);
 </script>
 
 <template>
@@ -28,33 +44,39 @@ const format = percentage => (percentage === 100 ? "Full" : `${percentage}%`);
       <div class="demo-progress">
         <span>LV.1</span>
         <el-progress
-          :percentage="90"
-          :format="format"
+          :percentage="growthValue"
+          :format="() => formatProgress('成长值', growthValue)"
           :stroke-width="20"
           :text-inside="true"
-          >成长值</el-progress
-        >
+          striped
+          striped-flow
+          :duration="20"
+        />
         <el-progress
-          :percentage="100"
-          :format="format"
+          :percentage="vitalityValue"
+          :format="() => formatProgress('活力值', vitalityValue)"
+          :status="getProgressStatus(vitalityValue)"
           :stroke-width="20"
           :text-inside="true"
-          >活力值</el-progress
-        >
+        />
         <el-progress
-          :percentage="60"
-          :format="format"
+          :percentage="moodValue"
+          :format="() => formatProgress('心情值', moodValue)"
+          :status="getProgressStatus(moodValue)"
           :stroke-width="20"
           :text-inside="true"
-          >心情值</el-progress
-        >
+        />
         <el-progress
-          :percentage="80"
-          :format="format"
+          :percentage="intimacyValue"
+          :format="() => formatProgress('亲密度', intimacyValue)"
+          :status="getProgressStatus(intimacyValue)"
           :stroke-width="20"
           :text-inside="true"
-          >亲密度</el-progress
-        >
+        />
+        <div class="form-item">
+          <el-button type="primary" style="width: 115px">召唤桌宠</el-button>
+          <el-button type="primary" style="width: 115px">关闭桌宠</el-button>
+        </div>
       </div>
     </el-card>
   </div>
