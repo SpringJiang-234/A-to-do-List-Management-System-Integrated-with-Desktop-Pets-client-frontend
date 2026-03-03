@@ -40,6 +40,16 @@ const handleChangeDate = (date: string) => {
       <template #header>
         <div class="card-header">
           <div class="header-content">
+            <span class="font-medium">选择待办</span>
+          </div>
+        </div>
+      </template>
+      <SearchCard :show-time-view-button="false" />
+    </el-card>
+    <el-card shadow="never">
+      <template #header>
+        <div class="card-header">
+          <div class="header-content">
             <span class="font-medium">选择计时方式</span>
           </div>
         </div>
@@ -72,16 +82,7 @@ const handleChangeDate = (date: string) => {
         </div>
       </div>
     </el-card>
-    <el-card shadow="never">
-      <template #header>
-        <div class="card-header">
-          <div class="header-content">
-            <span class="font-medium">选择待办</span>
-          </div>
-        </div>
-      </template>
-      <SearchCard :show-time-view-button="false" />
-    </el-card>
+
     <el-card shadow="never">
       <h1>快速开始番茄钟、正计时或倒计时</h1>
       <!-- 要实现可能需要todo加一个计时字段 -->
