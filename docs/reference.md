@@ -3,3 +3,4 @@
 [Pure Admin 官方文档](https://pure-admin.cn/)
 [一个 Vue 3 UI 框架 | Element Plus](https://element-plus.org/zh-CN/)
 [日历热力图，月度数据可视化图表（日活跃图、格子图）vue组件-CSDN博客](https://blog.csdn.net/a1308003218/article/details/145262447)
+[使用 Element Plus 中的 el-tree 实现右键点击节点弹出菜单并执行不同操作\_elementplus 右键菜单-CSDN博客](https://blog.csdn.net/original_alps/article/details/142974490)
