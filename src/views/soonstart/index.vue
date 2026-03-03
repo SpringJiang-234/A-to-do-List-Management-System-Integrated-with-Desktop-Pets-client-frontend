@@ -3,6 +3,9 @@ import { message } from "@/utils/message";
 import Countdown from "@/views/soonstart/components/CountDown.vue";
 import { ref } from "vue";
 import SearchCard from "@/components/SearchCard.vue";
+import GameIconsTomato from "~icons/game-icons/tomato?width=16px&height=16px";
+import StreamlineSharpResetClockSolid from "~icons/streamline-sharp/reset-clock-solid?width=16px&height=16px";
+import MeteorIconsClockRotate from "~icons/meteor-icons/clock-rotate?width=16px&height=16px";
 
 defineOptions({
   name: "Soonstart"
@@ -55,6 +58,11 @@ const options = [
       <h1>快速开始番茄钟、正计时或倒计时</h1>
       <!-- 要实现可能需要todo加一个计时字段 -->
       <!-- 根据选择的计时类型弹出新的窗口用于计时 -->
+      <div class="icon-container">
+        <GameIconsTomato width="64" height="64" />
+        <StreamlineSharpResetClockSolid width="64" height="64" />
+        <MeteorIconsClockRotate width="64" height="64" />
+      </div>
       <Countdown />
     </el-card>
     <SearchCard :show-time-view-button="false" />
@@ -112,6 +120,20 @@ const options = [
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.large-icon {
+  font-size: 64px !important;
+  width: 64px;
+  height: 64px;
 }
 
 .date-picker-wrapper {
