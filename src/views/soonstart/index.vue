@@ -63,7 +63,6 @@ const options = [
         <StreamlineSharpResetClockSolid width="64" height="64" />
         <MeteorIconsClockRotate width="64" height="64" />
       </div>
-      <Countdown />
     </el-card>
     <SearchCard :show-time-view-button="false" />
     <!-- 直接放待办卡片 -->
@@ -127,6 +126,7 @@ const options = [
   justify-content: space-around;
   align-items: center;
   width: 100%;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
