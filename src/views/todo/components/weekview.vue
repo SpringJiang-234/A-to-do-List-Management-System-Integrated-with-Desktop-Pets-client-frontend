@@ -221,6 +221,38 @@ const tableData = [
 function handleClickTodo(activity: Activity) {
   message(`点击了待办：${activity.title}，ID：${activity.id}`);
 }
+
+const contextMenuVisible = ref(false);
+const menuPosition = ref({ x: 0, y: 0 });
+const selectedActivity = ref<Activity | null>(null);
+
+const handleRightClick = (event: MouseEvent, activity: Activity) => {
+  event.preventDefault();
+  menuPosition.value = { x: event.clientX, y: event.clientY };
+  selectedActivity.value = activity;
+  contextMenuVisible.value = true;
+};
+
+const handleMenuAction = (action: string) => {
+  contextMenuVisible.value = false;
+  const activity = selectedActivity.value;
+
+  if (!activity) return;
+
+  switch (action) {
+    case "add":
+      message("新增待办");
+      break;
+    case "edit":
+      message(`修改待办：${activity.title}`);
+      break;
+    case "delete":
+      message(`删除待办：${activity.title}`);
+      break;
+  }
+
+  selectedActivity.value = null;
+};
 </script>
 
 <template>
@@ -245,6 +277,7 @@ function handleClickTodo(activity: Activity) {
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
           >
             {{ activity.title }}
           </div>
@@ -258,6 +291,7 @@ function handleClickTodo(activity: Activity) {
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
           >
             {{ activity.title }}
           </div>
@@ -271,6 +305,7 @@ function handleClickTodo(activity: Activity) {
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
           >
             {{ activity.title }}
           </div>
@@ -284,6 +319,7 @@ function handleClickTodo(activity: Activity) {
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
           >
             {{ activity.title }}
           </div>
@@ -297,6 +333,7 @@ function handleClickTodo(activity: Activity) {
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
           >
             {{ activity.title }}
           </div>
@@ -310,6 +347,7 @@ function handleClickTodo(activity: Activity) {
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
           >
             {{ activity.title }}
           </div>
@@ -323,12 +361,46 @@ function handleClickTodo(activity: Activity) {
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
           >
             {{ activity.title }}
           </div>
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 右键菜单 -->
+    <el-popover
+      v-model:visible="contextMenuVisible"
+      placement="bottom-start"
+      width="160"
+      :popper-style="{
+        left: `${menuPosition.x}px`,
+        top: `${menuPosition.y}px`,
+        position: 'absolute'
+      }"
+    >
+      <div class="flex flex-col items-center">
+        <div
+          @click="handleMenuAction('add')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          新增待办
+        </div>
+        <div
+          @click="handleMenuAction('edit')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          修改待办
+        </div>
+        <div
+          @click="handleMenuAction('delete')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          删除待办
+        </div>
+      </div>
+    </el-popover>
   </el-card>
 </template>
 

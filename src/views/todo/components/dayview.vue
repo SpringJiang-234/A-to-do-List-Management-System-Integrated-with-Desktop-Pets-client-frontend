@@ -39,6 +39,10 @@ const activities = ref<Activity[]>([
   }
 ]);
 
+const contextMenuVisible = ref(false);
+const menuPosition = ref({ x: 0, y: 0 });
+const selectedActivityIndex = ref<number | null>(null);
+
 /** 点击事件 */
 function handleClick(activity: Activity) {
   activity.isCompleted = !activity.isCompleted;
@@ -48,6 +52,36 @@ function handleClick(activity: Activity) {
 /** 点击文字内容事件 */
 function handleTextClick(activity: Activity) {
   message(`点击了文字：${activity.content}`);
+}
+
+/** 右键点击事件 */
+function handleRightClick(event: MouseEvent, index: number) {
+  event.preventDefault();
+  menuPosition.value = { x: event.clientX, y: event.clientY };
+  selectedActivityIndex.value = index;
+  contextMenuVisible.value = true;
+}
+
+/** 菜单操作处理 */
+function handleMenuAction(action: string) {
+  contextMenuVisible.value = false;
+  const index = selectedActivityIndex.value;
+
+  if (index === null) return;
+
+  switch (action) {
+    case "add":
+      message("新增待办");
+      break;
+    case "edit":
+      message(`修改待办：${activities.value[index].title},${index}`);
+      break;
+    case "delete":
+      message(`删除待办：${activities.value[index].title},${index}`);
+      break;
+  }
+
+  selectedActivityIndex.value = null;
 }
 </script>
 
@@ -75,6 +109,7 @@ function handleTextClick(activity: Activity) {
           :hollow="!activity.isCompleted"
           :color="activity.color"
           @click="handleClick(activity)"
+          @contextmenu.prevent="handleRightClick($event, index)"
         >
           <!-- 使用 dot 插槽完全自定义节点，仅当 isCompleted 为 false 时生效 -->
           <template #dot v-if="!activity.isCompleted">
@@ -92,6 +127,39 @@ function handleTextClick(activity: Activity) {
         </el-timeline-item>
       </el-timeline>
     </div>
+
+    <!-- 右键菜单 -->
+    <el-popover
+      v-model:visible="contextMenuVisible"
+      placement="bottom-start"
+      width="160"
+      :popper-style="{
+        left: `${menuPosition.x}px`,
+        top: `${menuPosition.y}px`,
+        position: 'absolute'
+      }"
+    >
+      <div class="flex flex-col items-center">
+        <div
+          @click="handleMenuAction('add')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          新增待办
+        </div>
+        <div
+          @click="handleMenuAction('edit')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          修改待办
+        </div>
+        <div
+          @click="handleMenuAction('delete')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          删除待办
+        </div>
+      </div>
+    </el-popover>
   </el-card>
 </template>
 
