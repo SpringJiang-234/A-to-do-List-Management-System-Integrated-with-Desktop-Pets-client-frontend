@@ -3,7 +3,7 @@ import { reactive, computed } from "vue";
 import Select from "@/components/Select.vue";
 import IconamoonSearchLight from "~icons/iconamoon/search-light";
 import HeroiconsArrowPath from "~icons/heroicons/arrow-path";
-import DialogPage from "@/views/todo/components/Dialog.vue";
+import { useTodoStoreHook } from "@/store/modules/todo";
 
 interface Props {
   showTimeViewButton?: boolean;
@@ -12,6 +12,25 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   showTimeViewButton: true
 });
+
+const todoStore = useTodoStoreHook();
+
+const handleTimeRuleChange = (value: string) => {
+  todoStore.setFilter({
+    title: todoStore.filter.title,
+    content: todoStore.filter.content,
+    categories: todoStore.filter.categories,
+    tags: todoStore.filter.tags,
+    priorities: todoStore.filter.priorities,
+    isContinuous: todoStore.filter.isContinuous,
+    time: todoStore.filter.time,
+    startTime: todoStore.filter.startTime,
+    endTime: todoStore.filter.endTime,
+    status: todoStore.filter.status,
+    isTop: todoStore.filter.isTop,
+    timeRule: value
+  });
+};
 
 const resetForm = () => {
   formInline.title = "";
@@ -139,6 +158,21 @@ const topOptions = [
   }
 ];
 
+const timeRules = [
+  {
+    value: "1",
+    label: "日视图"
+  },
+  {
+    value: "2",
+    label: "周视图"
+  },
+  {
+    value: "3",
+    label: "月视图"
+  }
+];
+
 const isContinuousTask = computed(() => {
   return formInline.isContinuous.includes("1");
 });
@@ -187,6 +221,18 @@ const onSubmit = () => {
                   :model="formInline"
                   class="demo-form-inline"
                 >
+                  <el-form-item v-if="showTimeViewButton">
+                    <Select
+                      :model-value="todoStore.filter.timeRule"
+                      :options="timeRules"
+                      :multiple="false"
+                      placeholder="请选择时间视图"
+                      all-text="全选"
+                      :max-collapse-tags="1"
+                      width="240px"
+                      @update:model-value="handleTimeRuleChange"
+                    />
+                  </el-form-item>
                   <el-form-item>
                     <Select
                       v-model="formInline.categories"
@@ -283,6 +329,7 @@ const onSubmit = () => {
                       :icon="HeroiconsArrowPath"
                       circle
                       type="primary"
+                      title="重置除时间视图外的条件"
                       @click="resetForm"
                     />
                   </el-form-item>
@@ -293,9 +340,6 @@ const onSubmit = () => {
                       type="primary"
                       @click="onSubmit"
                     />
-                  </el-form-item>
-                  <el-form-item v-if="showTimeViewButton">
-                    <DialogPage />
                   </el-form-item>
                 </el-form>
               </template>
