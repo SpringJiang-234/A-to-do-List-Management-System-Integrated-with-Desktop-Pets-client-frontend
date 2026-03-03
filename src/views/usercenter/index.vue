@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
+import Dialog from "@/components/Dialog.vue";
 
 defineOptions({
   name: "UserCenter"
@@ -11,6 +12,20 @@ const nickname = ref("");
 const email = ref("");
 const gender = ref();
 const birthday = ref("");
+const editable = ref(false);
+const showSaveDialog = ref(false);
+
+const handleEdit = () => {
+  editable.value = true;
+};
+
+const handleSave = () => {
+  showSaveDialog.value = true;
+};
+
+const handleSaveConfirm = () => {
+  editable.value = false;
+};
 </script>
 
 <template>
@@ -25,6 +40,7 @@ const birthday = ref("");
       <div class="form-item">
         <el-input
           v-model="nickname"
+          :disabled="!editable"
           style="width: 240px"
           placeholder="输入新昵称"
         />
@@ -38,7 +54,12 @@ const birthday = ref("");
         />
       </div>
       <div class="form-item">
-        <el-select v-model="gender" style="width: 240px" placeholder="选择性别">
+        <el-select
+          v-model="gender"
+          :disabled="!editable"
+          style="width: 240px"
+          placeholder="选择性别"
+        >
           <el-option label="男" value="1" />
           <el-option label="女" value="2" />
           <el-option label="未知" value="3" />
@@ -48,6 +69,7 @@ const birthday = ref("");
         <!-- 选择日期必须小于等于今天 -->
         <el-date-picker
           v-model="birthday"
+          :disabled="!editable"
           type="date"
           value-format="yyyy-MM-dd"
           style="width: 240px"
@@ -55,8 +77,19 @@ const birthday = ref("");
         />
       </div>
       <div class="form-item">
-        <el-button type="primary" style="width: 115px">修改</el-button>
-        <el-button type="primary" style="width: 115px">保存</el-button>
+        <el-button type="primary" style="width: 115px" @click="handleEdit"
+          >修改</el-button
+        >
+        <Dialog
+          buttonText="保存"
+          title="保存"
+          content="确认要保存修改吗？"
+          closeConfirmMessage="确认关闭弹窗吗？"
+          confirmButtonType="primary"
+          buttonWidth="115px"
+          buttonType="primary"
+          @confirm="handleSaveConfirm"
+        />
       </div>
       <div class="form-item">
         <el-button type="primary" style="width: 115px">退出登录</el-button>
