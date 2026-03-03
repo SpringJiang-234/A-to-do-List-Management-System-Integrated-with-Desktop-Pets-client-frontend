@@ -34,21 +34,42 @@ const dateRange = computed(() => {
 const weekDates = computed(() => {
   const current = value.value ? new Date(value.value) : new Date();
   const day = current.getDay();
-  const diff = current.getDate() - day;
+  const diff = current.getDate() - day + (day === 0 ? -6 : 1);
 
-  const sunday = new Date(current);
-  sunday.setDate(diff);
+  const monday = new Date(current);
+  monday.setDate(diff);
 
   const dates = [];
   for (let i = 0; i < 7; i++) {
-    const date = new Date(sunday);
-    date.setDate(sunday.getDate() + i);
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
     const month = date.getMonth() + 1;
     const day = date.getDate();
     dates.push(`${month}月${day}日`);
   }
 
   return dates;
+});
+
+const currentWeekRange = computed(() => {
+  const current = value.value ? new Date(value.value) : new Date();
+  const day = current.getDay();
+  const diff = current.getDate() - day + (day === 0 ? -6 : 1);
+
+  const monday = new Date(current);
+  monday.setDate(diff);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year} 年 ${month} 月 ${day} 日`;
+  };
+
+  return `${formatDate(monday)} 至 ${formatDate(sunday)}`;
 });
 
 const tableData = [
@@ -259,30 +280,30 @@ const handleMenuAction = (action: string) => {
   <el-card shadow="never">
     <template #header>
       <div class="card-header">
-        <h3>待办-周视图</h3>
+        <div class="header-content">
+          <h3>待办</h3>
+          <span
+            style="
+              font-size: 14px;
+              font-weight: 400;
+              color: var(--el-text-color-secondary);
+            "
+            >周视图</span
+          >
+        </div>
+        <div class="date-picker-container">
+          <span class="current-date">{{ currentWeekRange }}</span>
+          <el-date-picker
+            v-model="value"
+            type="week"
+            format="[Week] ww"
+            placeholder="选择周"
+            class="week-picker"
+          />
+        </div>
       </div>
-      <el-date-picker
-        v-model="value"
-        type="week"
-        format="[Week] ww"
-        placeholder="选择周"
-      />
     </template>
     <el-table :data="tableData" border style="width: 100%">
-      <el-table-column prop="sunday" label="周日" min-width="14.2%">
-        <template #default="{ row }">
-          <div>{{ weekDates[6] }}</div>
-          <div
-            v-for="(activity, index) in row.sunday"
-            :key="index"
-            class="todo-item"
-            @click="() => handleClickTodo(activity)"
-            @contextmenu.prevent="handleRightClick($event, activity)"
-          >
-            {{ activity.title }}
-          </div>
-        </template>
-      </el-table-column>
       <el-table-column prop="monday" label="周一" min-width="14.2%">
         <template #default="{ row }">
           <div>{{ weekDates[0] }}</div>
@@ -367,6 +388,20 @@ const handleMenuAction = (action: string) => {
           </div>
         </template>
       </el-table-column>
+      <el-table-column prop="sunday" label="周日" min-width="14.2%">
+        <template #default="{ row }">
+          <div>{{ weekDates[6] }}</div>
+          <div
+            v-for="(activity, index) in row.sunday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
+          >
+            {{ activity.title }}
+          </div>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 右键菜单 -->
@@ -407,9 +442,34 @@ const handleMenuAction = (action: string) => {
 <style scoped>
 .card-header {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.date-picker-container {
+  display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  margin-top: 12px;
+}
+
+.current-date {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+}
+
+.week-picker {
+  padding: 12px;
+  width: auto;
 }
 
 :deep(.el-table .cell) {

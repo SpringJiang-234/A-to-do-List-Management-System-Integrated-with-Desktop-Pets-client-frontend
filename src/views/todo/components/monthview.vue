@@ -52,7 +52,15 @@ const handleMenuAction = (action: string) => {
     <template #header>
       <div class="card-header">
         <div class="header-content">
-          <h3>待办-月视图</h3>
+          <h3>待办</h3>
+          <span
+            style="
+              font-size: 14px;
+              font-weight: 400;
+              color: var(--el-text-color-secondary);
+            "
+            >月视图</span
+          >
         </div>
       </div>
     </template>
@@ -187,5 +195,11 @@ const handleMenuAction = (action: string) => {
   background-color: var(--el-color-primary-light-9);
   border-radius: 2px;
   cursor: pointer;
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
 }
 </style>

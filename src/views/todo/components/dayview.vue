@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { message } from "@/utils/message";
 
 defineOptions({
@@ -38,6 +38,14 @@ const activities = ref<Activity[]>([
     color: "#66CCFF"
   }
 ]);
+
+const currentDate = computed(() => {
+  const date = value.value ? new Date(value.value) : new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${year} 年 ${month} 月 ${day} 日`;
+});
 
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
@@ -90,14 +98,25 @@ function handleMenuAction(action: string) {
     <template #header>
       <div class="card-header">
         <div class="header-content">
-          <h3>待办-日视图</h3>
+          <h3>待办</h3>
+          <span
+            style="
+              font-size: 14px;
+              font-weight: 400;
+              color: var(--el-text-color-secondary);
+            "
+            >日视图</span
+          >
         </div>
-        <el-date-picker
-          v-model="value"
-          type="date"
-          placeholder="选择日期"
-          size="default"
-        />
+        <div class="date-picker-container">
+          <span class="current-date">{{ currentDate }}</span>
+          <el-date-picker
+            v-model="value"
+            type="date"
+            placeholder="选择日期"
+            size="default"
+          />
+        </div>
       </div>
     </template>
     <div class="flex">
@@ -164,11 +183,31 @@ function handleMenuAction(action: string) {
 </template>
 
 <style scoped>
+.card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
 .header-content {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.date-picker-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  margin-top: 12px;
+}
+
+.current-date {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
 }
 
 .custom-node {
