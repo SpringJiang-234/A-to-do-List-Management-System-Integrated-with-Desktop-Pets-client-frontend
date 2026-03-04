@@ -37,35 +37,41 @@ dataThemeChange(overallStyle.value);
 const { title } = useNav();
 
 const ruleForm = reactive({
-  username: "admin",
-  password: "admin123"
+  account: "sakiko@qq.com",
+  password: "123456abc"
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate(valid => {
     if (valid) {
+      console.log('开始登录，账号:', ruleForm.account, '密码:', ruleForm.password);
       loading.value = true;
       useUserStoreHook()
         .loginByUsername({
-          username: ruleForm.username,
+          account: ruleForm.account,
           password: ruleForm.password
         })
         .then(res => {
-          if (res.success) {
+          console.log('登录响应:', res);
+          if (res.code === 200) {
             // 获取后端路由
             return initRouter().then(() => {
               disabled.value = true;
               router
                 .push(getTopMenu(true).path)
                 .then(() => {
-                  message("登录成功", { type: "success" });
+                  message(res.msg, { type: "success" });
                 })
                 .finally(() => (disabled.value = false));
             });
           } else {
-            message("登录失败", { type: "error" });
+            message(res.msg, { type: "error" });
           }
+        })
+        .catch(error => {
+          console.error('登录错误:', error);
+          message('登录失败，请检查网络连接', { type: "error" });
         })
         .finally(() => (loading.value = false));
     }
@@ -127,10 +133,10 @@ useEventListener(document, "keydown", ({ code }) => {
                     trigger: 'blur'
                   }
                 ]"
-                prop="username"
+                prop="account"
               >
                 <el-input
-                  v-model="ruleForm.username"
+                  v-model="ruleForm.account"
                   clearable
                   placeholder="账号"
                   :prefix-icon="useRenderIcon(User)"
