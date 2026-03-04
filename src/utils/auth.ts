@@ -10,7 +10,7 @@ export interface DataInfo<T> {
   /** 账号 */
   account: string;
   /** 角色 */
-  role: string;
+  roles: Array<string>;
   /** token */
   token: string;
 }
@@ -39,7 +39,7 @@ export function getToken(): DataInfo<number> {
  * 将用户信息放在key值为`user-info`的localStorage里
  */
 export function setToken(data: DataInfo<number>) {
-  const { token, username, account, role } = data;
+  const { token, username, account, roles } = data;
   const { isRemembered, loginDay } = useUserStoreHook();
   
   // 设置token到cookie，过期时间为1天（86400秒）
@@ -60,9 +60,42 @@ export function setToken(data: DataInfo<number>) {
 
   // 存储用户信息到localStorage
   storageLocal().setItem(userKey, {
+    ...data
+  });
+}
+
+/**
+ * @description 设置`token`以及一些必要信息
+ * 将token信息放在key值为authorized-token的cookie里
+ * 将用户信息放在key值为`user-info`的localStorage里
+ */
+export function setTokenFromLogin(data: any) {
+  const { token, username, account, role } = data;
+  const { isRemembered, loginDay } = useUserStoreHook();
+  
+  const dataWithRoles = {
     ...data,
     roles: [role]
+  };
+  
+  // 设置token到cookie，过期时间为1天（86400秒）
+  Cookies.set(TokenKey, JSON.stringify(dataWithRoles), {
+    expires: 1
   });
+
+  // 设置multipleTabsKey
+  Cookies.set(
+    multipleTabsKey,
+    "true",
+    isRemembered
+      ? {
+          expires: loginDay
+        }
+      : {}
+  );
+
+  // 存储用户信息到localStorage
+  storageLocal().setItem(userKey, dataWithRoles);
 }
 
 /** 删除`token`以及key值为`user-info`的localStorage信息 */

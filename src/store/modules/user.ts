@@ -13,7 +13,7 @@ import {
   getLogout
 } from "@/api/user";
 import { useMultiTagsStoreHook } from "./multiTags";
-import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
+import { type DataInfo, setTokenFromLogin, removeToken, userKey } from "@/utils/auth";
 
 export const useUserStore = defineStore("pure-user", {
   state: (): userType => ({
@@ -58,7 +58,7 @@ export const useUserStore = defineStore("pure-user", {
             console.log('登录API返回:', data);
             if (data?.code === 200) {
               console.log('登录成功，用户信息:', data.data);
-              setToken(data.data);
+              setTokenFromLogin(data.data);
               this.SET_USERNAME(data.data.username);
               this.SET_ACCOUNT(data.data.account);
               this.SET_ROLES([data.data.role]);
