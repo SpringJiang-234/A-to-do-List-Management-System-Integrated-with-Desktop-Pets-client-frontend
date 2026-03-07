@@ -31,6 +31,9 @@ const currentView = computed(() => {
 
 <template>
   <div class="todo-container">
+
+    <el-button type="primary" circle class="add-button" />
+
     <div class="header-wrapper">
       <SearchCard />
     </div>
@@ -51,7 +54,10 @@ const currentView = computed(() => {
     <div class="footer-wrapper">
       <!-- 这里需要一个回到顶部的按钮 -->
     </div>
+
+
   </div>
+
 </template>
 
 <style scoped lang="scss">
@@ -75,5 +81,34 @@ const currentView = computed(() => {
 
 .footer-wrapper {
   flex-shrink: 0;
+}
+
+.add-button {
+  position: fixed;
+  left: 230px;
+  bottom: 20px;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+  
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    background-color: #fff;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  &::before {
+    width: 14px;
+    height: 2px;
+  }
+  
+  &::after {
+    width: 2px;
+    height: 14px;
+  }
 }
 </style>
