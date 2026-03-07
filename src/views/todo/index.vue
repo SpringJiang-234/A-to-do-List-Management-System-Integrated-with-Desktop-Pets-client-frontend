@@ -86,10 +86,12 @@ const currentView = computed(() => {
 .add-button {
   position: fixed;
   left: 230px;
-  bottom: 20px;
+  bottom: 40px;
   z-index: 9999;
   transition: opacity 0.3s ease;
   opacity: 1;
+  width: 40px;
+  height: 40px;
   
   &::before,
   &::after {
@@ -102,13 +104,13 @@ const currentView = computed(() => {
   }
   
   &::before {
-    width: 14px;
+    width: 16px;
     height: 2px;
   }
   
   &::after {
     width: 2px;
-    height: 14px;
+    height: 16px;
   }
 }
 </style>
