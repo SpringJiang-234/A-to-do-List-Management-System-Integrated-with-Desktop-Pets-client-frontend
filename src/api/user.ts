@@ -12,6 +12,8 @@ export type UserResult = {
     account: string;
     /** 角色 */
     role: string;
+    /** 头像 */
+    avatar: string;
     /** `token` */
     token: string;
   };

@@ -11,6 +11,8 @@ export interface DataInfo<T> {
   account: string;
   /** 角色 */
   roles: Array<string>;
+  /** 头像 */
+  avatar: string;
   /** token */
   token: string;
 }

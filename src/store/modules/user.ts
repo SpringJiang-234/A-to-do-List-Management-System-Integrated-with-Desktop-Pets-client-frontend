@@ -17,6 +17,8 @@ import { type DataInfo, setTokenFromLogin, removeToken, userKey } from "@/utils/
 
 export const useUserStore = defineStore("pure-user", {
   state: (): userType => ({
+    // 头像
+    avatar: storageLocal().getItem<DataInfo<number>>(userKey)?.avatar ?? "",
     // 用户名
     username: storageLocal().getItem<DataInfo<number>>(userKey)?.username ?? "",
     // 账号
@@ -29,6 +31,10 @@ export const useUserStore = defineStore("pure-user", {
     loginDay: 7
   }),
   actions: {
+    /** 存储头像 */
+    SET_AVATAR(avatar: string) {
+      this.avatar = avatar;
+    },
     /** 存储用户名 */
     SET_USERNAME(username: string) {
       this.username = username;
@@ -61,6 +67,8 @@ export const useUserStore = defineStore("pure-user", {
               setTokenFromLogin(data.data);
               this.SET_USERNAME(data.data.username);
               this.SET_ACCOUNT(data.data.account);
+              const avatarUrl = data.data.avatar ? data.data.avatar.split('?')[0] : '';
+              this.SET_AVATAR(avatarUrl);
               this.SET_ROLES([data.data.role]);
             } else {
               console.log('登录失败:', data?.msg);
