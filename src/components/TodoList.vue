@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
-import { completeTodo, cancelCompleteTodo, abandonTodo } from "@/api/todo";
+import { completeTodo, cancelCompleteTodo, abandonTodo, deleteTodo } from "@/api/todo";
 
 interface Activity {
   id: number;
@@ -20,6 +20,7 @@ interface Props {
 interface Emits {
   (e: "click", activity: Activity): void;
   (e: "textClick", activity: Activity): void;
+  (e: "refresh"): void;
 }
 
 const props = defineProps<Props>();
@@ -82,7 +83,11 @@ async function handleMenuAction(action: string) {
         emit("click", activity);
         break;
       case "delete":
-        message(`删除待办，index: ${currentIndex.value}`);
+        console.log("========== TodoList 删除待办 ==========", activity.id);
+        await deleteTodo(activity.id);
+        message("删除待办成功", { type: "success" });
+        console.log("========== TodoList emit refresh 事件 ==========");
+        emit("refresh");
         break;
     }
   } catch (error) {

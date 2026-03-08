@@ -10,9 +10,9 @@ import { getTagList } from "@/api/tag";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import ListView from "@/views/todo/components/ListView.vue";
-import DayView from "@/views/todo/components/DayView.vue";
-import WeekView from "@/views/todo/components/WeekView.vue";
-import MonthView from "@/views/todo/components/MonthView.vue";
+import DayView from "@/views/todo/components/dayview.vue";
+import WeekView from "@/views/todo/components/weekview.vue";
+import MonthView from "@/views/todo/components/monthview.vue";
 
 defineOptions({
   name: "Todo"
@@ -144,6 +144,7 @@ const monthData = computed(() => {
 
 // TODO：目前是全部查询，如果太多待办应该会很卡，后续看看怎么优化
 const loadTodoList = async () => {
+  console.log("========== loadTodoList 被调用 ==========");
   try {
     loading.value = true;
     const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
@@ -256,7 +257,7 @@ onMounted(() => {
     3、不重要但紧急：<FluentAlertUrgent16Filled />
     -->
     <div class="main-wrapper">
-      <component :is="currentView" :todo-list="todoList" :week-data="weekData" :month-data="monthData" :date-todo-map="dateTodoMap" :original-todo-list="originalTodoList" />
+      <component :is="currentView" :todo-list="todoList" :week-data="weekData" :month-data="monthData" :date-todo-map="dateTodoMap" :original-todo-list="originalTodoList" @refresh="loadTodoList" />
     </div>
     <div class="footer-wrapper">
       <!-- 这里需要一个回到顶部的按钮 -->

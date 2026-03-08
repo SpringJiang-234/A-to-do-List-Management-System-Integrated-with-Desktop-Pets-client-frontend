@@ -17,6 +17,9 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+    (e: "refresh"): void;
+}>();
 
 const router = useRouter();
 
@@ -43,6 +46,11 @@ function handleTodoClick(activity: Activity) {
 function handleTextClick(activity: Activity) {
     router.push(`/todo/detail/${activity.id}`);
 }
+
+function handleRefresh() {
+    console.log("========== ListView 刷新 ==========");
+    emit("refresh");
+}
 </script>
 
 <template>
@@ -63,6 +71,7 @@ function handleTextClick(activity: Activity) {
             :activities="activities" 
             @click="handleTodoClick"
             @textClick="handleTextClick"
+            @refresh="handleRefresh"
         />
     </el-card>
 </template>

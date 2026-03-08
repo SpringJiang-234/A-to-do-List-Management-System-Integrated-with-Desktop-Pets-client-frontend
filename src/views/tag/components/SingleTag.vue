@@ -90,6 +90,7 @@ watch(
       :originalTodoList="originalTodoList"
       @click="handleTodoClick"
       @textClick="handleTextClick"
+      @refresh="loadTodoList"
     />
   </div>
 </template>

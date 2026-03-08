@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 
 import type { CalendarDateType, CalendarInstance } from "element-plus";
 import { message } from "@/utils/message";
-import { abandonTodo, completeTodo, cancelCompleteTodo } from "@/api/todo";
+import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
 
 interface Activity {
   id: number;
@@ -26,6 +26,9 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
 
 const router = useRouter();
 
@@ -90,7 +93,11 @@ const handleMenuAction = async (action: string) => {
         message("放弃待办", { type: "warning" });
         break;
       case "delete":
-        message(`删除待办：${todo.title}`);
+        console.log("========== 月视图删除待办 ==========", todo.id);
+        await deleteTodo(todo.id);
+        message("删除待办成功", { type: "success" });
+        console.log("========== 月视图 emit refresh 事件 ==========");
+        emit("refresh");
         break;
     }
   } catch (error) {

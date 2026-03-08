@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
-import { abandonTodo, completeTodo, cancelCompleteTodo } from "@/api/todo";
+import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
 
 defineOptions({
   name: "DayView"
@@ -24,6 +24,9 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
 
 const router = useRouter();
 
@@ -135,7 +138,11 @@ async function handleMenuAction(action: string) {
         message("放弃待办成功", { type: "success" });
         break;
       case "delete":
-        message(`删除待办：${activity.title}`);
+        console.log("========== 删除待办 ==========", activity.id);
+        await deleteTodo(activity.id);
+        message("删除待办成功", { type: "success" });
+        console.log("========== emit refresh 事件 ==========");
+        emit("refresh");
         break;
     }
   } catch (error) {

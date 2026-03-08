@@ -132,6 +132,7 @@ onMounted(() => {
           :originalTodoList="tagTodos.originalTodoList"
           @click="(activity: Activity) => handleTodoClick(tagTodos.tagId, activity)"
           @textClick="handleTextClick"
+          @refresh="() => loadTagTodos(tagTodos.tagId, tagTodos.tagName)"
         />
       </el-collapse-item>
     </el-collapse>
