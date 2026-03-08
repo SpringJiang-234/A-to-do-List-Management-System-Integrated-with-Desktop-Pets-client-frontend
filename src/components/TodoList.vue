@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { message } from "@/utils/message";
-import { completeTodo, cancelCompleteTodo } from "@/api/todo";
+import { completeTodo, cancelCompleteTodo, abandonTodo } from "@/api/todo";
 
 interface Activity {
   id: number;
@@ -27,6 +27,7 @@ const emit = defineEmits<Emits>();
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const currentIndex = ref(-1);
+const selectedActivity = ref<Activity | null>(null);
 
 async function handleClick(activity: Activity) {
   try {
@@ -56,24 +57,37 @@ function handleRightClick(event: MouseEvent, index: number) {
   event.stopPropagation();
   menuPosition.value = { x: event.clientX, y: event.clientY };
   currentIndex.value = index;
+  selectedActivity.value = props.activities[index];
   contextMenuVisible.value = true;
 }
 
-function handleMenuAction(action: string) {
+async function handleMenuAction(action: string) {
   contextMenuVisible.value = false;
-  if (currentIndex.value === -1) return;
+  const activity = selectedActivity.value;
+  
+  if (!activity) return;
 
-  switch (action) {
-    case "add":
-      message(`新增待办，index: ${currentIndex.value}`);
-      break;
-    case "edit":
-      message(`修改待办，index: ${currentIndex.value}`);
-      break;
-    case "delete":
-      message(`删除待办，index: ${currentIndex.value}`);
-      break;
+  try {
+    switch (action) {
+      case "edit":
+        message(`修改待办：${activity.title}`);
+        break;
+      case "abandon":
+        await abandonTodo(activity.id);
+        activity.status = 3;
+        message("放弃待办成功");
+        emit("click", activity);
+        break;
+      case "delete":
+        message(`删除待办，index: ${currentIndex.value}`);
+        break;
+    }
+  } catch (error) {
+    console.error("操作失败:", error);
+    message("操作失败，请重试");
   }
+  
+  selectedActivity.value = null;
 }
 </script>
 
@@ -92,16 +106,16 @@ function handleMenuAction(action: string) {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('add')"
-          class="py-2.5 border-b w-full cursor-pointer text-center"
-        >
-          新增待办
-        </div>
-        <div
           @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
         >
           修改待办
+        </div>
+        <div
+          @click="handleMenuAction('abandon')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          放弃待办
         </div>
         <div
           @click="handleMenuAction('delete')"

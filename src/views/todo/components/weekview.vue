@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { message } from "@/utils/message";
+import { abandonTodo } from "@/api/todo";
 
 defineOptions({
   name: "WeekView"
@@ -158,22 +159,33 @@ const handleRightClick = (event: MouseEvent, activity: Activity) => {
   contextMenuVisible.value = true;
 };
 
-const handleMenuAction = (action: string) => {
+const handleMenuAction = async (action: string) => {
   contextMenuVisible.value = false;
   const activity = selectedActivity.value;
 
   if (!activity) return;
 
-  switch (action) {
-    case "add":
-      message("新增待办");
-      break;
-    case "edit":
-      message(`修改待办：${activity.title}`);
-      break;
-    case "delete":
-      message(`删除待办：${activity.title}`);
-      break;
+  try {
+    switch (action) {
+      case "edit":
+        message(`修改待办：${activity.title}`);
+        break;
+      case "abandon":
+        await abandonTodo(activity.id);
+        const todo = props.originalTodoList.find(t => t.id === activity.id);
+        if (todo) {
+          todo.status = 3;
+        }
+        activity.status = 3;
+        message("放弃待办成功");
+        break;
+      case "delete":
+        message(`删除待办：${activity.title}`);
+        break;
+    }
+  } catch (error) {
+    console.error("操作失败:", error);
+    message("操作失败，请重试");
   }
 
   selectedActivity.value = null;
@@ -321,16 +333,16 @@ const handleMenuAction = (action: string) => {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('add')"
-          class="py-2.5 border-b w-full cursor-pointer text-center"
-        >
-          新增待办
-        </div>
-        <div
           @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
         >
           修改待办
+        </div>
+        <div
+          @click="handleMenuAction('abandon')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          放弃待办
         </div>
         <div
           @click="handleMenuAction('delete')"

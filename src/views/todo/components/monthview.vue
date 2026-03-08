@@ -3,6 +3,7 @@ import { ref } from "vue";
 
 import type { CalendarDateType, CalendarInstance } from "element-plus";
 import { message } from "@/utils/message";
+import { abandonTodo } from "@/api/todo";
 
 interface Activity {
   id: number;
@@ -46,22 +47,33 @@ const handleRightClick = (event: MouseEvent, todo: Activity) => {
   contextMenuVisible.value = true;
 };
 
-const handleMenuAction = (action: string) => {
+const handleMenuAction = async (action: string) => {
   contextMenuVisible.value = false;
   const todo = selectedTodo.value;
 
   if (!todo) return;
 
-  switch (action) {
-    case "add":
-      message("新增待办");
-      break;
-    case "edit":
-      message(`修改待办：${todo.title}`);
-      break;
-    case "delete":
-      message(`删除待办：${todo.title}`);
-      break;
+  try {
+    switch (action) {
+      case "edit":
+        message(`修改待办：${todo.title}`);
+        break;
+      case "abandon":
+        await abandonTodo(todo.id);
+        const originalTodo = props.originalTodoList.find(t => t.id === todo.id);
+        if (originalTodo) {
+          originalTodo.status = 3;
+        }
+        todo.status = 3;
+        message("放弃待办成功");
+        break;
+      case "delete":
+        message(`删除待办：${todo.title}`);
+        break;
+    }
+  } catch (error) {
+    console.error("操作失败:", error);
+    message("操作失败，请重试");
   }
 
   selectedTodo.value = null;
@@ -136,16 +148,16 @@ const handleMenuAction = (action: string) => {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('add')"
-          class="py-2.5 border-b w-full cursor-pointer text-center"
-        >
-          新增待办
-        </div>
-        <div
           @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
         >
           修改待办
+        </div>
+        <div
+          @click="handleMenuAction('abandon')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          放弃待办
         </div>
         <div
           @click="handleMenuAction('delete')"
