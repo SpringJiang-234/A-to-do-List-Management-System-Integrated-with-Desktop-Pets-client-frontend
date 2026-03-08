@@ -70,7 +70,7 @@ async function createWindow() {
     title: "Main window",
     icon: join(process.env.PUBLIC, "favicon.ico"),
     webPreferences: {
-      preload
+      preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
       // nodeIntegration: true,
 
@@ -191,7 +191,18 @@ const appMenu = (fullscreenLabel: string) => {
 
 // New window example arg: new windows url
 ipcMain.handle("open-win", (_, arg) => {
+  const isTransparent = arg === "transparent";
+  
   const childWindow = new BrowserWindow({
+    width: isTransparent ? 400 : 1024,
+    height: isTransparent ? 400 : 768,
+    minWidth: isTransparent ? 400 : 1024,
+    minHeight: isTransparent ? 400 : 768,
+    transparent: isTransparent,
+    frame: !isTransparent,
+    backgroundColor: isTransparent ? '#00ffffff' : undefined,
+    title: isTransparent ? "" : "Main window",
+    icon: isTransparent ? undefined : join(process.env.PUBLIC, "favicon.ico"),
     webPreferences: {
       preload,
       nodeIntegration: true,
@@ -199,9 +210,19 @@ ipcMain.handle("open-win", (_, arg) => {
     }
   });
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#${arg}`);
+  if (arg === "blank") {
+    const blankHtml = join(process.env.PUBLIC, "blank.html");
+    childWindow.loadFile(blankHtml);
+  } else if (arg === "transparent") {
+    const transparentHtml = join(process.env.PUBLIC, "transparent.html");
+    childWindow.loadFile(transparentHtml);
   } else {
-    childWindow.loadFile(indexHtml, { hash: arg });
+    if (process.env.VITE_DEV_SERVER_URL) {
+      childWindow.loadURL(`${url}#${arg}`);
+    } else {
+      childWindow.loadFile(indexHtml, { hash: arg });
+    }
   }
+  
+  return childWindow;
 });
