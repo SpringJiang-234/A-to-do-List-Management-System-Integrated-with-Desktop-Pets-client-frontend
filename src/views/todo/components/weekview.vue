@@ -27,6 +27,8 @@ interface WeekData {
 
 interface Props {
   weekData: WeekData;
+  dateTodoMap: Map<string, number[]>;
+  originalTodoList: any[];
 }
 
 const props = defineProps<Props>();
@@ -89,6 +91,53 @@ const currentWeekRange = computed(() => {
 });
 
 const tableData = computed(() => [props.weekData]);
+
+const currentWeekData = computed(() => {
+  const current = value.value ? new Date(value.value) : new Date();
+  const day = current.getDay();
+  const diff = current.getDate() - day + (day === 0 ? -6 : 1);
+
+  const monday = new Date(current);
+  monday.setDate(diff);
+
+  const weekDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const result: WeekData = {
+    sunday: [],
+    monday: [],
+    tuesday: [],
+    wednesday: [],
+    thursday: [],
+    friday: [],
+    saturday: []
+  };
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateKey = `${year}-${month}-${day}`;
+
+    const todoIds = props.dateTodoMap.get(dateKey) || [];
+    const dayName = weekDays[i];
+    result[dayName as keyof WeekData] = todoIds.map(id => {
+      const todo = props.originalTodoList.find(t => t.id === id);
+      if (todo) {
+        return {
+          id: todo.id,
+          title: todo.title,
+          content: todo.content,
+          timestamp: dateKey,
+          isCompleted: todo.status === 2
+        };
+      }
+      return null;
+    }).filter(Boolean) as Activity[];
+  }
+
+  return result;
+});
 
 function handleClickTodo(activity: Activity) {
   message(`点击了待办：${activity.title}，ID：${activity.id}`);
@@ -154,7 +203,7 @@ const handleMenuAction = (action: string) => {
         </div>
       </div>
     </template>
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="[currentWeekData]" border style="width: 100%">
       <el-table-column prop="monday" label="周一" min-width="14.2%">
         <template #default="{ row }">
           <div>{{ weekDates[0] }}</div>

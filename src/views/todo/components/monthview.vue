@@ -19,6 +19,8 @@ interface MonthData {
 
 interface Props {
   monthData: MonthData;
+  dateTodoMap: Map<string, number[]>;
+  originalTodoList: any[];
 }
 
 const props = defineProps<Props>();

@@ -17,6 +17,8 @@ interface Activity {
 
 interface Props {
   todoList: Activity[];
+  dateTodoMap: Map<string, number[]>;
+  originalTodoList: any[];
 }
 
 const props = defineProps<Props>();
@@ -24,6 +26,29 @@ const props = defineProps<Props>();
 const value = ref("");
 const { lastBuildTime } = __APP_INFO__;
 const activities = computed(() => props.todoList);
+
+const currentDayTodos = computed(() => {
+  const date = value.value ? new Date(value.value) : new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const dateKey = `${year}-${month}-${day}`;
+  
+  const todoIds = props.dateTodoMap.get(dateKey) || [];
+  return todoIds.map(id => {
+    const todo = props.originalTodoList.find(t => t.id === id);
+    if (todo) {
+      return {
+        id: todo.id,
+        title: todo.title,
+        content: todo.content,
+        timestamp: dateKey,
+        isCompleted: todo.status === 2
+      };
+    }
+    return null;
+  }).filter(Boolean) as Activity[];
+});
 
 const currentDate = computed(() => {
   const date = value.value ? new Date(value.value) : new Date();
@@ -120,7 +145,7 @@ function handleMenuAction(action: string) {
     <div class="flex">
       <el-timeline>
         <el-timeline-item
-          v-for="(activity, index) in activities"
+          v-for="(activity, index) in currentDayTodos"
           :key="index"
           :timestamp="formatTimestamp(activity.timestamp)"
           :hollow="!activity.isCompleted"

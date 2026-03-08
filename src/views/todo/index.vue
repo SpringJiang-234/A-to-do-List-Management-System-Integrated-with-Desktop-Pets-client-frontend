@@ -52,6 +52,8 @@ interface MonthData {
 
 const todoStore = useTodoStoreHook();
 const userStore = useUserStoreHook();
+const originalTodoList = ref<any[]>([]);
+const dateTodoMap = ref<Map<string, number[]>>(new Map());
 const todoList = ref<Activity[]>([]);
 const loading = ref(false);
 
@@ -173,7 +175,11 @@ const loadTodoList = async () => {
         userId: userInfo.id
       });
       if (response.code === 200) {
-        const expandedActivities: Activity[] = [];
+        originalTodoList.value = response.data;
+        console.log("========== 待办映射开始 ==========");
+        console.log("原始待办列表:", originalTodoList.value);
+        
+        const newDateTodoMap = new Map<string, number[]>();
         
         response.data.forEach(record => {
           const startTime = record.startTime ? new Date(record.startTime) : new Date();
@@ -186,22 +192,55 @@ const loadTodoList = async () => {
           endDate.setHours(0, 0, 0, 0);
           
           const currentDate = new Date(startDate);
+          const assignedDates: string[] = [];
+          
+          console.log(`\n待办ID: ${record.id}, 标题: "${record.title}"`);
+          console.log(`  开始时间: ${record.startTime}`);
+          console.log(`  结束时间: ${record.endTime}`);
           
           while (currentDate <= endDate) {
-            expandedActivities.push({
-              id: record.id,
-              title: record.title,
-              content: record.content,
-              timestamp: currentDate.toISOString(),
-              isCompleted: record.status === 2
-            });
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+            
+            if (!newDateTodoMap.has(dateKey)) {
+              newDateTodoMap.set(dateKey, []);
+            }
+            newDateTodoMap.get(dateKey)!.push(record.id);
+            assignedDates.push(dateKey);
             
             currentDate.setDate(currentDate.getDate() + 1);
           }
+          
+          console.log(`  分配到日期: ${assignedDates.join(", ")}`);
+        });
+        
+        dateTodoMap.value = newDateTodoMap;
+        console.log("\n========== 日期映射表 ==========");
+        dateTodoMap.value.forEach((todoIds, dateKey) => {
+          console.log(`${dateKey}: 待办ID [${todoIds.join(", ")}]`);
+        });
+        console.log("========== 待办映射结束 ==========\n");
+        
+        const expandedActivities: Activity[] = [];
+        newDateTodoMap.forEach((todoIds, dateKey) => {
+          todoIds.forEach(todoId => {
+            const todo = originalTodoList.value.find(t => t.id === todoId);
+            if (todo) {
+              expandedActivities.push({
+                id: todo.id,
+                title: todo.title,
+                content: todo.content,
+                timestamp: new Date(dateKey).toISOString(),
+                isCompleted: todo.status === 2
+              });
+            }
+          });
         });
         
         todoList.value = expandedActivities;
-        console.log("待办列表:", todoList.value);
+        console.log("展开后的待办列表:", todoList.value);
       }
     }
   } catch (error) {
@@ -328,7 +367,7 @@ onMounted(() => {
     3、不重要但紧急：<FluentAlertUrgent16Filled />
     -->
     <div class="main-wrapper">
-      <component :is="currentView" :todo-list="todoList" :week-data="weekData" :month-data="monthData" />
+      <component :is="currentView" :todo-list="todoList" :week-data="weekData" :month-data="monthData" :date-todo-map="dateTodoMap" :original-todo-list="originalTodoList" />
     </div>
     <div class="footer-wrapper">
       <!-- 这里需要一个回到顶部的按钮 -->
