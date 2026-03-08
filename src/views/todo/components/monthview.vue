@@ -4,30 +4,49 @@ import { ref } from "vue";
 import type { CalendarDateType, CalendarInstance } from "element-plus";
 import { message } from "@/utils/message";
 
+interface Activity {
+  id: number;
+  title: string;
+  content: string;
+  timestamp: string;
+  isCompleted: boolean;
+  color?: string;
+}
+
+interface MonthData {
+  [key: string]: Activity[];
+}
+
+interface Props {
+  monthData: MonthData;
+}
+
+const props = defineProps<Props>();
+
 const calendar = ref<CalendarInstance>();
 const selectDate = (val: CalendarDateType) => {
   if (!calendar.value) return;
   calendar.value.selectDate(val);
 };
 
-const handleClickTodo = (todo: string) => {
-  message(`点击了待办：${todo}`);
+const handleClickTodo = (todo: Activity) => {
+  message(`点击了待办：${todo.title}，ID：${todo.id}`);
 };
 
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
-const selectedTodoText = ref<string | null>(null);
+const selectedTodo = ref<Activity | null>(null);
 
-const handleRightClick = (event: MouseEvent, todo: string) => {
+const handleRightClick = (event: MouseEvent, todo: Activity) => {
   event.preventDefault();
   menuPosition.value = { x: event.clientX, y: event.clientY };
-  selectedTodoText.value = todo;
+  selectedTodo.value = todo;
   contextMenuVisible.value = true;
 };
 
 const handleMenuAction = (action: string) => {
   contextMenuVisible.value = false;
-  const todo = selectedTodoText.value;
+  const todo = selectedTodo.value;
 
   if (!todo) return;
 
@@ -36,14 +55,14 @@ const handleMenuAction = (action: string) => {
       message("新增待办");
       break;
     case "edit":
-      message(`修改待办：${todo}`);
+      message(`修改待办：${todo.title}`);
       break;
     case "delete":
-      message(`删除待办：${todo}`);
+      message(`删除待办：${todo.title}`);
       break;
   }
 
-  selectedTodoText.value = null;
+  selectedTodo.value = null;
 };
 </script>
 
@@ -90,31 +109,14 @@ const handleMenuAction = (action: string) => {
           {{ data.day.split("-").slice(2).join("-") }}
         </p>
         <!-- 待办事项 -->
-        <!-- 点击进入详情页 -->
         <div
+          v-for="todo in (props.monthData[data.day] || [])"
+          :key="todo.id"
           class="todo-item"
-          @click="() => handleClickTodo('测试')"
-          @contextmenu.prevent="handleRightClick($event, '测试')"
+          @click="() => handleClickTodo(todo)"
+          @contextmenu.prevent="handleRightClick($event, todo)"
         >
-          测试
-        </div>
-        <div
-          class="todo-item"
-          @contextmenu.prevent="handleRightClick($event, '测试')"
-        >
-          测试
-        </div>
-        <div
-          class="todo-item"
-          @contextmenu.prevent="handleRightClick($event, '测试')"
-        >
-          测试
-        </div>
-        <div
-          class="todo-item"
-          @contextmenu.prevent="handleRightClick($event, '测试')"
-        >
-          测试
+          {{ todo.title }}
         </div>
       </template>
     </el-calendar>

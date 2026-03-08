@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import SearchCard from "@/components/SearchCard.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
+import { useUserStoreHook } from "@/store/modules/user";
+import { getTodoList } from "@/api/todo";
+import { userKey, type DataInfo } from "@/utils/auth";
+import { storageLocal } from "@pureadmin/utils";
 import DayView from "@/views/todo/components/DayView.vue";
 import WeekView from "@/views/todo/components/WeekView.vue";
 import MonthView from "@/views/todo/components/MonthView.vue";
@@ -10,9 +14,33 @@ defineOptions({
   name: "Todo"
 });
 
+interface Activity {
+  id: number;
+  title: string;
+  content: string;
+  timestamp: string;
+  isCompleted: boolean;
+  color?: string;
+}
+
+interface WeekData {
+  sunday: Activity[];
+  monday: Activity[];
+  tuesday: Activity[];
+  wednesday: Activity[];
+  thursday: Activity[];
+  friday: Activity[];
+  saturday: Activity[];
+}
+
+interface MonthData {
+  [key: string]: Activity[];
+}
+
 const todoStore = useTodoStoreHook();
-// 可以在 index 页面中使用 todoStore.filter 来获取 DialogPage 中设置的筛选条件
-console.log("筛选条件:", todoStore.filter);
+const userStore = useUserStoreHook();
+const todoList = ref<Activity[]>([]);
+const loading = ref(false);
 
 const currentView = computed(() => {
   const timeRule = todoStore.filter.timeRule;
@@ -26,6 +54,103 @@ const currentView = computed(() => {
     return MonthView;
   }
   return DayView;
+});
+
+const weekData = computed(() => {
+  const data: WeekData = {
+    sunday: [],
+    monday: [],
+    tuesday: [],
+    wednesday: [],
+    thursday: [],
+    friday: [],
+    saturday: []
+  };
+
+  todoList.value.forEach(todo => {
+    const date = new Date(todo.timestamp);
+    const dayOfWeek = date.getDay();
+    
+    switch (dayOfWeek) {
+      case 0:
+        data.sunday.push(todo);
+        break;
+      case 1:
+        data.monday.push(todo);
+        break;
+      case 2:
+        data.tuesday.push(todo);
+        break;
+      case 3:
+        data.wednesday.push(todo);
+        break;
+      case 4:
+        data.thursday.push(todo);
+        break;
+      case 5:
+        data.friday.push(todo);
+        break;
+      case 6:
+        data.saturday.push(todo);
+        break;
+      default:
+        console.warn(`Unexpected day of week: ${dayOfWeek}`);
+        break;
+    }
+  });
+
+  return data;
+});
+
+const monthData = computed(() => {
+  const data: MonthData = {};
+
+  todoList.value.forEach(todo => {
+    const date = new Date(todo.timestamp);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const dateKey = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+    if (!data[dateKey]) {
+      data[dateKey] = [];
+    }
+    data[dateKey].push(todo);
+  });
+
+  return data;
+});
+
+const loadTodoList = async () => {
+  try {
+    loading.value = true;
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (userInfo?.id) {
+      const response = await getTodoList({
+        pageNum: 1,
+        pageSize: 100,
+        userId: userInfo.id
+      });
+      if (response.code === 200) {
+        todoList.value = response.data.records.map(record => ({
+          id: record.id,
+          title: record.title,
+          content: record.content,
+          timestamp: record.startTime || record.endTime || new Date().toISOString(),
+          isCompleted: record.status === 2
+        }));
+        console.log("待办列表:", todoList.value);
+      }
+    }
+  } catch (error) {
+    console.error("加载待办列表失败:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadTodoList();
 });
 </script>
 
@@ -49,7 +174,7 @@ const currentView = computed(() => {
     3、不重要但紧急：<FluentAlertUrgent16Filled />
     -->
     <div class="main-wrapper">
-      <component :is="currentView" />
+      <component :is="currentView" :todo-list="todoList" :week-data="weekData" :month-data="monthData" />
     </div>
     <div class="footer-wrapper">
       <!-- 这里需要一个回到顶部的按钮 -->

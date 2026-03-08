@@ -7,6 +7,7 @@ defineOptions({
 });
 
 interface Activity {
+  id: number;
   title: string;
   content: string;
   timestamp: string;
@@ -14,30 +15,15 @@ interface Activity {
   color?: string;
 }
 
+interface Props {
+  todoList: Activity[];
+}
+
+const props = defineProps<Props>();
+
 const value = ref("");
 const { lastBuildTime } = __APP_INFO__;
-const activities = ref<Activity[]>([
-  {
-    title: "支持默认颜色测试测试测试",
-    content: "支持默认颜色测试测试测试",
-    timestamp: lastBuildTime,
-    isCompleted: false
-  },
-  {
-    title: "支持自定义颜色",
-    content: "支持自定义颜色",
-    timestamp: lastBuildTime,
-    isCompleted: false,
-    color: "#F56C6C"
-  },
-  {
-    title: "支持自定义颜色",
-    content: "支持自定义颜色",
-    timestamp: lastBuildTime,
-    isCompleted: false,
-    color: "#66CCFF"
-  }
-]);
+const activities = computed(() => props.todoList);
 
 const currentDate = computed(() => {
   const date = value.value ? new Date(value.value) : new Date();

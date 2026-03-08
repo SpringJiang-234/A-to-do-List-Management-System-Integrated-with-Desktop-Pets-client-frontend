@@ -7,13 +7,29 @@ defineOptions({
 });
 
 interface Activity {
-  id: string;
+  id: number;
   title: string;
   content: string;
   timestamp: string;
   isCompleted: boolean;
   color?: string;
 }
+
+interface WeekData {
+  sunday: Activity[];
+  monday: Activity[];
+  tuesday: Activity[];
+  wednesday: Activity[];
+  thursday: Activity[];
+  friday: Activity[];
+  saturday: Activity[];
+}
+
+interface Props {
+  weekData: WeekData;
+}
+
+const props = defineProps<Props>();
 
 const value = ref("");
 
@@ -40,7 +56,7 @@ const weekDates = computed(() => {
   monday.setDate(diff);
 
   const dates = [];
-  for (let i = 0; i < 7; i++) {
+  for(let i = 0; i < 7; i++) {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);
     const month = date.getMonth() + 1;
@@ -72,172 +88,7 @@ const currentWeekRange = computed(() => {
   return `${formatDate(monday)} 至 ${formatDate(sunday)}`;
 });
 
-const tableData = [
-  {
-    sunday: [
-      {
-        id: "1",
-        title: "完成周报",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "2",
-        title: "团队会议",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      }
-    ],
-    monday: [
-      {
-        id: "3",
-        title: "项目评审",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "4",
-        title: "代码审查",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      }
-    ],
-    tuesday: [
-      {
-        id: "5",
-        title: "需求分析",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      }
-    ],
-    wednesday: [
-      {
-        id: "6",
-        title: "开发任务",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      { id: "7", title: "测试", content: "", timestamp: "", isCompleted: false }
-    ],
-    thursday: [
-      {
-        id: "8",
-        title: "文档编写",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      }
-    ],
-    friday: [
-      {
-        id: "9",
-        title: "部署上线",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "10",
-        title: "总结",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      }
-    ],
-    saturday: [
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      },
-      {
-        id: "11",
-        title: "学习新技术",
-        content: "",
-        timestamp: "",
-        isCompleted: false
-      }
-    ]
-  }
-];
+const tableData = computed(() => [props.weekData]);
 
 function handleClickTodo(activity: Activity) {
   message(`点击了待办：${activity.title}，ID：${activity.id}`);
