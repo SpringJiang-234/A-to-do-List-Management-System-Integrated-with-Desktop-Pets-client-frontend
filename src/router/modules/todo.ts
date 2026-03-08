@@ -22,7 +22,8 @@ export default {
       name: "TodoDetail",
       component: () => import("@/views/todo/detail.vue"),
       meta: {
-        title: "待办详情"
+        title: "待办详情",
+        showLink: false
       }
     }
   ]
