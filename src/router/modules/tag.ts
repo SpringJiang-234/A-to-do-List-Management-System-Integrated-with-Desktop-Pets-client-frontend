@@ -33,12 +33,13 @@ export default {
 
 export function generateTagRoutes(tags: Tag[]): RouteRecordRaw[] {
   return tags.map(tag => ({
-    path: `/tag/${tag.name}/index`,
+    path: `/tag/${tag.id}/index`,
     name: tag.name.charAt(0).toUpperCase() + tag.name.slice(1),
     component: () => import("@/views/tag/index.vue"),
     meta: {
       icon: TablerTag,
-      title: tag.title
+      title: tag.title,
+      tagId: tag.id
     }
   }));
 }
