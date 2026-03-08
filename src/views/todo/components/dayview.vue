@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { message } from "@/utils/message";
+import { abandonTodo } from "@/api/todo";
 
 defineOptions({
   name: "DayView"
@@ -72,7 +73,7 @@ const formatTimestamp = (timestamp: string) => {
 
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
-const selectedActivityIndex = ref<number | null>(null);
+const selectedActivity = ref<Activity | null>(null);
 
 /** 点击事件 */
 function handleClick(activity: Activity) {
@@ -89,33 +90,44 @@ function handleTextClick(activity: Activity) {
 }
 
 /** 右键点击事件 */
-function handleRightClick(event: MouseEvent, index: number) {
+function handleRightClick(event: MouseEvent, activity: Activity) {
   event.preventDefault();
   menuPosition.value = { x: event.clientX, y: event.clientY };
-  selectedActivityIndex.value = index;
+  selectedActivity.value = activity;
   contextMenuVisible.value = true;
 }
 
 /** 菜单操作处理 */
-function handleMenuAction(action: string) {
+async function handleMenuAction(action: string) {
   contextMenuVisible.value = false;
-  const index = selectedActivityIndex.value;
+  const activity = selectedActivity.value;
 
-  if (index === null) return;
+  if (!activity) return;
 
-  switch (action) {
-    case "add":
-      message("新增待办");
-      break;
-    case "edit":
-      message(`修改待办：${activities.value[index].title},${index}`);
-      break;
-    case "delete":
-      message(`删除待办：${activities.value[index].title},${index}`);
-      break;
+  try {
+    switch (action) {
+      case "edit":
+        message(`修改待办：${activity.title}`);
+        break;
+      case "abandon":
+        await abandonTodo(activity.id);
+        const todo = props.originalTodoList.find(t => t.id === activity.id);
+        if (todo) {
+          todo.status = 3;
+        }
+        activity.status = 3;
+        message("放弃待办成功", { type: "success" });
+        break;
+      case "delete":
+        message(`删除待办：${activity.title}`);
+        break;
+    }
+  } catch (error) {
+    console.error("操作失败:", error);
+    message("操作失败，请重试", { type: "error" });
   }
 
-  selectedActivityIndex.value = null;
+  selectedActivity.value = null;
 }
 </script>
 
@@ -154,7 +166,7 @@ function handleMenuAction(action: string) {
           :hollow="activity.status !== 2"
           :color="activity.color"
           @click="handleClick(activity)"
-          @contextmenu.prevent="handleRightClick($event, index)"
+          @contextmenu.prevent="handleRightClick($event, activity)"
         >
           <!-- 使用 dot 插槽完全自定义节点，仅当 status 不为 2 时生效 -->
           <template #dot v-if="activity.status !== 2">
@@ -166,7 +178,10 @@ function handleMenuAction(action: string) {
             ></div>
           </template>
           <!-- 只有点击标题才跳到详细页 -->
-          <span class="todo-text" @click.stop="handleTextClick(activity)">
+          <span 
+            :class="['todo-text', { 'line-through': activity.status === 3 }]" 
+            @click.stop="handleTextClick(activity)"
+          >
             {{ activity.title }}
           </span>
         </el-timeline-item>
@@ -186,16 +201,16 @@ function handleMenuAction(action: string) {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('add')"
-          class="py-2.5 border-b w-full cursor-pointer text-center"
-        >
-          新增待办
-        </div>
-        <div
           @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
         >
           修改待办
+        </div>
+        <div
+          @click="handleMenuAction('abandon')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          放弃待办
         </div>
         <div
           @click="handleMenuAction('delete')"
@@ -247,5 +262,9 @@ function handleMenuAction(action: string) {
 
 .todo-text {
   cursor: pointer;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 </style>

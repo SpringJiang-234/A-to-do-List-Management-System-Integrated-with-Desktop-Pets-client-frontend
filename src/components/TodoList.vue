@@ -34,16 +34,16 @@ async function handleClick(activity: Activity) {
     if (activity.status === 2) {
       await cancelCompleteTodo(activity.id);
       activity.status = 1;
-      message("取消完成成功");
+      message("取消完成待办", { type: "success" });
     } else {
       await completeTodo(activity.id);
       activity.status = 2;
-      message("完成成功");
+      message("完成待办", { type: "success" });
     }
     emit("click", activity);
   } catch (error) {
     console.error("更新待办状态失败:", error);
-    message("更新失败，请重试");
+    message("更新失败，请重试", { type: "error" });
   }
 }
 
@@ -75,7 +75,7 @@ async function handleMenuAction(action: string) {
       case "abandon":
         await abandonTodo(activity.id);
         activity.status = 3;
-        message("放弃待办成功");
+        message("放弃待办", { type: "warning" });
         emit("click", activity);
         break;
       case "delete":
@@ -84,7 +84,7 @@ async function handleMenuAction(action: string) {
     }
   } catch (error) {
     console.error("操作失败:", error);
-    message("操作失败，请重试");
+    message("操作失败，请重试", { type: "error" });
   }
   
   selectedActivity.value = null;
@@ -129,7 +129,7 @@ async function handleMenuAction(action: string) {
     <div
       v-for="(activity, index) in activities"
       :key="index"
-      class="todo-item"
+      :class="['todo-item', { 'todo-abandoned': activity.status === 3 }]"
       @click="handleClick(activity)"
       @contextmenu.prevent="handleRightClick($event, index)"
     >
@@ -145,12 +145,15 @@ async function handleMenuAction(action: string) {
               : 'white'
           }"
         ></div>
-        <span class="todo-title" @click.stop="handleTextClick(activity)">{{
-          activity.title
-        }}</span>
+        <span 
+          :class="['todo-title', { 'line-through': activity.status === 3 }]" 
+          @click.stop="handleTextClick(activity)"
+        >
+          {{ activity.title }}
+        </span>
         <span class="todo-time">{{ activity.timestamp }}</span>
       </div>
-      <div class="todo-content">
+      <div :class="['todo-content', { 'line-through': activity.status === 3 }]">
         {{ activity.content }}
       </div>
     </div>
@@ -173,6 +176,10 @@ async function handleMenuAction(action: string) {
 
 .todo-item:hover {
   background-color: var(--el-color-primary-light-9);
+}
+
+.todo-abandoned {
+  opacity: 0.6;
 }
 
 .todo-header {
@@ -205,6 +212,10 @@ async function handleMenuAction(action: string) {
   font-size: 14px;
   flex: 1;
   cursor: pointer;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 
 .todo-time {

@@ -56,7 +56,7 @@ const handleMenuAction = async (action: string) => {
   try {
     switch (action) {
       case "edit":
-        message(`修改待办：${todo.title}`);
+        message(`修改待办`);
         break;
       case "abandon":
         await abandonTodo(todo.id);
@@ -65,7 +65,7 @@ const handleMenuAction = async (action: string) => {
           originalTodo.status = 3;
         }
         todo.status = 3;
-        message("放弃待办成功");
+        message("放弃待办", { type: "warning" });
         break;
       case "delete":
         message(`删除待办：${todo.title}`);
@@ -73,7 +73,7 @@ const handleMenuAction = async (action: string) => {
     }
   } catch (error) {
     console.error("操作失败:", error);
-    message("操作失败，请重试");
+    message("操作失败，请重试", { type: "error" });
   }
 
   selectedTodo.value = null;
@@ -126,7 +126,7 @@ const handleMenuAction = async (action: string) => {
         <div
           v-for="todo in (props.monthData[data.day] || [])"
           :key="todo.id"
-          class="todo-item"
+          :class="['todo-item', { 'line-through': todo.status === 3 }]"
           @click="() => handleClickTodo(todo)"
           @contextmenu.prevent="handleRightClick($event, todo)"
         >
@@ -211,6 +211,10 @@ const handleMenuAction = async (action: string) => {
   background-color: var(--el-color-primary-light-9);
   border-radius: 2px;
   cursor: pointer;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 
 .header-content {
