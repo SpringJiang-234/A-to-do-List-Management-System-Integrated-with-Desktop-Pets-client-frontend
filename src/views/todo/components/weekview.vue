@@ -52,15 +52,15 @@ const dateRange = computed(() => {
 const weekDates = computed(() => {
   const current = value.value ? new Date(value.value) : new Date();
   const day = current.getDay();
-  const diff = current.getDate() - day + (day === 0 ? -6 : 1);
+  const diff = current.getDate() - day;
 
-  const monday = new Date(current);
-  monday.setDate(diff);
+  const sunday = new Date(current);
+  sunday.setDate(diff);
 
   const dates = [];
   for(let i = 0; i < 7; i++) {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + i);
+    const date = new Date(sunday);
+    date.setDate(sunday.getDate() + i);
     const month = date.getMonth() + 1;
     const day = date.getDate();
     dates.push(`${month}月${day}日`);
@@ -72,13 +72,13 @@ const weekDates = computed(() => {
 const currentWeekRange = computed(() => {
   const current = value.value ? new Date(value.value) : new Date();
   const day = current.getDay();
-  const diff = current.getDate() - day + (day === 0 ? -6 : 1);
+  const diff = current.getDate() - day;
 
-  const monday = new Date(current);
-  monday.setDate(diff);
+  const sunday = new Date(current);
+  sunday.setDate(diff);
 
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
+  const saturday = new Date(sunday);
+  saturday.setDate(sunday.getDate() + 6);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -87,7 +87,7 @@ const currentWeekRange = computed(() => {
     return `${year} 年 ${month} 月 ${day} 日`;
   };
 
-  return `${formatDate(monday)} 至 ${formatDate(sunday)}`;
+  return `${formatDate(sunday)} 至 ${formatDate(saturday)}`;
 });
 
 const tableData = computed(() => [props.weekData]);
@@ -95,10 +95,10 @@ const tableData = computed(() => [props.weekData]);
 const currentWeekData = computed(() => {
   const current = value.value ? new Date(value.value) : new Date();
   const day = current.getDay();
-  const diff = current.getDate() - day + (day === 0 ? -6 : 1);
+  const diff = current.getDate() - day;
 
-  const monday = new Date(current);
-  monday.setDate(diff);
+  const sunday = new Date(current);
+  sunday.setDate(diff);
 
   const weekDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const result: WeekData = {
@@ -112,8 +112,8 @@ const currentWeekData = computed(() => {
   };
 
   for (let i = 0; i < 7; i++) {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + i);
+    const date = new Date(sunday);
+    date.setDate(sunday.getDate() + i);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -204,9 +204,23 @@ const handleMenuAction = (action: string) => {
       </div>
     </template>
     <el-table :data="[currentWeekData]" border style="width: 100%">
-      <el-table-column prop="monday" label="周一" min-width="14.2%">
+      <el-table-column prop="sunday" label="周日" min-width="14.2%">
         <template #default="{ row }">
           <div>{{ weekDates[0] }}</div>
+          <div
+            v-for="(activity, index) in row.sunday"
+            :key="index"
+            class="todo-item"
+            @click="() => handleClickTodo(activity)"
+            @contextmenu.prevent="handleRightClick($event, activity)"
+          >
+            {{ activity.title }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="monday" label="周一" min-width="14.2%">
+        <template #default="{ row }">
+          <div>{{ weekDates[1] }}</div>
           <div
             v-for="(activity, index) in row.monday"
             :key="index"
@@ -220,7 +234,7 @@ const handleMenuAction = (action: string) => {
       </el-table-column>
       <el-table-column prop="tuesday" label="周二" min-width="14.2%">
         <template #default="{ row }">
-          <div>{{ weekDates[1] }}</div>
+          <div>{{ weekDates[2] }}</div>
           <div
             v-for="(activity, index) in row.tuesday"
             :key="index"
@@ -234,7 +248,7 @@ const handleMenuAction = (action: string) => {
       </el-table-column>
       <el-table-column prop="wednesday" label="周三" min-width="14.2%">
         <template #default="{ row }">
-          <div>{{ weekDates[2] }}</div>
+          <div>{{ weekDates[3] }}</div>
           <div
             v-for="(activity, index) in row.wednesday"
             :key="index"
@@ -248,7 +262,7 @@ const handleMenuAction = (action: string) => {
       </el-table-column>
       <el-table-column prop="thursday" label="周四" min-width="14.2%">
         <template #default="{ row }">
-          <div>{{ weekDates[3] }}</div>
+          <div>{{ weekDates[4] }}</div>
           <div
             v-for="(activity, index) in row.thursday"
             :key="index"
@@ -262,7 +276,7 @@ const handleMenuAction = (action: string) => {
       </el-table-column>
       <el-table-column prop="friday" label="周五" min-width="14.2%">
         <template #default="{ row }">
-          <div>{{ weekDates[4] }}</div>
+          <div>{{ weekDates[5] }}</div>
           <div
             v-for="(activity, index) in row.friday"
             :key="index"
@@ -276,23 +290,9 @@ const handleMenuAction = (action: string) => {
       </el-table-column>
       <el-table-column prop="saturday" label="周六" min-width="14.2%">
         <template #default="{ row }">
-          <div>{{ weekDates[5] }}</div>
-          <div
-            v-for="(activity, index) in row.saturday"
-            :key="index"
-            class="todo-item"
-            @click="() => handleClickTodo(activity)"
-            @contextmenu.prevent="handleRightClick($event, activity)"
-          >
-            {{ activity.title }}
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="sunday" label="周日" min-width="14.2%">
-        <template #default="{ row }">
           <div>{{ weekDates[6] }}</div>
           <div
-            v-for="(activity, index) in row.sunday"
+            v-for="(activity, index) in row.saturday"
             :key="index"
             class="todo-item"
             @click="() => handleClickTodo(activity)"
