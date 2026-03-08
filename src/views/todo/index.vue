@@ -26,6 +26,7 @@ interface Activity {
   content: string;
   timestamp: string;
   status: number;
+  priority?: number;
   color?: string;
 }
 
@@ -211,7 +212,8 @@ const loadTodoList = async () => {
                 title: todo.title,
                 content: todo.content,
                 timestamp: new Date(dateKey).toISOString(),
-                status: todo.status
+                status: todo.status,
+                priority: todo.priority
               });
             }
           });

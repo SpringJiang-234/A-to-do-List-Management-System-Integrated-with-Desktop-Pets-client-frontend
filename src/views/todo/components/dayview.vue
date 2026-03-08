@@ -14,6 +14,7 @@ interface Activity {
   content: string;
   timestamp: string;
   status: number;
+  priority?: number;
   color?: string;
 }
 
@@ -50,7 +51,8 @@ const currentDayTodos = computed(() => {
         title: todo.title,
         content: todo.content,
         timestamp: dateKey,
-        status: todo.status
+        status: todo.status,
+        priority: todo.priority
       };
     }
     return null;
@@ -80,6 +82,20 @@ const formatTimestamp = (timestamp: string) => {
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const selectedActivity = ref<Activity | null>(null);
+
+const getPriorityColor = (priority?: number) => {
+  switch (priority) {
+    case 4:
+      return "#F56C6C";
+    case 3:
+      return "#E6A23C";
+    case 2:
+      return "#409EFF";
+    case 1:
+    default:
+      return "#67C23A";
+  }
+};
 
 /** 点击事件 */
 async function handleClick(activity: Activity) {
@@ -187,7 +203,7 @@ async function handleMenuAction(action: string) {
           :key="index"
           :timestamp="formatTimestamp(activity.timestamp)"
           :hollow="activity.status !== 2"
-          :color="activity.color"
+          :color="getPriorityColor(activity.priority)"
           @click="handleClick(activity)"
           @contextmenu.prevent="handleRightClick($event, activity)"
         >
@@ -196,7 +212,7 @@ async function handleMenuAction(action: string) {
             <div
               class="custom-node"
               :style="{
-                borderColor: activity.color
+                borderColor: getPriorityColor(activity.priority)
               }"
             ></div>
           </template>

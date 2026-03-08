@@ -13,6 +13,7 @@ interface Activity {
   content: string;
   timestamp: string;
   status: number;
+  priority?: number;
   color?: string;
 }
 
@@ -82,6 +83,7 @@ const loadCategoryTodos = async (categoryId: number, categoryName: string) => {
       content: todo.content,
       timestamp: todo.startTime || "",
       status: todo.status,
+      priority: todo.priority,
       color: undefined
     }));
 

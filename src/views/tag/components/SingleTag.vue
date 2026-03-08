@@ -10,6 +10,7 @@ interface Activity {
   content: string;
   timestamp: string;
   status: number;
+  priority?: number;
   color?: string;
 }
 
@@ -34,6 +35,7 @@ const activities = computed(() => {
     content: todo.content,
     timestamp: todo.startTime || todo.createTime || "",
     status: todo.status,
+    priority: todo.priority,
     color: undefined
   }));
 });

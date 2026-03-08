@@ -9,6 +9,7 @@ type ClientTodoVO = {
   endTime: string;
   status: number;
   isTop: number;
+  priority: number;
 };
 
 type TagDetails = {

@@ -12,6 +12,7 @@ interface Activity {
   content: string;
   timestamp: string;
   status: number;
+  priority?: number;
   color?: string;
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { completeTodo, cancelCompleteTodo, abandonTodo, deleteTodo } from "@/api/todo";
@@ -10,6 +10,7 @@ interface Activity {
   content: string;
   timestamp: string;
   status: number;
+  priority?: number;
   color?: string;
 }
 
@@ -32,6 +33,20 @@ const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const currentIndex = ref(-1);
 const selectedActivity = ref<Activity | null>(null);
+
+const getPriorityColor = (priority?: number) => {
+  switch (priority) {
+    case 4:
+      return "#F56C6C";
+    case 3:
+      return "#E6A23C";
+    case 2:
+      return "#409EFF";
+    case 1:
+    default:
+      return "#67C23A";
+  }
+};
 
 async function handleClick(activity: Activity) {
   try {
@@ -147,9 +162,9 @@ async function handleMenuAction(action: string) {
             activity.status === 2 ? 'custom-node-completed' : 'custom-node'
           "
           :style="{
-            borderColor: activity.color || 'var(--el-color-info-light-7)',
+            borderColor: getPriorityColor(activity.priority),
             backgroundColor: activity.status === 2
-              ? activity.color || 'var(--el-color-info-light-7)'
+              ? getPriorityColor(activity.priority)
               : 'white'
           }"
         ></div>
