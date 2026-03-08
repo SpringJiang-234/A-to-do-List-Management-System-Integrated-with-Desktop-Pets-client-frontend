@@ -78,7 +78,7 @@ const handleMenuAction = async (action: string) => {
         }
         break;
       case "edit":
-        router.push(`/todo/edit/${todo.id}`);
+        router.push(`/todo/detail/${todo.id}?edit=true`);
         break;
       case "abandon":
         await abandonTodo(todo.id);

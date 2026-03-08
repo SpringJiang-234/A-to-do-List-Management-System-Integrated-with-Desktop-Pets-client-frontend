@@ -123,7 +123,7 @@ async function handleMenuAction(action: string) {
   try {
     switch (action) {
       case "edit":
-        router.push(`/todo/edit/${activity.id}`);
+        router.push(`/todo/detail/${activity.id}?edit=true`);
         break;
       case "abandon":
         await abandonTodo(activity.id);
