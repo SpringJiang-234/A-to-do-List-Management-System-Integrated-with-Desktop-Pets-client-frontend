@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { message } from "@/utils/message";
+import { completeTodo, cancelCompleteTodo } from "@/api/todo";
 
 interface Activity {
   id: number;
@@ -27,14 +28,26 @@ const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const currentIndex = ref(-1);
 
-function handleClick(activity: Activity) {
-  activity.status = activity.status === 2 ? 1 : 2;
-  message(`切换是否完成：${activity.status === 2 ? '已完成' : '未完成'}`);
-  emit("click", activity);
+async function handleClick(activity: Activity) {
+  try {
+    if (activity.status === 2) {
+      await cancelCompleteTodo(activity.id);
+      activity.status = 1;
+      message("取消完成成功");
+    } else {
+      await completeTodo(activity.id);
+      activity.status = 2;
+      message("完成成功");
+    }
+    emit("click", activity);
+  } catch (error) {
+    console.error("更新待办状态失败:", error);
+    message("更新失败，请重试");
+  }
 }
 
 function handleTextClick(activity: Activity) {
-  message(`点击了文字：${activity.content}`);
+  message(`点击了文字：${activity.title}`);
   emit("textClick", activity);
 }
 

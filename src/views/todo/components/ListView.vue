@@ -33,7 +33,7 @@ function handleTodoClick(activity: Activity) {
     
     const todo = props.originalTodoList.find(t => t.id === activity.id);
     if (todo) {
-        todo.status = todo.status === 2 ? 1 : 2;
+        todo.status = activity.status;
     }
 }
 

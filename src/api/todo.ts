@@ -85,3 +85,15 @@ export const getTodoDetails = (id: number) => {
 export const insertTodo = (data: ClientTodoDTO) => {
   return http.request<Result<void>>("post", "/api/todo/insert", { data });
 };
+
+export const completeTodo = (id: number) => {
+  return http.request<Result<void>>("get", `/api/todo/complete/${id}`);
+};
+
+export const cancelCompleteTodo = (id: number) => {
+  return http.request<Result<void>>("get", `/api/todo/cancel-complete/${id}`);
+};
+
+export const abandonTodo = (id: number) => {
+  return http.request<Result<void>>("get", `/api/todo/abandon/${id}`);
+};
