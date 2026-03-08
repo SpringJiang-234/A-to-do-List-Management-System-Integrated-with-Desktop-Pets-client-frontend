@@ -179,7 +179,7 @@ async function handleMenuAction(action: string) {
           </template>
           <!-- 只有点击标题才跳到详细页 -->
           <span 
-            :class="['todo-text', { 'line-through': activity.status === 3 }]" 
+            :class="['todo-text', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
             @click.stop="handleTextClick(activity)"
           >
             {{ activity.title }}

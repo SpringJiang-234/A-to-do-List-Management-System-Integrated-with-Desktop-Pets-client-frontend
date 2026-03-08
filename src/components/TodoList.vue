@@ -146,14 +146,14 @@ async function handleMenuAction(action: string) {
           }"
         ></div>
         <span 
-          :class="['todo-title', { 'line-through': activity.status === 3 }]" 
+          :class="['todo-title', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
           @click.stop="handleTextClick(activity)"
         >
           {{ activity.title }}
         </span>
         <span class="todo-time">{{ activity.timestamp }}</span>
       </div>
-      <div :class="['todo-content', { 'line-through': activity.status === 3 }]">
+      <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">
         {{ activity.content }}
       </div>
     </div>

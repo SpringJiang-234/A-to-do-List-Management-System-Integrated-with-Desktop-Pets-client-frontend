@@ -226,7 +226,7 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.sunday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 3 }]"
+            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
@@ -240,7 +240,7 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.monday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 3 }]"
+            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
@@ -254,7 +254,7 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.tuesday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 3 }]"
+            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
@@ -268,7 +268,7 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.wednesday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 3 }]"
+            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
@@ -282,7 +282,7 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.thursday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 3 }]"
+            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
@@ -296,7 +296,7 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.friday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 3 }]"
+            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
@@ -310,7 +310,7 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.saturday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 3 }]"
+            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >

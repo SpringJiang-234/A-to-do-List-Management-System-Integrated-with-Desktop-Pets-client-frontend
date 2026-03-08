@@ -126,7 +126,7 @@ const handleMenuAction = async (action: string) => {
         <div
           v-for="todo in (props.monthData[data.day] || [])"
           :key="todo.id"
-          :class="['todo-item', { 'line-through': todo.status === 3 }]"
+          :class="['todo-item', { 'line-through': todo.status === 2 || todo.status === 3 }]"
           @click="() => handleClickTodo(todo)"
           @contextmenu.prevent="handleRightClick($event, todo)"
         >
