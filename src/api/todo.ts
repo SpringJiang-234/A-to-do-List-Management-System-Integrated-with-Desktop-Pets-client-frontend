@@ -102,3 +102,7 @@ export const abandonTodo = (id: number) => {
 export const updateTodo = (data: ClientTodoDTO) => {
   return http.request<Result<void>>("post", "/api/todo/update", { data });
 };
+
+export const deleteTodo = (id: number) => {
+  return http.request<Result<void>>("get", `/api/todo/delete/${id}`);
+};
