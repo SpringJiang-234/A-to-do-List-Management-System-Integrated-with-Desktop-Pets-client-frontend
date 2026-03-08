@@ -50,12 +50,12 @@ const statusText = computed(() => {
 const priorityText = computed(() => {
   if (!todoForm.value) return "";
   return todoForm.value.priority === 1 
-    ? "非常低" 
+    ? "不重要不紧急" 
     : todoForm.value.priority === 2 
-    ? "低" 
+    ? "不重要但紧急" 
     : todoForm.value.priority === 3 
-    ? "中" 
-    : "高";
+    ? "重要不紧急" 
+    : "重要且紧急";
 });
 
 const isTopText = computed(() => {
@@ -272,10 +272,10 @@ watch(
           </el-form-item>
           <el-form-item label="优先级">
             <el-select v-if="isEditMode" v-model="todoForm.priority" placeholder="请选择优先级">
-              <el-option label="非常低" :value="1" />
-              <el-option label="低" :value="2" />
-              <el-option label="中" :value="3" />
-              <el-option label="高" :value="4" />
+              <el-option label="不重要不紧急" :value="1" />
+              <el-option label="不重要但紧急" :value="2" />
+              <el-option label="重要不紧急" :value="3" />
+              <el-option label="重要且紧急" :value="4" />
             </el-select>
             <el-input v-else :value="priorityText" readonly />
           </el-form-item>

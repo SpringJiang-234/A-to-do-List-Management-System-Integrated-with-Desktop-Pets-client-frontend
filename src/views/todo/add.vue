@@ -34,10 +34,10 @@ const categories = ref<any[]>([]);
 const tags = ref<any[]>([]);
 
 const priorities = [
-  { value: 1, label: "非常低" },
-  { value: 2, label: "低" },
-  { value: 3, label: "中" },
-  { value: 4, label: "高" }
+  { value: 1, label: "不重要不紧急" },
+  { value: 2, label: "不重要但紧急" },
+  { value: 3, label: "重要不紧急" },
+  { value: 4, label: "重要且紧急" }
 ];
 
 const topOptions = [
@@ -177,10 +177,10 @@ loadTags();
         </el-form-item>
         <el-form-item label="优先级">
           <el-select v-model="todoForm.priority" placeholder="请选择优先级">
-            <el-option label="非常低" :value="1" />
-            <el-option label="低" :value="2" />
-            <el-option label="中" :value="3" />
-            <el-option label="高" :value="4" />
+            <el-option label="不重要不紧急" :value="1" />
+            <el-option label="不重要但紧急" :value="2" />
+            <el-option label="重要不紧急" :value="3" />
+            <el-option label="重要且紧急" :value="4" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">

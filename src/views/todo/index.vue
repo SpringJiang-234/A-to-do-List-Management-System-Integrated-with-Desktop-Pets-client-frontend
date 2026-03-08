@@ -252,9 +252,10 @@ onMounted(() => {
     2、如果是周视图，则展示分段控制器+卡片（一列）列表（可以选择周）
     3、如果是月视图，则展示热力图，按照待办完成数量区分颜色深度（可以选择月） 
     关于优先级：标题前加上图标
-    1、重要且紧急：<FluentImportant12Filled /><FluentAlertUrgent16Filled />
-    2、重要不紧急：<FluentImportant12Filled />
-    3、不重要但紧急：<FluentAlertUrgent16Filled />
+    1、重要且紧急（4）：<FluentImportant12Filled /><FluentAlertUrgent16Filled />
+    2、重要不紧急（3）：<FluentImportant12Filled />
+    3、不重要但紧急（2）：<FluentAlertUrgent16Filled />
+    4、不重要不紧急（1）：无图标
     -->
     <div class="main-wrapper">
       <component :is="currentView" :todo-list="todoList" :week-data="weekData" :month-data="monthData" :date-todo-map="dateTodoMap" :original-todo-list="originalTodoList" @refresh="loadTodoList" />

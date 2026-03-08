@@ -108,19 +108,19 @@ const tags = [
 
 const priorities = [
   {
-    value: "1",
+    value: "4",
     label: "重要且紧急"
   },
   {
-    value: "2",
+    value: "3",
     label: "重要不紧急"
   },
   {
-    value: "3",
+    value: "2",
     label: "不重要但紧急"
   },
   {
-    value: "4",
+    value: "1",
     label: "不重要不紧急"
   }
 ];
