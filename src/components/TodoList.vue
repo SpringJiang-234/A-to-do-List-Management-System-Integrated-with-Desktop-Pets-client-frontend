@@ -3,10 +3,11 @@ import { ref } from "vue";
 import { message } from "@/utils/message";
 
 interface Activity {
+  id: number;
   title: string;
   content: string;
   timestamp: string;
-  isCompleted: boolean;
+  status: number;
   color?: string;
 }
 
@@ -27,8 +28,8 @@ const menuPosition = ref({ x: 0, y: 0 });
 const currentIndex = ref(-1);
 
 function handleClick(activity: Activity) {
-  activity.isCompleted = !activity.isCompleted;
-  message(`切换是否完成：${activity.isCompleted}`);
+  activity.status = activity.status === 2 ? 1 : 2;
+  message(`切换是否完成：${activity.status === 2 ? '已完成' : '未完成'}`);
   emit("click", activity);
 }
 
@@ -108,11 +109,11 @@ function handleMenuAction(action: string) {
       <div class="todo-header">
         <div
           :class="
-            activity.isCompleted ? 'custom-node-completed' : 'custom-node'
+            activity.status === 2 ? 'custom-node-completed' : 'custom-node'
           "
           :style="{
             borderColor: activity.color || 'var(--el-color-info-light-7)',
-            backgroundColor: activity.isCompleted
+            backgroundColor: activity.status === 2
               ? activity.color || 'var(--el-color-info-light-7)'
               : 'white'
           }"

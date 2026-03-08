@@ -11,7 +11,7 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  isCompleted: boolean;
+  status: number;
   color?: string;
 }
 
@@ -129,7 +129,7 @@ const currentWeekData = computed(() => {
           title: todo.title,
           content: todo.content,
           timestamp: dateKey,
-          isCompleted: todo.status === 2
+          status: todo.status
         };
       }
       return null;
@@ -140,6 +140,10 @@ const currentWeekData = computed(() => {
 });
 
 function handleClickTodo(activity: Activity) {
+  const todo = props.originalTodoList.find(t => t.id === activity.id);
+  if (todo) {
+    todo.status = todo.status === 2 ? 1 : 2;
+  }
   message(`点击了待办：${activity.title}，ID：${activity.id}`);
 }
 

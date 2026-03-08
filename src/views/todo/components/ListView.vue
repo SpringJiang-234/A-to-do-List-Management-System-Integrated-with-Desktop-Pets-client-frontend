@@ -7,7 +7,7 @@ interface Activity {
     title: string;
     content: string;
     timestamp: string;
-    isCompleted: boolean;
+    status: number;
     color?: string;
 }
 
@@ -19,13 +19,27 @@ const props = defineProps<Props>();
 
 const activities = computed(() => {
     return props.originalTodoList.map(todo => ({
+        id: todo.id,
         title: todo.title,
         content: todo.content,
         timestamp: todo.startTime || todo.createTime || "",
-        isCompleted: todo.status === 2,
+        status: todo.status,
         color: undefined
     }));
 });
+
+function handleTodoClick(activity: Activity) {
+    console.log("待办项被点击:", activity);
+    
+    const todo = props.originalTodoList.find(t => t.id === activity.id);
+    if (todo) {
+        todo.status = todo.status === 2 ? 1 : 2;
+    }
+}
+
+function handleTextClick(activity: Activity) {
+    console.log("文字被点击:", activity);
+}
 </script>
 
 <template>
@@ -42,7 +56,11 @@ const activities = computed(() => {
                 </div>
             </div>
         </template>
-        <TodoList :activities="activities" />
+        <TodoList 
+            :activities="activities" 
+            @click="handleTodoClick"
+            @textClick="handleTextClick"
+        />
     </el-card>
 </template>
 

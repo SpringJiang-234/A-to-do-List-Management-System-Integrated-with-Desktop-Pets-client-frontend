@@ -9,7 +9,7 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  isCompleted: boolean;
+  status: number;
   color?: string;
 }
 

@@ -11,7 +11,7 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  isCompleted: boolean;
+  status: number;
   color?: string;
 }
 
@@ -43,7 +43,7 @@ const currentDayTodos = computed(() => {
         title: todo.title,
         content: todo.content,
         timestamp: dateKey,
-        isCompleted: todo.status === 2
+        status: todo.status
       };
     }
     return null;
@@ -76,7 +76,10 @@ const selectedActivityIndex = ref<number | null>(null);
 
 /** 点击事件 */
 function handleClick(activity: Activity) {
-  activity.isCompleted = !activity.isCompleted;
+  const todo = props.originalTodoList.find(t => t.id === activity.id);
+  if (todo) {
+    todo.status = todo.status === 2 ? 1 : 2;
+  }
   message(`点击了待办：${activity.content}`);
 }
 
@@ -148,13 +151,13 @@ function handleMenuAction(action: string) {
           v-for="(activity, index) in currentDayTodos"
           :key="index"
           :timestamp="formatTimestamp(activity.timestamp)"
-          :hollow="!activity.isCompleted"
+          :hollow="activity.status !== 2"
           :color="activity.color"
           @click="handleClick(activity)"
           @contextmenu.prevent="handleRightClick($event, index)"
         >
-          <!-- 使用 dot 插槽完全自定义节点，仅当 isCompleted 为 false 时生效 -->
-          <template #dot v-if="!activity.isCompleted">
+          <!-- 使用 dot 插槽完全自定义节点，仅当 status 不为 2 时生效 -->
+          <template #dot v-if="activity.status !== 2">
             <div
               class="custom-node"
               :style="{

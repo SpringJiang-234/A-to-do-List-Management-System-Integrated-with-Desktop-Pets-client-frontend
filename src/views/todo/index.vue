@@ -22,7 +22,7 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  isCompleted: boolean;
+  status: number;
   color?: string;
 }
 
@@ -234,7 +234,7 @@ const loadTodoList = async () => {
                 title: todo.title,
                 content: todo.content,
                 timestamp: new Date(dateKey).toISOString(),
-                isCompleted: todo.status === 2
+                status: todo.status
               });
             }
           });
