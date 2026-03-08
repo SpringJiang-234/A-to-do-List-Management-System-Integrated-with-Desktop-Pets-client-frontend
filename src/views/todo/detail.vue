@@ -7,6 +7,7 @@ import { getTagList } from "@/api/tag";
 import { message } from "@/utils/message";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
+import { Close } from "@element-plus/icons-vue";
 
 defineOptions({
   name: "TodoDetail"
@@ -163,6 +164,10 @@ const handleCancel = () => {
   fetchTodoDetails();
 };
 
+const handleClose = () => {
+  router.back();
+};
+
 const handleSubmit = async () => {
   if (!todoForm.value.title.trim()) {
     message("请输入待办标题", { type: "warning" });
@@ -173,8 +178,7 @@ const handleSubmit = async () => {
     submitting.value = true;
     await updateTodo(todoForm.value);
     message("修改成功", { type: "success" });
-    isEditMode.value = false;
-    fetchTodoDetails();
+    router.back();
   } catch (error) {
     console.error("修改待办失败:", error);
     message("修改失败，请重试", { type: "error" });
@@ -203,12 +207,23 @@ watch(
       <template #header>
         <div class="header-content">
           <div>待办详情</div>
-          <el-switch 
-            v-model="isEditMode" 
-            active-text="可修改" 
-            inactive-text="只读"
-            @change="isEditMode ? loadCategories() : null"
-          />
+          <div class="header-actions">
+            <el-switch 
+              v-model="isEditMode" 
+              active-text="可修改" 
+              inactive-text="只读"
+              @change="isEditMode ? loadCategories() : null"
+            />
+            <el-button 
+              type="primary" 
+              circle 
+              size="small" 
+              @click="handleClose"
+              class="close-button"
+            >
+              <el-icon><Close /></el-icon>
+            </el-button>
+          </div>
         </div>
       </template>
       <el-empty v-if="!todoId" description="待办 ID 无效，请从待办列表点击查看详情" />
@@ -320,6 +335,16 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.close-button {
+  padding: 4px;
 }
 
 .tags-container {

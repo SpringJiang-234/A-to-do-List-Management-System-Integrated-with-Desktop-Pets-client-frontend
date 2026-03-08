@@ -7,6 +7,7 @@ import { getTagList } from "@/api/tag";
 import { message } from "@/utils/message";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
+import { Close } from "@element-plus/icons-vue";
 
 defineOptions({
   name: "TodoAdd"
@@ -98,6 +99,10 @@ const handleCancel = () => {
   router.back();
 };
 
+const handleClose = () => {
+  router.back();
+};
+
 const handleSubmit = async () => {
   if (!todoForm.value.title.trim()) {
     message("请输入待办标题", { type: "warning" });
@@ -140,7 +145,18 @@ loadTags();
   <div class="todo-add-container">
     <el-card shadow="never">
       <template #header>
-        <div>添加待办</div>
+        <div class="header-content">
+          <div>添加待办</div>
+          <el-button 
+            type="primary" 
+            circle 
+            size="small" 
+            @click="handleClose"
+            class="close-button"
+          >
+            <el-icon><Close /></el-icon>
+          </el-button>
+        </div>
       </template>
       <el-form label-width="100px">
         <el-form-item label="标题" required>
@@ -221,5 +237,15 @@ loadTags();
 <style scoped lang="scss">
 .todo-add-container {
   padding: 16px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  padding: 4px;
 }
 </style>
