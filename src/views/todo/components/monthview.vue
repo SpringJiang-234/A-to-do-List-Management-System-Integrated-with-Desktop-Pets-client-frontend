@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 import type { CalendarDateType, CalendarInstance } from "element-plus";
 import { message } from "@/utils/message";
-import { abandonTodo } from "@/api/todo";
+import { abandonTodo, completeTodo, cancelCompleteTodo } from "@/api/todo";
 
 interface Activity {
   id: number;
@@ -55,6 +55,25 @@ const handleMenuAction = async (action: string) => {
 
   try {
     switch (action) {
+      case "toggleComplete":
+        if (todo.status === 2) {
+          await cancelCompleteTodo(todo.id);
+          const cancelTodoItem = props.originalTodoList.find(t => t.id === todo.id);
+          if (cancelTodoItem) {
+            cancelTodoItem.status = 1;
+          }
+          todo.status = 1;
+          message("取消完成待办", { type: "success" });
+        } else {
+          await completeTodo(todo.id);
+          const completeTodoItem = props.originalTodoList.find(t => t.id === todo.id);
+          if (completeTodoItem) {
+            completeTodoItem.status = 2;
+          }
+          todo.status = 2;
+          message("完成待办", { type: "success" });
+        }
+        break;
       case "edit":
         message(`修改待办`);
         break;
@@ -147,6 +166,12 @@ const handleMenuAction = async (action: string) => {
       }"
     >
       <div class="flex flex-col items-center">
+        <div
+          @click="handleMenuAction('toggleComplete')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          {{ selectedTodo?.status === 2 ? '取消完成待办' : '完成待办' }}
+        </div>
         <div
           @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { message } from "@/utils/message";
-import { abandonTodo } from "@/api/todo";
+import { abandonTodo, completeTodo, cancelCompleteTodo } from "@/api/todo";
 
 defineOptions({
   name: "DayView"
@@ -76,12 +76,25 @@ const menuPosition = ref({ x: 0, y: 0 });
 const selectedActivity = ref<Activity | null>(null);
 
 /** 点击事件 */
-function handleClick(activity: Activity) {
-  const todo = props.originalTodoList.find(t => t.id === activity.id);
-  if (todo) {
-    todo.status = activity.status;
+async function handleClick(activity: Activity) {
+  try {
+    if (activity.status === 2) {
+      await cancelCompleteTodo(activity.id);
+      activity.status = 1;
+      message("取消完成待办", { type: "success" });
+    } else {
+      await completeTodo(activity.id);
+      activity.status = 2;
+      message("完成待办", { type: "success" });
+    }
+    const todo = props.originalTodoList.find(t => t.id === activity.id);
+    if (todo) {
+      todo.status = activity.status;
+    }
+  } catch (error) {
+    console.error("更新待办状态失败:", error);
+    message("更新失败，请重试", { type: "error" });
   }
-  message(`点击了待办：${activity.content}`);
 }
 
 /** 点击文字内容事件 */

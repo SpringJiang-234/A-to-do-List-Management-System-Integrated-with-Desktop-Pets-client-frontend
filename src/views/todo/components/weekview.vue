@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { message } from "@/utils/message";
-import { abandonTodo } from "@/api/todo";
+import { abandonTodo, completeTodo, cancelCompleteTodo } from "@/api/todo";
 
 defineOptions({
   name: "WeekView"
@@ -167,14 +167,33 @@ const handleMenuAction = async (action: string) => {
 
   try {
     switch (action) {
+      case "toggleComplete":
+        if (activity.status === 2) {
+          await cancelCompleteTodo(activity.id);
+          const todo = props.originalTodoList.find(t => t.id === activity.id);
+          if (todo) {
+            todo.status = 1;
+          }
+          activity.status = 1;
+          message("取消完成待办", { type: "success" });
+        } else {
+          await completeTodo(activity.id);
+          const todo = props.originalTodoList.find(t => t.id === activity.id);
+          if (todo) {
+            todo.status = 2;
+          }
+          activity.status = 2;
+          message("完成待办", { type: "success" });
+        }
+        break;
       case "edit":
         message(`修改待办：${activity.title}`);
         break;
       case "abandon":
         await abandonTodo(activity.id);
-        const todo = props.originalTodoList.find(t => t.id === activity.id);
-        if (todo) {
-          todo.status = 3;
+        const abandonTodoItem = props.originalTodoList.find(t => t.id === activity.id);
+        if (abandonTodoItem) {
+          abandonTodoItem.status = 3;
         }
         activity.status = 3;
         message("放弃待办", { type: "warning" });
@@ -332,6 +351,12 @@ const handleMenuAction = async (action: string) => {
       }"
     >
       <div class="flex flex-col items-center">
+        <div
+          @click="handleMenuAction('toggleComplete')"
+          class="py-2.5 border-b w-full cursor-pointer text-center"
+        >
+          {{ selectedActivity?.status === 2 ? '取消完成待办' : '完成待办' }}
+        </div>
         <div
           @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
