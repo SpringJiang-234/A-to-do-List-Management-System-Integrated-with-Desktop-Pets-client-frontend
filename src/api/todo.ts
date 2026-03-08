@@ -52,6 +52,22 @@ type ClientTodoQuery = {
   tagIdList?: number[];
 };
 
+type ClientTodoDTO = {
+  id?: number;
+  userId: number;
+  title: string;
+  content?: string;
+  categoryId?: number;
+  priority?: number;
+  startTime?: string;
+  endTime?: string;
+  status?: number;
+  finishTime?: string;
+  isDelete?: number;
+  isTop?: number;
+  tagIdList?: number[];
+};
+
 type Result<T> = {
   code: number;
   msg: string;
@@ -64,4 +80,8 @@ export const getTodoList = (params: ClientTodoQuery) => {
 
 export const getTodoDetails = (id: number) => {
   return http.request<Result<ClientTodoDetails>>("get", `/api/todo/details/${id}`);
+};
+
+export const insertTodo = (data: ClientTodoDTO) => {
+  return http.request<Result<void>>("post", "/api/todo/insert", { data });
 };
