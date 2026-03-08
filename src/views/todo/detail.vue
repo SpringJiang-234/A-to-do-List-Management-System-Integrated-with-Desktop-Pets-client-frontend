@@ -38,6 +38,17 @@ const statusText = computed(() => {
     : "已放弃";
 });
 
+const priorityText = computed(() => {
+  if (!todoDetails.value) return "";
+  return todoDetails.value.priority === 1 
+    ? "非常低" 
+    : todoDetails.value.priority === 2 
+    ? "低" 
+    : todoDetails.value.priority === 3 
+    ? "中" 
+    : "高";
+});
+
 const isTopText = computed(() => {
   if (!todoDetails.value) return "";
   return todoDetails.value.isTop === "1" ? "是" : "否";
@@ -73,6 +84,9 @@ watch(
           </el-form-item>
           <el-form-item label="类别">
             <el-input v-model="todoDetails.categoryName" readonly />
+          </el-form-item>
+          <el-form-item label="优先级">
+            <el-input :value="priorityText" readonly />
           </el-form-item>
           <el-form-item label="状态">
             <el-input :value="statusText" readonly />

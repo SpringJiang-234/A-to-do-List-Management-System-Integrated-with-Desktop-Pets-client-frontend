@@ -25,6 +25,15 @@ export default {
         title: "待办详情",
         showLink: false
       }
+    },
+    {
+      path: "/todo/edit/:id?",
+      name: "TodoEdit",
+      component: () => import("@/views/todo/edit.vue"),
+      meta: {
+        title: "修改待办",
+        showLink: false
+      }
     }
   ]
-};
+} satisfies RouteConfigsTable;

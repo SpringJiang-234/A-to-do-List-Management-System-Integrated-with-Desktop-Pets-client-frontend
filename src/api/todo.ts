@@ -29,6 +29,7 @@ type ClientTodoDetails = {
   status: string;
   isTop: string;
   categoryName: string;
+  priority: number;
   tags: TagDetails[];
 };
 
@@ -96,4 +97,8 @@ export const cancelCompleteTodo = (id: number) => {
 
 export const abandonTodo = (id: number) => {
   return http.request<Result<void>>("get", `/api/todo/abandon/${id}`);
+};
+
+export const updateTodo = (data: ClientTodoDTO) => {
+  return http.request<Result<void>>("post", "/api/todo/update", { data });
 };

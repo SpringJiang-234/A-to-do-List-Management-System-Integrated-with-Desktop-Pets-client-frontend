@@ -73,7 +73,7 @@ async function handleMenuAction(action: string) {
   try {
     switch (action) {
       case "edit":
-        message(`修改待办：${activity.title}`);
+        router.push(`/todo/edit/${activity.id}`);
         break;
       case "abandon":
         await abandonTodo(activity.id);
