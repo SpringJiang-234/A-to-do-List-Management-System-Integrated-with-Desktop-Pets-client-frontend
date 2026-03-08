@@ -173,13 +173,34 @@ const loadTodoList = async () => {
         userId: userInfo.id
       });
       if (response.code === 200) {
-        todoList.value = response.data.map(record => ({
-          id: record.id,
-          title: record.title,
-          content: record.content,
-          timestamp: record.startTime || record.endTime || new Date().toISOString(),
-          isCompleted: record.status === 2
-        }));
+        const expandedActivities: Activity[] = [];
+        
+        response.data.forEach(record => {
+          const startTime = record.startTime ? new Date(record.startTime) : new Date();
+          const endTime = record.endTime ? new Date(record.endTime) : new Date();
+          
+          const startDate = new Date(startTime);
+          startDate.setHours(0, 0, 0, 0);
+          
+          const endDate = new Date(endTime);
+          endDate.setHours(0, 0, 0, 0);
+          
+          const currentDate = new Date(startDate);
+          
+          while (currentDate <= endDate) {
+            expandedActivities.push({
+              id: record.id,
+              title: record.title,
+              content: record.content,
+              timestamp: currentDate.toISOString(),
+              isCompleted: record.status === 2
+            });
+            
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+        });
+        
+        todoList.value = expandedActivities;
         console.log("待办列表:", todoList.value);
       }
     }
