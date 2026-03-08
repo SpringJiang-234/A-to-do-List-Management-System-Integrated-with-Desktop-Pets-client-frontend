@@ -160,6 +160,10 @@ const topOptions = [
 
 const timeRules = [
   {
+    value: "0",
+    label: "列表"
+  },
+  {
     value: "1",
     label: "日视图"
   },
@@ -226,7 +230,7 @@ const onSubmit = () => {
                       :model-value="todoStore.filter.timeRule"
                       :options="timeRules"
                       :multiple="false"
-                      placeholder="请选择时间视图"
+                      placeholder="请选择视图"
                       all-text="全选"
                       :max-collapse-tags="1"
                       width="240px"

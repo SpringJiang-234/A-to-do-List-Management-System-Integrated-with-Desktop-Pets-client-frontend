@@ -6,6 +6,7 @@ import { useUserStoreHook } from "@/store/modules/user";
 import { getTodoList, insertTodo } from "@/api/todo";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
+import ListView from "@/views/todo/components/ListView.vue";
 import DayView from "@/views/todo/components/DayView.vue";
 import WeekView from "@/views/todo/components/WeekView.vue";
 import MonthView from "@/views/todo/components/MonthView.vue";
@@ -76,6 +77,9 @@ const topOptions = [
 
 const currentView = computed(() => {
   const timeRule = todoStore.filter.timeRule;
+  if (timeRule === "0") {
+    return ListView;
+  }
   if (timeRule === "1") {
     return DayView;
   }
@@ -85,7 +89,7 @@ const currentView = computed(() => {
   if (timeRule === "3") {
     return MonthView;
   }
-  return DayView;
+  return ListView;
 });
 
 const weekData = computed(() => {
