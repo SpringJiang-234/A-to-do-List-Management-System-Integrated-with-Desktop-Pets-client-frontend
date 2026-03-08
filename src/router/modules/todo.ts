@@ -18,6 +18,15 @@ export default {
       }
     },
     {
+      path: "/todo/add",
+      name: "TodoAdd",
+      component: () => import("@/views/todo/add.vue"),
+      meta: {
+        title: "添加待办",
+        showLink: false
+      }
+    },
+    {
       path: "/todo/detail/:id?",
       name: "TodoDetail",
       component: () => import("@/views/todo/detail.vue"),

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import SearchCard from "@/components/SearchCard.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
 import { useUserStoreHook } from "@/store/modules/user";
-import { getTodoList, insertTodo } from "@/api/todo";
+import { getTodoList } from "@/api/todo";
 import { getCategoryList } from "@/api/category";
 import { getTagList } from "@/api/tag";
 import { userKey, type DataInfo } from "@/utils/auth";
@@ -16,6 +17,8 @@ import MonthView from "@/views/todo/components/MonthView.vue";
 defineOptions({
   name: "Todo"
 });
+
+const router = useRouter();
 
 interface Activity {
   id: number;
@@ -56,33 +59,6 @@ const originalTodoList = ref<any[]>([]);
 const dateTodoMap = ref<Map<string, number[]>>(new Map());
 const todoList = ref<Activity[]>([]);
 const loading = ref(false);
-
-const dialogVisible = ref(false);
-const todoForm = ref({
-  title: "",
-  content: "",
-  categoryId: undefined as number | undefined,
-  priority: undefined as number | undefined,
-  startTime: "",
-  endTime: "",
-  isTop: 1,
-  tagIdList: [] as number[]
-});
-
-const categories = ref<CategoryOption[]>([]);
-const tags = ref<TagOption[]>([]);
-
-const priorities = [
-  { value: 1, label: "非常低" },
-  { value: 2, label: "低" },
-  { value: 3, label: "中" },
-  { value: 4, label: "高" }
-];
-
-const topOptions = [
-  { value: 1, label: "未置顶" },
-  { value: 2, label: "置顶" }
-];
 
 const currentView = computed(() => {
   const timeRule = todoStore.filter.timeRule;
@@ -252,99 +228,11 @@ const loadTodoList = async () => {
 };
 
 const handleAddClick = () => {
-  dialogVisible.value = true;
-  todoForm.value = {
-    title: "",
-    content: "",
-    categoryId: undefined,
-    priority: undefined,
-    startTime: "",
-    endTime: "",
-    isTop: 1,
-    tagIdList: []
-  };
-  loadCategories();
-  loadTags();
-};
-
-const loadCategories = async () => {
-  try {
-    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
-    if (userInfo?.id) {
-      const systemResponse = await getCategoryList(0);
-      const userResponse = await getCategoryList(userInfo.id);
-      
-      const systemCategories = systemResponse.code === 200 ? systemResponse.data : [];
-      const userCategories = userResponse.code === 200 ? userResponse.data : [];
-      
-      const allCategories = [
-        ...systemCategories.map(cat => ({ value: cat.id, label: cat.name })),
-        ...userCategories.map(cat => ({ value: cat.id, label: cat.name }))
-      ];
-      
-      categories.value = allCategories;
-    }
-  } catch (error) {
-    console.error("加载分类列表失败:", error);
-  }
-};
-
-const loadTags = async () => {
-  try {
-    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
-    if (userInfo?.id) {
-      const systemResponse = await getTagList(0);
-      const userResponse = await getTagList(userInfo.id);
-      
-      const systemTags = systemResponse.code === 200 ? systemResponse.data : [];
-      const userTags = userResponse.code === 200 ? userResponse.data : [];
-      
-      const allTags = [
-        ...systemTags.map(tag => ({ value: tag.id, label: tag.name })),
-        ...userTags.map(tag => ({ value: tag.id, label: tag.name }))
-      ];
-      
-      tags.value = allTags;
-    }
-  } catch (error) {
-    console.error("加载标签列表失败:", error);
-  }
-};
-
-const handleConfirm = async () => {
-  try {
-    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
-    if (userInfo?.id) {
-      const response = await insertTodo({
-        userId: userInfo.id,
-        title: todoForm.value.title,
-        content: todoForm.value.content,
-        categoryId: todoForm.value.categoryId,
-        priority: todoForm.value.priority,
-        startTime: todoForm.value.startTime,
-        endTime: todoForm.value.endTime,
-        isTop: todoForm.value.isTop,
-        tagIdList: todoForm.value.tagIdList
-      });
-      
-      if (response.code === 200) {
-        dialogVisible.value = false;
-        await loadTodoList();
-      }
-    }
-  } catch (error) {
-    console.error("添加待办失败:", error);
-  }
-};
-
-const handleCancel = () => {
-  dialogVisible.value = false;
+  router.push("/todo/add");
 };
 
 onMounted(() => {
   loadTodoList();
-  loadCategories();
-  loadTags();
 });
 </script>
 
@@ -373,88 +261,7 @@ onMounted(() => {
     <div class="footer-wrapper">
       <!-- 这里需要一个回到顶部的按钮 -->
     </div>
-
-    <!-- 添加待办事项弹窗 -->
-    <el-dialog v-model="dialogVisible" title="添加待办事项" width="600px">
-      <el-form :model="todoForm" label-width="100px">
-        <el-form-item label="标题" required>
-          <el-input v-model="todoForm.title" placeholder="请输入标题" />
-        </el-form-item>
-        <el-form-item label="内容">
-          <el-input v-model="todoForm.content" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        
-        <el-collapse>
-          <el-collapse-item title="更多选项" name="more">
-            <el-form-item label="类别">
-              <el-select v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
-                <el-option
-                  v-for="item in categories"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="优先级">
-              <el-select v-model="todoForm.priority" placeholder="请选择优先级" clearable>
-                <el-option
-                  v-for="item in priorities"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="开始时间">
-              <el-date-picker
-                v-model="todoForm.startTime"
-                type="datetime"
-                placeholder="请选择开始时间"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DD HH:mm:ss"
-              />
-            </el-form-item>
-            <el-form-item label="结束时间">
-              <el-date-picker
-                v-model="todoForm.endTime"
-                type="datetime"
-                placeholder="请选择结束时间"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DD HH:mm:ss"
-              />
-            </el-form-item>
-            <el-form-item label="是否置顶">
-              <el-select v-model="todoForm.isTop" placeholder="请选择是否置顶">
-                <el-option
-                  v-for="item in topOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="标签">
-              <el-select v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
-                <el-option
-                  v-for="item in tags"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-collapse-item>
-        </el-collapse>
-      </el-form>
-      <template #footer>
-        <el-button @click="handleCancel">取消</el-button>
-        <el-button type="primary" @click="handleConfirm">确认</el-button>
-      </template>
-    </el-dialog>
-
   </div>
-
 </template>
 
 <style scoped lang="scss">

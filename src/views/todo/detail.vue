@@ -54,6 +54,18 @@ const isTopText = computed(() => {
   return todoDetails.value.isTop === "1" ? "是" : "否";
 });
 
+const formatDateTime = (dateTime: string) => {
+  if (!dateTime) return "";
+  const date = new Date(dateTime);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
 watch(
   () => route.params.id,
   (newId) => {
@@ -92,10 +104,10 @@ watch(
             <el-input :value="statusText" readonly />
           </el-form-item>
           <el-form-item label="开始时间">
-            <el-input v-model="todoDetails.startTime" readonly />
+            <el-input :value="formatDateTime(todoDetails.startTime)" readonly />
           </el-form-item>
           <el-form-item label="结束时间">
-            <el-input v-model="todoDetails.endTime" readonly />
+            <el-input :value="formatDateTime(todoDetails.endTime)" readonly />
           </el-form-item>
           <el-form-item label="是否置顶">
             <el-input :value="isTopText" readonly />
