@@ -1,55 +1,95 @@
-<script lang="ts" setup>
-import { ref } from "vue";
-import TodoList from "@/components/TodoList.vue"; 
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { getTodoList } from "@/api/todo";
+import TodoList from "@/components/TodoList.vue";
 
 interface Activity {
+  id: number;
   title: string;
   content: string;
   timestamp: string;
-  isCompleted: boolean;
+  status: number;
   color?: string;
 }
-const { lastBuildTime } = __APP_INFO__;
-const activities = ref<Activity[]>([
-  {
-    title: "支持默认颜色测试测试测试",
-    content: "支持默认颜色测试测试测试",
-    timestamp: lastBuildTime,
-    isCompleted: false
-  },
-  {
-    title: "支持自定义颜色",
-    content: "支持自定义颜色",
-    timestamp: lastBuildTime,
-    isCompleted: false,
-    color: "#F56C6C"
-  },
-  {
-    title: "支持自定义颜色",
-    content: "支持自定义颜色",
-    timestamp: lastBuildTime,
-    isCompleted: false,
-    color: "#66CCFF"
+
+defineOptions({
+  name: "SingleCategory"
+});
+
+const route = useRoute();
+const router = useRouter();
+
+const originalTodoList = ref<any[]>([]);
+const loading = ref(false);
+
+const categoryId = computed(() => {
+  return (route.meta?.categoryId as number) || 0;
+});
+
+const activities = computed(() => {
+  return originalTodoList.value.map(todo => ({
+    id: todo.id,
+    title: todo.title,
+    content: todo.content,
+    timestamp: todo.startTime || todo.createTime || "",
+    status: todo.status,
+    color: undefined
+  }));
+});
+
+const loadTodoList = async () => {
+  if (!categoryId.value) {
+    console.warn("类别 ID 无效，跳过加载待办列表");
+    return;
   }
-]);
+
+  try {
+    loading.value = true;
+    const response = await getTodoList({
+      categoryId: categoryId.value
+    });
+    originalTodoList.value = response.data || [];
+  } catch (error) {
+    console.error("加载待办列表失败:", error);
+  } finally {
+    loading.value = false;
+  }
+};
 
 function handleTodoClick(activity: Activity) {
   console.log("待办项被点击:", activity);
+  
+  const todo = originalTodoList.value.find(t => t.id === activity.id);
+  if (todo) {
+    todo.status = activity.status;
+  }
 }
 
 function handleTextClick(activity: Activity) {
   console.log("文字被点击:", activity);
+  router.push(`/todo/detail/${activity.id}`);
 }
+
+watch(
+  () => route.meta?.categoryId,
+  (newCategoryId) => {
+    const id = Number(newCategoryId);
+    if (id && !isNaN(id)) {
+      loadTodoList();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
-  <div>
-    <TodoList
-      :activities="activities"
+  <div v-loading="loading">
+    <TodoList 
+      :activities="activities" 
+      :originalTodoList="originalTodoList"
       @click="handleTodoClick"
       @textClick="handleTextClick"
     />
   </div>
 </template>
-
-<style lang="scss" scoped></style>

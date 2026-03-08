@@ -33,12 +33,13 @@ export default {
 
 export function generateCategoryRoutes(categories: Category[]): RouteRecordRaw[] {
   return categories.map(category => ({
-    path: `/category/${category.name}/index`,
+    path: `/category/${category.id}/index`,
     name: category.name.charAt(0).toUpperCase() + category.name.slice(1),
     component: () => import("@/views/category/index.vue"),
     meta: {
       icon: MaterialSymbolsLightDocsOutlineRounded,
-      title: category.title
+      title: category.title,
+      categoryId: category.id
     }
   }));
 }
