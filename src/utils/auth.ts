@@ -77,7 +77,8 @@ export function setTokenFromLogin(data: any) {
   
   const dataWithRoles = {
     ...data,
-    roles: [role]
+    roles: [role],
+    avatar: data.avatar ? data.avatar.split('?')[0] : ''
   };
   
   // 设置token到cookie，过期时间为1天（86400秒）
