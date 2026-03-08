@@ -4,6 +4,8 @@ import SearchCard from "@/components/SearchCard.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
 import { useUserStoreHook } from "@/store/modules/user";
 import { getTodoList, insertTodo } from "@/api/todo";
+import { getCategoryList } from "@/api/category";
+import { getTagList } from "@/api/tag";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import ListView from "@/views/todo/components/ListView.vue";
@@ -22,6 +24,16 @@ interface Activity {
   timestamp: string;
   isCompleted: boolean;
   color?: string;
+}
+
+interface CategoryOption {
+  value: number;
+  label: string;
+}
+
+interface TagOption {
+  value: number;
+  label: string;
 }
 
 interface WeekData {
@@ -55,13 +67,8 @@ const todoForm = ref({
   tagIdList: [] as number[]
 });
 
-const categories = [
-  { value: 1, label: "学习" },
-  { value: 2, label: "工作" },
-  { value: 3, label: "生活" },
-  { value: 4, label: "娱乐" },
-  { value: 5, label: "健康" }
-];
+const categories = ref<CategoryOption[]>([]);
+const tags = ref<TagOption[]>([]);
 
 const priorities = [
   { value: 1, label: "非常低" },
@@ -197,6 +204,52 @@ const handleAddClick = () => {
     isTop: 1,
     tagIdList: []
   };
+  loadCategories();
+  loadTags();
+};
+
+const loadCategories = async () => {
+  try {
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (userInfo?.id) {
+      const systemResponse = await getCategoryList(0);
+      const userResponse = await getCategoryList(userInfo.id);
+      
+      const systemCategories = systemResponse.code === 200 ? systemResponse.data : [];
+      const userCategories = userResponse.code === 200 ? userResponse.data : [];
+      
+      const allCategories = [
+        ...systemCategories.map(cat => ({ value: cat.id, label: cat.name })),
+        ...userCategories.map(cat => ({ value: cat.id, label: cat.name }))
+      ];
+      
+      categories.value = allCategories;
+    }
+  } catch (error) {
+    console.error("加载分类列表失败:", error);
+  }
+};
+
+const loadTags = async () => {
+  try {
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (userInfo?.id) {
+      const systemResponse = await getTagList(0);
+      const userResponse = await getTagList(userInfo.id);
+      
+      const systemTags = systemResponse.code === 200 ? systemResponse.data : [];
+      const userTags = userResponse.code === 200 ? userResponse.data : [];
+      
+      const allTags = [
+        ...systemTags.map(tag => ({ value: tag.id, label: tag.name })),
+        ...userTags.map(tag => ({ value: tag.id, label: tag.name }))
+      ];
+      
+      tags.value = allTags;
+    }
+  } catch (error) {
+    console.error("加载标签列表失败:", error);
+  }
 };
 
 const handleConfirm = async () => {
@@ -231,6 +284,8 @@ const handleCancel = () => {
 
 onMounted(() => {
   loadTodoList();
+  loadCategories();
+  loadTags();
 });
 </script>
 
@@ -323,7 +378,7 @@ onMounted(() => {
             <el-form-item label="标签">
               <el-select v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
                 <el-option
-                  v-for="item in categories"
+                  v-for="item in tags"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"

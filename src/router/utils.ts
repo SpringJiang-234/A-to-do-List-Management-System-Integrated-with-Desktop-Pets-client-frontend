@@ -28,9 +28,9 @@ const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
-import { getMockCategories } from "@/api/category";
+import { getCategoryList } from "@/api/category";
 import { generateCategoryRoutes } from "@/router/modules/category";
-import { getMockTags } from "@/api/tag";
+import { getTagList } from "@/api/tag";
 import { generateTagRoutes } from "@/router/modules/tag";
 
 function handRank(routeInfo: any) {
@@ -237,7 +237,26 @@ function initRouter() {
 
 async function loadCategoryRoutes() {
   try {
-    const { data: categories } = await getMockCategories();
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (!userInfo?.id) {
+      return;
+    }
+
+    const systemResponse = await getCategoryList(0);
+    const userResponse = await getCategoryList(userInfo.id);
+
+    const systemCategories = systemResponse.code === 200 ? systemResponse.data : [];
+    const userCategories = userResponse.code === 200 ? userResponse.data : [];
+
+    const allCategories = [...systemCategories, ...userCategories];
+
+    const categories = allCategories.map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      path: `/${cat.name}`,
+      title: cat.name
+    }));
+
     const categoryRoutes = generateCategoryRoutes(categories);
 
     if (categoryRoutes.length > 0) {
@@ -281,7 +300,26 @@ async function loadCategoryRoutes() {
 
 async function loadTagRoutes() {
   try {
-    const { data: tags } = await getMockTags();
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (!userInfo?.id) {
+      return;
+    }
+
+    const systemResponse = await getTagList(0);
+    const userResponse = await getTagList(userInfo.id);
+
+    const systemTags = systemResponse.code === 200 ? systemResponse.data : [];
+    const userTags = userResponse.code === 200 ? userResponse.data : [];
+
+    const allTags = [...systemTags, ...userTags];
+
+    const tags = allTags.map(tag => ({
+      id: tag.id,
+      name: tag.name,
+      path: `/${tag.name}`,
+      title: tag.name
+    }));
+
     const tagRoutes = generateTagRoutes(tags);
 
     if (tagRoutes.length > 0) {

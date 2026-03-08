@@ -1,59 +1,23 @@
 import { http } from "@/utils/http";
 
-type Category = {
+type CategoryVO = {
   id: number;
+  userId: number;
   name: string;
-  path: string;
-  title: string;
+  isDefault: string;
+  sortOrder: number;
 };
 
-type Result = {
-  success: boolean;
-  data: Category[];
+type Result<T> = {
+  code: number;
+  msg: string;
+  data: T;
 };
 
-export const getCategories = () => {
-  return http.request<Result>("get", "/api/categories");
+type CategoryQuery = {
+  userId: number;
 };
 
-export const getMockCategories = (): Promise<Result> => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        data: [
-          {
-            id: 1,
-            name: "fighting",
-            path: "/fighting",
-            title: "加油"
-          },
-          {
-            id: 2,
-            name: "study",
-            path: "/study",
-            title: "学习"
-          },
-          {
-            id: 3,
-            name: "work",
-            path: "/work",
-            title: "工作"
-          },
-          {
-            id: 4,
-            name: "exercise",
-            path: "/exercise",
-            title: "运动"
-          },
-          {
-            id: 5,
-            name: "reading",
-            path: "/reading",
-            title: "阅读"
-          }
-        ]
-      });
-    }, 500);
-  });
+export const getCategoryList = (userId: number) => {
+  return http.request<Result<CategoryVO[]>>("post", "/api/category/list", { data: { userId } });
 };

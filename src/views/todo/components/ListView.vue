@@ -3,7 +3,7 @@
 
 <template>
 <div>
-    <el-card>
+    <el-card shadow="never">
         <template #header>
             <span>待办列表</span>
         </template>
