@@ -75,7 +75,7 @@ type Result<T> = {
 };
 
 export const getTodoList = (params: ClientTodoQuery) => {
-  return http.request<Result<PageBean<ClientTodoVO>>>("post", "/api/todo/list", { data: params });
+  return http.request<Result<ClientTodoVO[]>>("post", "/api/todo/list", { data: params });
 };
 
 export const getTodoDetails = (id: number) => {

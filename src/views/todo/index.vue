@@ -170,12 +170,10 @@ const loadTodoList = async () => {
     const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
     if (userInfo?.id) {
       const response = await getTodoList({
-        pageNum: 1,
-        pageSize: 100,
         userId: userInfo.id
       });
       if (response.code === 200) {
-        todoList.value = response.data.records.map(record => ({
+        todoList.value = response.data.map(record => ({
           id: record.id,
           title: record.title,
           content: record.content,
