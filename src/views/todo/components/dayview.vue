@@ -33,6 +33,18 @@ const currentDate = computed(() => {
   return `${year} 年 ${month} 月 ${day} 日`;
 });
 
+const formatTimestamp = (timestamp: string) => {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const selectedActivityIndex = ref<number | null>(null);
@@ -110,7 +122,7 @@ function handleMenuAction(action: string) {
         <el-timeline-item
           v-for="(activity, index) in activities"
           :key="index"
-          :timestamp="activity.timestamp"
+          :timestamp="formatTimestamp(activity.timestamp)"
           :hollow="!activity.isCompleted"
           :color="activity.color"
           @click="handleClick(activity)"
