@@ -44,7 +44,7 @@ const getPriorityColor = (priority?: number) => {
       return "#409EFF";
     case 1:
     default:
-      return "#67C23A";
+      return "var(--el-color-info-light-7)";
   }
 };
 
