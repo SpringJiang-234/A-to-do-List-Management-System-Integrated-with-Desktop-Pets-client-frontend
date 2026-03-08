@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { abandonTodo, completeTodo, cancelCompleteTodo } from "@/api/todo";
 
@@ -33,6 +34,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const router = useRouter();
 
 const value = ref("");
 
@@ -141,11 +144,7 @@ const currentWeekData = computed(() => {
 });
 
 function handleClickTodo(activity: Activity) {
-  const todo = props.originalTodoList.find(t => t.id === activity.id);
-  if (todo) {
-    todo.status = activity.status;
-  }
-  message(`点击了待办：${activity.title}，ID：${activity.id}`);
+  router.push(`/todo/detail/${activity.id}`);
 }
 
 const contextMenuVisible = ref(false);

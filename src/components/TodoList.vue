@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
-import { completeTodo, cancelCompleteTodo, abandonTodo, getTodoDetails } from "@/api/todo";
+import { completeTodo, cancelCompleteTodo, abandonTodo } from "@/api/todo";
 
 interface Activity {
   id: number;
@@ -24,13 +25,12 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const router = useRouter();
+
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const currentIndex = ref(-1);
 const selectedActivity = ref<Activity | null>(null);
-
-const detailDialogVisible = ref(false);
-const todoDetails = ref<any>(null);
 
 async function handleClick(activity: Activity) {
   try {
@@ -50,15 +50,8 @@ async function handleClick(activity: Activity) {
   }
 }
 
-async function handleTextClick(activity: Activity) {
-  try {
-    const response = await getTodoDetails(activity.id);
-    todoDetails.value = response.data;
-    detailDialogVisible.value = true;
-  } catch (error) {
-    console.error("获取待办详情失败:", error);
-    message("获取待办详情失败，请重试", { type: "error" });
-  }
+function handleTextClick(activity: Activity) {
+  router.push(`/todo/detail/${activity.id}`);
   emit("textClick", activity);
 }
 
@@ -167,48 +160,6 @@ async function handleMenuAction(action: string) {
         {{ activity.content }}
       </div>
     </div>
-
-    <!-- 待办详情弹窗 -->
-    <el-dialog v-model="detailDialogVisible" title="待办详情" width="600px">
-      <el-form v-if="todoDetails" label-width="100px">
-        <el-form-item label="标题">
-          <el-input v-model="todoDetails.title" readonly />
-        </el-form-item>
-        <el-form-item label="内容">
-          <el-input v-model="todoDetails.content" type="textarea" readonly />
-        </el-form-item>
-        <el-form-item label="类别">
-          <el-input v-model="todoDetails.categoryName" readonly />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-input 
-            :value="todoDetails.status === '1' ? '未完成' : todoDetails.status === '2' ? '已完成' : '已放弃'" 
-            readonly 
-          />
-        </el-form-item>
-        <el-form-item label="开始时间">
-          <el-input v-model="todoDetails.startTime" readonly />
-        </el-form-item>
-        <el-form-item label="结束时间">
-          <el-input v-model="todoDetails.endTime" readonly />
-        </el-form-item>
-        <el-form-item label="是否置顶">
-          <el-input :value="todoDetails.isTop === '1' ? '是' : '否'" readonly />
-        </el-form-item>
-        <el-form-item label="标签" v-if="todoDetails.tags && todoDetails.tags.length > 0">
-          <div class="tags-container">
-            <el-tag 
-              v-for="tag in todoDetails.tags" 
-              :key="tag.id"
-              :color="tag.color"
-              class="tag-item"
-            >
-              {{ tag.name }}
-            </el-tag>
-          </div>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
   </div>
 </template>
 
@@ -281,15 +232,5 @@ async function handleMenuAction(action: string) {
   color: var(--el-text-color-regular);
   padding-left: 20px;
   cursor: pointer;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tag-item {
-  margin: 0;
 }
 </style>

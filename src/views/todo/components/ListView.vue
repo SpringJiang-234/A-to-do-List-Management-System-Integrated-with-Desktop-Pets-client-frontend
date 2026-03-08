@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import TodoList from "@/components/TodoList.vue";
 
 interface Activity {
@@ -16,6 +17,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const router = useRouter();
 
 const activities = computed(() => {
     return props.originalTodoList.map(todo => ({
@@ -38,7 +41,7 @@ function handleTodoClick(activity: Activity) {
 }
 
 function handleTextClick(activity: Activity) {
-    console.log("文字被点击:", activity);
+    router.push(`/todo/detail/${activity.id}`);
 }
 </script>
 

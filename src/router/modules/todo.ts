@@ -16,6 +16,14 @@ export default {
       meta: {
         title: "待办"
       }
+    },
+    {
+      path: "/todo/detail/:id?",
+      name: "TodoDetail",
+      component: () => import("@/views/todo/detail.vue"),
+      meta: {
+        title: "待办详情"
+      }
     }
   ]
 };

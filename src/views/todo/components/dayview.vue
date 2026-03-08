@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { abandonTodo, completeTodo, cancelCompleteTodo } from "@/api/todo";
 
@@ -23,6 +24,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const router = useRouter();
 
 const value = ref("");
 const { lastBuildTime } = __APP_INFO__;
@@ -99,7 +102,7 @@ async function handleClick(activity: Activity) {
 
 /** 点击文字内容事件 */
 function handleTextClick(activity: Activity) {
-  message(`点击了文字：${activity.content}`);
+  router.push(`/todo/detail/${activity.id}`);
 }
 
 /** 右键点击事件 */

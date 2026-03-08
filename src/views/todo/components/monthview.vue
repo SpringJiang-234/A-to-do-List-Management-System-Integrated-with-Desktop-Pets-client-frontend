@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 import type { CalendarDateType, CalendarInstance } from "element-plus";
 import { message } from "@/utils/message";
@@ -26,6 +27,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const router = useRouter();
+
 const calendar = ref<CalendarInstance>();
 const selectDate = (val: CalendarDateType) => {
   if (!calendar.value) return;
@@ -33,7 +36,7 @@ const selectDate = (val: CalendarDateType) => {
 };
 
 const handleClickTodo = (todo: Activity) => {
-  message(`点击了待办：${todo.title}，ID：${todo.id}`);
+  router.push(`/todo/detail/${todo.id}`);
 };
 
 const contextMenuVisible = ref(false);
