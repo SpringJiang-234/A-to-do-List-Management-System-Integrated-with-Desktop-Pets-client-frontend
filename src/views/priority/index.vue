@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { message } from "@/utils/message";
 import TodoList from "@/components/TodoList.vue";
+import { getTodoList, completeTodo, cancelCompleteTodo } from "@/api/todo";
+import { userKey, type DataInfo } from "@/utils/auth";
+import { storageLocal } from "@pureadmin/utils";
 import FluentAlertUrgent16Filled from "~icons/fluent/alert-urgent-16-filled?width=16px&height=16px";
 import FluentImportant12Filled from "~icons/fluent/important-12-filled?width=16px&height=16px";
 
@@ -10,89 +13,102 @@ defineOptions({
 });
 
 interface Activity {
+  id: number;
   title: string;
   content: string;
   timestamp: string;
-  isCompleted: boolean;
+  startTime?: string;
+  endTime?: string;
+  status: number;
+  priority?: number;
   color?: string;
 }
 
-const highPriorityActivities = ref<Activity[]>([
-  // 颜色和标签有关，和优先级无关
-  {
-    title: "完成项目报告",
-    content: "需要在今天下班前提交",
-    timestamp: "10:00",
-    isCompleted: false,
-    color: "#F56C6C"
-  },
-  {
-    title: "紧急会议",
-    content: "下午3点参加项目评审",
-    timestamp: "15:00",
-    isCompleted: false,
-    color: "#F56C6C"
-  }
-]);
+const highPriorityActivities = ref<Activity[]>([]);
+const mediumPriorityActivities = ref<Activity[]>([]);
+const lowPriorityActivities = ref<Activity[]>([]);
+const nonePriorityActivities = ref<Activity[]>([]);
+const loading = ref(false);
 
-const mediumPriorityActivities = ref<Activity[]>([
-  {
-    title: "代码审查",
-    content: "审查新功能的代码",
-    timestamp: "09:00",
-    isCompleted: false,
-    color: "#E6A23C"
-  },
-  {
-    title: "文档编写",
-    content: "更新API文档",
-    timestamp: "14:00",
-    isCompleted: true,
-    color: "#E6A23C"
-  }
-]);
+const loadTodoListByPriority = async (priority: number) => {
+  try {
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (!userInfo?.id) {
+      console.warn("用户信息不存在，跳过加载待办列表");
+      return [];
+    }
 
-const lowPriorityActivities = ref<Activity[]>([
-  {
-    title: "客户咨询",
-    content: "回复客户邮件",
-    timestamp: "11:00",
-    isCompleted: false,
-    color: "#409EFF"
-  },
-  {
-    title: "数据分析",
-    content: "分析上周数据",
-    timestamp: "16:00",
-    isCompleted: false,
-    color: "#409EFF"
-  }
-]);
+    const response = await getTodoList({
+      userId: userInfo.id,
+      priority: priority
+    });
 
-const nonePriorityActivities = ref<Activity[]>([
-  {
-    title: "学习新技术",
-    content: "学习Vue3新特性",
-    timestamp: "13:00",
-    isCompleted: true,
-    color: "#67C23A"
-  },
-  {
-    title: "整理文件",
-    content: "整理项目文档",
-    timestamp: "17:00",
-    isCompleted: false,
-    color: "#67C23A"
+    if (response.code === 200) {
+      return response.data.map(todo => ({
+        id: todo.id,
+        title: todo.title,
+        content: todo.content,
+        timestamp: todo.startTime || "",
+        startTime: todo.startTime,
+        endTime: todo.endTime,
+        status: todo.status,
+        priority: todo.priority
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error(`加载优先级 ${priority} 的待办失败:`, error);
+    return [];
   }
-]);
+};
 
-function handleClick(activity: Activity) {
-  message(`点击了待办：${activity.content}`);
+const loadAllPriorityTodos = async () => {
+  loading.value = true;
+  try {
+    const [high, medium, low, none] = await Promise.all([
+      loadTodoListByPriority(4),
+      loadTodoListByPriority(3),
+      loadTodoListByPriority(2),
+      loadTodoListByPriority(1)
+    ]);
+
+    highPriorityActivities.value = high;
+    mediumPriorityActivities.value = medium;
+    lowPriorityActivities.value = low;
+    nonePriorityActivities.value = none;
+  } catch (error) {
+    console.error("加载待办列表失败:", error);
+    message("加载待办列表失败", { type: "error" });
+  } finally {
+    loading.value = false;
+  }
+};
+
+async function handleClick(activity: Activity) {
+  try {
+    if (activity.status === 2) {
+      await cancelCompleteTodo(activity.id);
+      activity.status = 1;
+      message("取消完成待办", { type: "success" });
+    } else {
+      await completeTodo(activity.id);
+      activity.status = 2;
+      message("完成待办", { type: "success" });
+    }
+    await loadAllPriorityTodos();
+  } catch (error) {
+    console.error("更新待办状态失败:", error);
+    message("更新失败，请重试", { type: "error" });
+  }
 }
 
 function handleTextClick(activity: Activity) {
   message(`点击了文字：${activity.content}`);
 }
+
+onMounted(() => {
+  loadAllPriorityTodos();
+});
 </script>
 
 <template>

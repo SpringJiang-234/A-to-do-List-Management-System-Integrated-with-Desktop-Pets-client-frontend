@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
+import dayjs from "dayjs";
 
 defineOptions({
   name: "DayView"
@@ -13,6 +14,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
+  startTime?: string;
+  endTime?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -51,6 +54,8 @@ const currentDayTodos = computed(() => {
         title: todo.title,
         content: todo.content,
         timestamp: dateKey,
+        startTime: todo.startTime,
+        endTime: todo.endTime,
         status: todo.status,
         priority: todo.priority
       };
@@ -67,16 +72,18 @@ const currentDate = computed(() => {
   return `${year} 年 ${month} 月 ${day} 日`;
 });
 
-const formatTimestamp = (timestamp: string) => {
+const formatTimestamp = (timestamp: string, startTime?: string, endTime?: string) => {
   if (!timestamp) return "";
-  const date = new Date(timestamp);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  
+  const formatTime = (time: string) => {
+    return dayjs(time).format("YYYY-MM-DD HH:mm:ss");
+  };
+  
+  if (startTime && endTime && startTime !== endTime) {
+    return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+  }
+  
+  return formatTime(timestamp);
 };
 
 const contextMenuVisible = ref(false);
@@ -201,7 +208,7 @@ async function handleMenuAction(action: string) {
         <el-timeline-item
           v-for="(activity, index) in currentDayTodos"
           :key="index"
-          :timestamp="formatTimestamp(activity.timestamp)"
+          :timestamp="formatTimestamp(activity.timestamp, activity.startTime, activity.endTime)"
           :hollow="activity.status !== 2"
           :color="getPriorityColor(activity.priority)"
           @click="handleClick(activity)"

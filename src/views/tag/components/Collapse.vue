@@ -12,6 +12,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
+  startTime?: string;
+  endTime?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -82,6 +84,8 @@ const loadTagTodos = async (tagId: number, tagName: string) => {
       title: todo.title,
       content: todo.content,
       timestamp: todo.startTime || "",
+      startTime: todo.startTime,
+      endTime: todo.endTime,
       status: todo.status,
       priority: todo.priority,
       color: undefined

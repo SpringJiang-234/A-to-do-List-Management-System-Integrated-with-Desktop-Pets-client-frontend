@@ -25,6 +25,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
+  startTime?: string;
+  endTime?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -212,6 +214,8 @@ const loadTodoList = async () => {
                 title: todo.title,
                 content: todo.content,
                 timestamp: new Date(dateKey).toISOString(),
+                startTime: todo.startTime,
+                endTime: todo.endTime,
                 status: todo.status,
                 priority: todo.priority
               });

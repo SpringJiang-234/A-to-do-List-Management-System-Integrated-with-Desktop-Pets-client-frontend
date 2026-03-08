@@ -8,6 +8,8 @@ interface Activity {
     title: string;
     content: string;
     timestamp: string;
+    startTime?: string;
+    endTime?: string;
     status: number;
     priority?: number;
     color?: string;
@@ -30,6 +32,8 @@ const activities = computed(() => {
         title: todo.title,
         content: todo.content,
         timestamp: todo.startTime || todo.createTime || "",
+        startTime: todo.startTime,
+        endTime: todo.endTime,
         status: todo.status,
         priority: todo.priority,
         color: undefined

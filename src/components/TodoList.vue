@@ -3,12 +3,15 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { completeTodo, cancelCompleteTodo, abandonTodo, deleteTodo } from "@/api/todo";
+import dayjs from "dayjs";
 
 interface Activity {
   id: number;
   title: string;
   content: string;
   timestamp: string;
+  startTime?: string;
+  endTime?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -46,6 +49,20 @@ const getPriorityColor = (priority?: number) => {
     default:
       return "var(--el-color-info-light-7)";
   }
+};
+
+const formatTimestamp = (timestamp: string, startTime?: string, endTime?: string) => {
+  if (!timestamp) return "";
+  
+  const formatTime = (time: string) => {
+    return dayjs(time).format("YYYY-MM-DD HH:mm:ss");
+  };
+  
+  if (startTime && endTime && startTime !== endTime) {
+    return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+  }
+  
+  return formatTime(timestamp);
 };
 
 async function handleClick(activity: Activity) {
@@ -174,7 +191,7 @@ async function handleMenuAction(action: string) {
         >
           {{ activity.title }}
         </span>
-        <span class="todo-time">{{ activity.timestamp }}</span>
+        <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startTime, activity.endTime) }}</span>
       </div>
       <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">
         {{ activity.content }}
