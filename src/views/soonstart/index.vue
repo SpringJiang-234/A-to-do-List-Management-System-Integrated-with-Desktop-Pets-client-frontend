@@ -192,7 +192,7 @@ const options = [
     <!-- 单选待办 -->
     <el-card shadow="never">
       <template #header>
-        选择要计时的待办
+        第一步：选择要计时的待办
       </template>
       <el-radio-group v-model="todoId">
         <el-radio 
@@ -208,7 +208,7 @@ const options = [
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <span class="font-medium">选择计时方式</span>
+            <span class="font-medium">第二步：选择计时方式并开始</span>
           </div>
         </div>
       </template>
@@ -216,15 +216,14 @@ const options = [
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <div class="time-pickers">
-        <!-- 如果是正计时，只需要按钮开始 -->
+        <!-- 如果是正计时，只需要显示提示 -->
         <div v-if="valueType === '正计时'">
-          <el-button type="primary" @click="handleConfirm">开始</el-button>
+          <span class="font-small">正计时模式，点击开始即可开始计时</span>
         </div>
 
         <div v-if="valueType === '倒计时'" class="time-picker-wrapper">
           <span class="font-small">倒计时时长：</span>
           <el-time-picker v-model="timeValue1" placeholder="选择时长" />
-          <el-button type="primary" @click="handleConfirm">开始</el-button>
         </div>
 
         <div v-if="valueType === '番茄钟'" class="time-pickers-wrapper">
@@ -234,8 +233,19 @@ const options = [
           <el-time-picker v-model="timeValue3" placeholder="休息时长" />
           <div class="font-small">循环次数：</div>
           <el-input-number v-model="timeValue4" placeholder="循环次数" />
-          <el-button type="primary" @click="handleConfirm">开始</el-button>
         </div>
+      </div>
+    </el-card>
+    <el-card shadow="never">
+      <template #header>
+        <div class="card-header">
+          <div class="header-content">
+            <span class="font-medium">第三步：立即开始</span>
+          </div>
+        </div>
+      </template>
+      <div class="start-button-container">
+        <el-button type="primary" size="large" @click="handleConfirm">开始</el-button>
       </div>
     </el-card>
   </div>
@@ -289,5 +299,10 @@ const options = [
   font-size: 14px;
   display: inline-flex;
   align-items: center;
+}
+
+.start-button-container {
+  display: flex;
+  padding: 20px 0;
 }
 </style>
