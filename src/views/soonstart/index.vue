@@ -52,6 +52,18 @@ const loadSearchResults = async () => {
     console.log('API 响应:', data);
     if (data.code === 200) {
       searchResults.value = data.data || [];
+      
+      // 过滤连续任务
+      if (todoStore.filter.isContinuous && todoStore.filter.isContinuous.length > 0 && todoStore.filter.isContinuous.length < 2) {
+        const isContinuousTask = todoStore.filter.isContinuous.includes("1");
+        searchResults.value = searchResults.value.filter(todo => {
+          const startTime = todo.startTime ? new Date(todo.startTime).getTime() : 0;
+          const endTime = todo.endTime ? new Date(todo.endTime).getTime() : 0;
+          const isContinuous = startTime !== endTime;
+          return isContinuousTask ? isContinuous : !isContinuous;
+        });
+      }
+      
       console.log('搜索结果:', searchResults.value);
       console.log('searchResults.value.length:', searchResults.value.length);
     } else {

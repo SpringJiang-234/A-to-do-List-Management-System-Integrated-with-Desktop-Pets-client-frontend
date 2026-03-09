@@ -249,6 +249,18 @@ const loadTodoList = async () => {
       const response = await getTodoList(params);
       if (response.code === 200) {
         originalTodoList.value = response.data;
+        
+        // 过滤连续任务
+        if (todoStore.filter.isContinuous && todoStore.filter.isContinuous.length > 0 && todoStore.filter.isContinuous.length < 2) {
+          const isContinuousTask = todoStore.filter.isContinuous.includes("1");
+          originalTodoList.value = originalTodoList.value.filter(todo => {
+            const startTime = todo.startTime ? new Date(todo.startTime).getTime() : 0;
+            const endTime = todo.endTime ? new Date(todo.endTime).getTime() : 0;
+            const isContinuous = startTime !== endTime;
+            return isContinuousTask ? isContinuous : !isContinuous;
+          });
+        }
+        
         console.log("========== 待办映射开始 ==========");
         console.log("原始待办列表:", originalTodoList.value);
         
