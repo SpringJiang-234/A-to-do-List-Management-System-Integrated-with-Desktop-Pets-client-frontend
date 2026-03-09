@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import SearchCard from "@/components/SearchCard.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
@@ -62,6 +62,51 @@ const originalTodoList = ref<any[]>([]);
 const dateTodoMap = ref<Map<string, number[]>>(new Map());
 const todoList = ref<Activity[]>([]);
 const loading = ref(false);
+
+const categories = ref<any[]>([]);
+const tags = ref<any[]>([]);
+const priorities = [
+  {
+    value: "1",
+    label: "不重要不紧急"
+  },
+  {
+    value: "2",
+    label: "不重要但紧急"
+  },
+  {
+    value: "3",
+    label: "重要不紧急"
+  },
+  {
+    value: "4",
+    label: "重要且紧急"
+  }
+];
+const statusOptions = [
+  {
+    value: "0",
+    label: "未开始"
+  },
+  {
+    value: "1",
+    label: "进行中"
+  },
+  {
+    value: "2",
+    label: "已完成"
+  }
+];
+const topOptions = [
+  {
+    value: "1",
+    label: "置顶"
+  },
+  {
+    value: "2",
+    label: "不置顶"
+  }
+];
 
 const currentView = computed(() => {
   const timeRule = todoStore.filter.timeRule;
@@ -150,11 +195,60 @@ const loadTodoList = async () => {
   console.log("========== loadTodoList 被调用 ==========");
   try {
     loading.value = true;
+    
+    dateTodoMap.value.clear();
+    
     const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
     if (userInfo?.id) {
-      const response = await getTodoList({
-        userId: userInfo.id
-      });
+      const params: any = {
+        userId: userInfo.id,
+        pageNum: 1,
+        pageSize: 1000
+      };
+
+      if (todoStore.filter.title) {
+        params.title = todoStore.filter.title;
+      }
+
+      if (todoStore.filter.content) {
+        params.content = todoStore.filter.content;
+      }
+
+      if (todoStore.filter.categories && todoStore.filter.categories.length > 0 && todoStore.filter.categories.length < categories.value.length) {
+        params.categoryId = parseInt(todoStore.filter.categories[0]);
+      }
+
+      if (todoStore.filter.tags && todoStore.filter.tags.length > 0 && todoStore.filter.tags.length < tags.value.length) {
+        params.tagIdList = todoStore.filter.tags.map((tag: string) => parseInt(tag));
+      }
+
+      if (todoStore.filter.priorities && todoStore.filter.priorities.length > 0 && todoStore.filter.priorities.length < priorities.length) {
+        params.priority = parseInt(todoStore.filter.priorities[0]);
+      }
+
+      if (todoStore.filter.time) {
+        params.time = todoStore.filter.time;
+      }
+
+      if (todoStore.filter.startTime) {
+        params.startTime = todoStore.filter.startTime;
+      }
+
+      if (todoStore.filter.endTime) {
+        params.endTime = todoStore.filter.endTime;
+      }
+
+      if (todoStore.filter.status && todoStore.filter.status.length > 0 && todoStore.filter.status.length < statusOptions.length) {
+        params.status = parseInt(todoStore.filter.status[0]);
+      }
+
+      if (todoStore.filter.isTop && todoStore.filter.isTop.length > 0 && todoStore.filter.isTop.length < topOptions.length) {
+        params.isTop = parseInt(todoStore.filter.isTop[0]);
+      }
+
+      console.log("loadTodoList 搜索参数:", params);
+
+      const response = await getTodoList(params);
       if (response.code === 200) {
         originalTodoList.value = response.data;
         console.log("========== 待办映射开始 ==========");
@@ -234,13 +328,53 @@ const loadTodoList = async () => {
   }
 };
 
+const loadCategoriesAndTags = async () => {
+  try {
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (!userInfo?.id) {
+      console.warn("用户信息不存在，跳过加载分类和标签");
+      return;
+    }
+
+    const systemCategoryResponse = await getCategoryList(0);
+    const userCategoryResponse = await getCategoryList(userInfo.id);
+
+    const systemCategories = systemCategoryResponse.code === 200 ? systemCategoryResponse.data : [];
+    const userCategories = userCategoryResponse.code === 200 ? userCategoryResponse.data : [];
+
+    categories.value = [...systemCategories, ...userCategories].map((item: any) => ({
+      value: item.id.toString(),
+      label: item.name
+    }));
+
+    const systemTagResponse = await getTagList(0);
+    const userTagResponse = await getTagList(userInfo.id);
+
+    const systemTags = systemTagResponse.code === 200 ? systemTagResponse.data : [];
+    const userTags = userTagResponse.code === 200 ? userTagResponse.data : [];
+
+    tags.value = [...systemTags, ...userTags].map((item: any) => ({
+      value: item.id.toString(),
+      label: item.name
+    }));
+  } catch (error) {
+    console.error("加载分类和标签失败:", error);
+  }
+};
+
 const handleAddClick = () => {
   router.push("/todo/add");
 };
 
 onMounted(() => {
   loadTodoList();
+  loadCategoriesAndTags();
 });
+
+watch(() => todoStore.filter, () => {
+  console.log("========== filter 变化，重新加载待办列表 ==========");
+  loadTodoList();
+}, { deep: true });
 </script>
 
 <template>

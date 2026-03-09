@@ -6,6 +6,7 @@ import HeroiconsArrowPath from "~icons/heroicons/arrow-path";
 import { useTodoStoreHook } from "@/store/modules/todo";
 import { getCategoryList } from "@/api/category";
 import { getTagList } from "@/api/tag";
+import { getTodoList } from "@/api/todo";
 import { storageLocal } from "@pureadmin/utils";
 import { userKey, type DataInfo } from "@/utils/auth";
 
@@ -189,8 +190,87 @@ const isNonContinuousTask = computed(() => {
   return formInline.isContinuous.includes("2");
 });
 
-const onSubmit = () => {
-  console.log(formInline);
+const onSubmit = async () => {
+  try {
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (!userInfo?.id) {
+      console.warn("用户信息不存在，跳过搜索");
+      return;
+    }
+
+    const params: any = {
+      userId: userInfo.id,
+      pageNum: 1,
+      pageSize: 1000
+    };
+
+    if (formInline.title) {
+      params.title = formInline.title;
+    }
+
+    if (formInline.content) {
+      params.content = formInline.content;
+    }
+
+    if (formInline.categories && formInline.categories.length > 0 && formInline.categories.length < categories.value.length) {
+      params.categoryId = parseInt(formInline.categories[0]);
+    }
+
+    if (formInline.tags && formInline.tags.length > 0 && formInline.tags.length < tags.value.length) {
+      params.tagIdList = formInline.tags.map((tag: string) => parseInt(tag));
+    }
+
+    if (formInline.priorities && formInline.priorities.length > 0 && formInline.priorities.length < priorities.length) {
+      params.priority = parseInt(formInline.priorities[0]);
+    }
+
+    if (formInline.time) {
+      params.time = formInline.time;
+    }
+
+    if (formInline.startTime) {
+      params.startTime = formInline.startTime;
+    }
+
+    if (formInline.endTime) {
+      params.endTime = formInline.endTime;
+    }
+
+    if (formInline.status && formInline.status.length > 0 && formInline.status.length < statusOptions.length) {
+      params.status = parseInt(formInline.status[0]);
+    }
+
+    if (formInline.isTop && formInline.isTop.length > 0 && formInline.isTop.length < topOptions.length) {
+      params.isTop = parseInt(formInline.isTop[0]);
+    }
+
+    console.log("搜索参数:", params);
+
+    const response = await getTodoList(params);
+
+    if (response.code === 200) {
+      todoStore.setFilter({
+        title: formInline.title,
+        content: formInline.content,
+        categories: formInline.categories,
+        tags: formInline.tags,
+        priorities: formInline.priorities,
+        isContinuous: formInline.isContinuous,
+        time: formInline.time,
+        startTime: formInline.startTime,
+        endTime: formInline.endTime,
+        status: formInline.status,
+        isTop: formInline.isTop,
+        timeRule: todoStore.filter.timeRule
+      });
+
+      console.log("搜索结果:", response.data);
+    } else {
+      console.error("搜索失败:", response.msg);
+    }
+  } catch (error) {
+    console.error("搜索出错:", error);
+  }
 };
 </script>
 
