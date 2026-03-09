@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
 import Dialog from "@/components/Dialog.vue";
-import { getUserInfo } from "@/api/user";
-import { onMounted } from "vue";
+import { getUserInfo, updateUser } from "@/api/user";
+import { onMounted, watch } from "vue";
+import { ElMessage } from "element-plus";
 
 defineOptions({
   name: "UserCenter"
@@ -42,6 +43,25 @@ const loadUserInfo = async () => {
     console.error("获取用户信息失败:", error);
   }
 };
+
+watch(editable, async (newValue, oldValue) => {
+  if (oldValue === true && newValue === false) {
+    try {
+      const result = await updateUser({
+        nickname: nickname.value,
+        gender: gender.value ? parseInt(gender.value) : 3,
+        birth: birthday.value
+      });
+      if (result.code === 200) {
+        ElMessage.success(result.msg || "修改成功");
+      } else {
+        ElMessage.error(result.msg || "修改失败");
+      }
+    } catch (error) {
+      ElMessage.error("修改失败，请重试");
+    }
+  }
+});
 
 onMounted(() => {
   loadUserInfo();

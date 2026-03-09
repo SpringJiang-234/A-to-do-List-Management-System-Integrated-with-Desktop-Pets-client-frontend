@@ -23,6 +23,12 @@ export type UserResult = {
   };
 };
 
+export type UpdateUserResult = {
+  code: number;
+  msg: string;
+  data: null;
+};
+
 /** 登录 */
 export const getLogin = (data?: object) => {
   return http.request<UserResult>("post", "/api/security/login", { data });
@@ -36,4 +42,9 @@ export const getLogout = () => {
 /** 获取用户信息 */
 export const getUserInfo = () => {
   return http.request<UserResult>("get", "/api/user/info");
+};
+
+/** 更新用户信息 */
+export const updateUser = (data?: object) => {
+  return http.request<UpdateUserResult>("post", "/api/user/update", { data });
 };
