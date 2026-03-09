@@ -14,7 +14,8 @@ export default {
       name: "Todo",
       component: () => import("@/views/todo/index.vue"),
       meta: {
-        title: "待办"
+        title: "待办",
+        keepAlive: true
       }
     },
     {

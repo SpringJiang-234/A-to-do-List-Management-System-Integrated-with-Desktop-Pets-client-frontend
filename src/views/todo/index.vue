@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onActivated, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import SearchCard from "@/components/SearchCard.vue";
 import { useTodoStoreHook } from "@/store/modules/todo";
@@ -379,6 +379,24 @@ const handleAddClick = () => {
 onMounted(() => {
   loadTodoList();
   loadCategoriesAndTags();
+});
+
+onActivated(() => {
+  todoStore.setFilter({
+    title: "",
+    content: "",
+    categories: [],
+    tags: [],
+    priorities: [],
+    isContinuous: [],
+    time: "",
+    startTime: "",
+    endTime: "",
+    status: [],
+    isTop: [],
+    timeRule: todoStore.filter.timeRule
+  });
+  loadTodoList();
 });
 
 watch(() => todoStore.filter, () => {
