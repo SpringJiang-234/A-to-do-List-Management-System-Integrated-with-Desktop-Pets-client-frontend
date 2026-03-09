@@ -1,9 +1,13 @@
 <script lang="ts" setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, ref, onMounted } from "vue";
 import Select from "@/components/Select.vue";
 import IconamoonSearchLight from "~icons/iconamoon/search-light";
 import HeroiconsArrowPath from "~icons/heroicons/arrow-path";
 import { useTodoStoreHook } from "@/store/modules/todo";
+import { getCategoryList } from "@/api/category";
+import { getTagList } from "@/api/tag";
+import { storageLocal } from "@pureadmin/utils";
+import { userKey, type DataInfo } from "@/utils/auth";
 
 interface Props {
   showTimeViewButton?: boolean;
@@ -14,6 +18,52 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const todoStore = useTodoStoreHook();
+
+const loading = ref(false);
+
+const categories = ref<any[]>([]);
+const tags = ref<any[]>([]);
+
+const loadCategoriesAndTags = async () => {
+  try {
+    loading.value = true;
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (!userInfo?.id) {
+      console.warn("用户信息不存在，跳过加载分类和标签");
+      return;
+    }
+
+    const systemCategoryResponse = await getCategoryList(0);
+    const userCategoryResponse = await getCategoryList(userInfo.id);
+
+    const systemCategories = systemCategoryResponse.code === 200 ? systemCategoryResponse.data : [];
+    const userCategories = userCategoryResponse.code === 200 ? userCategoryResponse.data : [];
+
+    categories.value = [...systemCategories, ...userCategories].map((item: any) => ({
+      value: item.id.toString(),
+      label: item.name
+    }));
+
+    const systemTagResponse = await getTagList(0);
+    const userTagResponse = await getTagList(userInfo.id);
+
+    const systemTags = systemTagResponse.code === 200 ? systemTagResponse.data : [];
+    const userTags = userTagResponse.code === 200 ? userTagResponse.data : [];
+
+    tags.value = [...systemTags, ...userTags].map((item: any) => ({
+      value: item.id.toString(),
+      label: item.name
+    }));
+  } catch (error) {
+    console.error("加载分类和标签失败:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadCategoriesAndTags();
+});
 
 const handleTimeRuleChange = (value: string) => {
   todoStore.setFilter({
@@ -59,52 +109,6 @@ const formInline = reactive({
   status: [],
   isTop: []
 });
-
-const categories = [
-  {
-    value: "1",
-    label: "学习"
-  },
-  {
-    value: "2",
-    label: "工作"
-  },
-  {
-    value: "3",
-    label: "生活"
-  },
-  {
-    value: "4",
-    label: "娱乐"
-  },
-  {
-    value: "5",
-    label: "健康"
-  }
-];
-
-const tags = [
-  {
-    value: "1",
-    label: "重要"
-  },
-  {
-    value: "2",
-    label: "紧急"
-  },
-  {
-    value: "3",
-    label: "待处理"
-  },
-  {
-    value: "4",
-    label: "已完成"
-  },
-  {
-    value: "5",
-    label: "已归档"
-  }
-];
 
 const priorities = [
   {
