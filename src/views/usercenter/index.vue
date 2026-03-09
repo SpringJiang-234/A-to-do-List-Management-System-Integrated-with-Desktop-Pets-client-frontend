@@ -4,10 +4,13 @@ import Dialog from "@/components/Dialog.vue";
 import { getUserInfo, updateUser, uploadAvatar } from "@/api/user";
 import { onMounted, watch, ref } from "vue";
 import { ElMessage } from "element-plus";
+import { useUserStoreHook } from "@/store/modules/user";
 
 defineOptions({
   name: "UserCenter"
 });
+
+const userStore = useUserStoreHook();
 
 const nickname = ref("");
 const email = ref("");
@@ -108,6 +111,7 @@ const handleFileChange = async (event: Event) => {
       
       if (updateResult.code === 200) {
         ElMessage.success("头像上传成功");
+        userStore.SET_AVATAR(avatarUrl);
       } else {
         ElMessage.error(updateResult.msg || "更新头像失败");
       }

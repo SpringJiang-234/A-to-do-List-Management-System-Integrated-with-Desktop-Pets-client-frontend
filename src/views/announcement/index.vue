@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import AnnounceList from "@/components/AnnounceList.vue";
 import { getAnnouncementList } from "@/api/announcement";
@@ -9,7 +10,17 @@ defineOptions({
   name: "Announcement"
 });
 
-const activities = ref([]);
+const router = useRouter();
+
+interface Activity {
+  id: number;
+  title: string;
+  content: string;
+  timestamp: string;
+  isCompleted: boolean;
+}
+
+const activities = ref<Activity[]>([]);
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return "";
@@ -21,6 +32,7 @@ onMounted(async () => {
     const result = await getAnnouncementList();
     if (result.code === 200) {
       activities.value = result.data.map((item: any) => ({
+        id: item.id,
         title: item.title,
         content: item.content,
         timestamp: formatTimestamp(item.updateTime),
@@ -34,12 +46,12 @@ onMounted(async () => {
   }
 });
 
-function handleTodoClick(activity: any) {
-  message("公告项被点击:", activity);
+function handleTodoClick(activity: Activity) {
+  router.push(`/announcement/detail/${activity.id}`);
 }
 
-function handleTextClick(activity: any) {
-  message("公告文字被点击:", activity);
+function handleTextClick(activity: Activity) {
+  router.push(`/announcement/detail/${activity.id}`);
 }
 </script>
 

@@ -16,6 +16,15 @@ export default {
       meta: {
         title: "公告"
       }
+    },
+    {
+      path: "/announcement/detail/:id",
+      name: "AnnouncementDetail",
+      component: () => import("@/views/announcement/detail.vue"),
+      meta: {
+        title: "公告详情",
+        showLink: false
+      }
     }
   ]
 };
