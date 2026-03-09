@@ -199,9 +199,7 @@ const onSubmit = async () => {
     }
 
     const params: any = {
-      userId: userInfo.id,
-      pageNum: 1,
-      pageSize: 1000
+      userId: userInfo.id
     };
 
     if (formInline.title) {
