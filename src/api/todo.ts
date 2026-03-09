@@ -31,6 +31,7 @@ type ClientTodoDetails = {
   isTop: string;
   categoryName: string;
   priority: number;
+  focusTime: number;
   tags: TagDetails[];
 };
 

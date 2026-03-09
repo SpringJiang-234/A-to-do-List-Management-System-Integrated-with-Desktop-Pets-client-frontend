@@ -29,7 +29,8 @@ const todoForm = ref({
   isTop: 1 as number,
   tagIdList: [] as number[],
   startTime: "",
-  endTime: ""
+  endTime: "",
+  focusTime: 0 as number
 });
 const loading = ref(false);
 const submitting = ref(false);
@@ -73,6 +74,14 @@ const formatDateTime = (dateTime: string) => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+const formatFocusTime = (seconds: number) => {
+  if (!seconds || seconds === 0) return "0时0分0秒";
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hours}时${minutes}分${secs}秒`;
 };
 
 const loadCategories = async () => {
@@ -141,7 +150,8 @@ const fetchTodoDetails = async () => {
       isTop: parseInt(data.isTop) || 1,
       tagIdList: data.tags ? data.tags.map((tag: any) => tag.id) : [],
       startTime: formatDateTime(data.startTime),
-      endTime: formatDateTime(data.endTime)
+      endTime: formatDateTime(data.endTime),
+      focusTime: data.focusTime || 0
     };
     
     await loadCategories();
@@ -290,6 +300,9 @@ watch(
           <el-form-item label="是否置顶">
             <el-switch v-if="isEditMode" v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
             <el-input v-else :value="isTopText" readonly />
+          </el-form-item>
+          <el-form-item label="专注时间">
+            <el-input :value="formatFocusTime(todoForm.focusTime)" readonly />
           </el-form-item>
           <el-form-item label="标签">
             <el-select v-if="isEditMode" v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
