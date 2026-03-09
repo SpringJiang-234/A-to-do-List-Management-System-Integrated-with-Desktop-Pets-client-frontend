@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { getAnnouncementDetail } from "@/api/announcement";
 import dayjs from "dayjs";
+import { Close } from "@element-plus/icons-vue";
 
 defineOptions({
   name: "AnnouncementDetail"
@@ -69,7 +70,7 @@ const loadAnnouncementDetail = async () => {
   }
 };
 
-const handleBack = () => {
+const handleClose = () => {
   router.back();
 };
 
@@ -81,20 +82,28 @@ onMounted(() => {
 
 <template>
   <div class="announcement-detail-container">
-    <el-card shadow="never" v-loading="loading">
+    <el-card shadow="never">
       <template #header>
-        <div class="card-header">
-          <el-button circle @click="handleBack" class="back-button">
-            <el-icon><ArrowLeft /></el-icon>
+        <div class="header-content">
+          <div>公告详情</div>
+          <el-button 
+            type="primary" 
+            circle 
+            size="small" 
+            @click="handleClose"
+            class="close-button"
+          >
+            <el-icon><Close /></el-icon>
           </el-button>
-          <h3 class="detail-title">{{ title }}</h3>
         </div>
       </template>
-      <div class="detail-content">
-        <div class="markdown-content" v-html="renderedContent"></div>
-        <div class="update-time">
-          <span class="time-label">最新修改时间：</span>
-          <span class="time-value">{{ updateTime }}</span>
+      <div v-loading="loading">
+        <div class="detail-content">
+          <div class="markdown-content" v-html="renderedContent"></div>
+          <div class="update-time">
+            <span class="time-label">最新修改时间：</span>
+            <span class="time-value">{{ updateTime }}</span>
+          </div>
         </div>
       </div>
     </el-card>
@@ -106,21 +115,14 @@ onMounted(() => {
   padding: 16px;
 }
 
-.card-header {
+.header-content {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
 }
 
-.back-button {
-  flex-shrink: 0;
-}
-
-.detail-title {
-  flex: 1;
-  margin: 0;
-  font-size: 18px;
-  font-weight: 500;
+.close-button {
+  padding: 4px;
 }
 
 .detail-content {
