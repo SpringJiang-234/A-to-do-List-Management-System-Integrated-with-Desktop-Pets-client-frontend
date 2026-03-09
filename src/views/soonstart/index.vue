@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { message } from "@/utils/message";
-import Countdown from "@/views/soonstart/components/CountDown.vue";
 import { ref } from "vue";
 import SearchCard from "@/components/SearchCard.vue";
 import GameIconsTomato from "~icons/game-icons/tomato?width=16px&height=16px";
@@ -26,19 +25,33 @@ const formatTime = (timeValue: string | Date): string => {
   return `${hours}小时${minutes}分钟`;
 };
 
-const handleConfirm = () => {
-  if (valueType.value === "倒计时") {
-    message(`倒计时时长：${formatTime(timeValue1.value)}`);
-  } else if (valueType.value === "番茄钟") {
-    message(
-      `专注时长：${formatTime(timeValue2.value)}，休息时长：${formatTime(timeValue3.value)}，循环次数：${timeValue4.value}`
-    );
+const handleConfirm = async () => {
+  try {
+    const params = new URLSearchParams();
+    params.append("valueType", valueType.value);
+    
+    if (valueType.value === "倒计时") {
+      params.append("timeValue1", timeValue1.value.toISOString());
+      message(`倒计时时长：${formatTime(timeValue1.value)}`, { type: "success" });
+    } else if (valueType.value === "番茄钟") {
+      params.append("timeValue2", timeValue2.value.toISOString());
+      params.append("timeValue3", timeValue3.value.toISOString());
+      params.append("timeValue4", timeValue4.value.toString());
+      message(
+        `专注时长：${formatTime(timeValue2.value)}，休息时长：${formatTime(timeValue3.value)}，循环次数：${timeValue4.value}`, { type: "success" }
+      );
+    }
+    
+    await (window as any).ipcRenderer.invoke("open-win", `compound-timer?${params.toString()}`);
+  } catch (error) {
+    console.error("打开计时窗口失败:", error);
+    message("打开计时窗口失败", { type: "error" });
   }
 };
 
 const handleIconClick = (type: string) => {
   valueType.value = type;
-  message(`已选择：${type}`);
+  message(`已选择：${type}`, { type: "success" });
 };
 
 const options = [
@@ -112,7 +125,6 @@ const options = [
         <div v-if="valueType === '倒计时'" class="time-picker-wrapper">
           <span class="font-small">倒计时时长：</span>
           <el-time-picker v-model="timeValue1" placeholder="选择时长" />
-          <el-button type="primary" @click="handleConfirm">确定</el-button>
           <el-button type="primary" @click="handleConfirm">开始</el-button>
         </div>
 

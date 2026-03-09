@@ -192,12 +192,13 @@ const appMenu = (fullscreenLabel: string) => {
 // New window example arg: new windows url
 ipcMain.handle("open-win", (_, arg) => {
   const isTransparent = arg === "new-windows";
+  const isCompoundTimer = arg.startsWith("compound-timer");
   
   const childWindow = new BrowserWindow({
-    width: isTransparent ? 400 : 1024,
-    height: isTransparent ? 400 : 768,
-    minWidth: isTransparent ? 400 : 1024,
-    minHeight: isTransparent ? 400 : 768,
+    width: isTransparent ? 400 : (isCompoundTimer ? 500 : 1024),
+    height: isTransparent ? 400 : (isCompoundTimer ? 450 : 768),
+    minWidth: isTransparent ? 400 : (isCompoundTimer ? 500 : 1024),
+    minHeight: isTransparent ? 400 : (isCompoundTimer ? 450 : 768),
     transparent: isTransparent,
     frame: !isTransparent,
     backgroundColor: isTransparent ? '#00ffffff' : undefined,
@@ -224,5 +225,5 @@ ipcMain.handle("open-win", (_, arg) => {
     }
   }
   
-  return childWindow;
+  return { success: true };
 });

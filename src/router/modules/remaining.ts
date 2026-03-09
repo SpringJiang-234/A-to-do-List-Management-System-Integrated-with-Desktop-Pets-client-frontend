@@ -54,5 +54,15 @@ export default [
       title: "桌宠窗口",
       showLink: false
     }
+  },
+  // 复合计时器窗口
+  {
+    path: "/compound-timer",
+    name: "CompoundTimer",
+    component: () => import("@/views/new-windows/compound-timer.vue"),
+    meta: {
+      title: "复合计时器",
+      showLink: false
+    }
   }
 ] satisfies Array<RouteConfigsTable>;
