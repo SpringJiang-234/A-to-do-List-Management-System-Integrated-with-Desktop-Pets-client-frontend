@@ -23,12 +23,10 @@ const emit = defineEmits<Emits>();
 
 function handleClick(activity: Activity) {
   activity.isCompleted = !activity.isCompleted;
-  message(`切换是否完成：${activity.isCompleted}`);
   emit("click", activity);
 }
 
 function handleTextClick(activity: Activity) {
-  message(`点击了文字：${activity.title}`);
   emit("textClick", activity);
 }
 
@@ -40,9 +38,9 @@ const getStatusTag = (
 } => {
   switch (status) {
     case 1:
-      return { type: "info", text: "未受理" };
+      return { type: "danger", text: "未受理" };
     case 2:
-      return { type: "danger", text: "已受理" };
+      return { type: "warning", text: "已受理" };
     case 3:
       return { type: "success", text: "已解决" };
     default:
@@ -50,7 +48,7 @@ const getStatusTag = (
   }
 };
 </script>
-
+<!-- TODO 全世界的置顶逻辑都没写 -->
 <template>
   <div class="feedback-list">
     <div

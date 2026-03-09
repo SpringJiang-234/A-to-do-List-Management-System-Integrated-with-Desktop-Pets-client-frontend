@@ -99,6 +99,7 @@ onMounted(() => {
       </template>
       <div v-loading="loading">
         <div class="detail-content">
+          <div class="announcement-title">{{ title }}</div>
           <div class="markdown-content" v-html="renderedContent"></div>
           <div class="update-time">
             <span class="time-label">最新修改时间：</span>
@@ -129,6 +130,14 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.announcement-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--el-border-color);
 }
 
 .markdown-content {

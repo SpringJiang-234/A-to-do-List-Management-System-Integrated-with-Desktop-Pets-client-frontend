@@ -13,6 +13,7 @@ defineOptions({
 const router = useRouter();
 
 interface Activity {
+  id: number;
   title: string;
   status: 1 | 2 | 3;
   timestamp: string;
@@ -45,6 +46,7 @@ const loadFeedbacks = async () => {
     const result = await getMyFeedbacks();
     if (result.code === 200) {
       activities.value = result.data.map((item: FeedbackItem) => ({
+        id: item.id,
         title: item.title,
         status: statusMap[item.status] || 1,
         timestamp: formatTimestamp(item.updateTime),
@@ -63,11 +65,11 @@ function handleAddClick() {
 }
 
 function handleTodoClick(activity: Activity) {
-  console.log("反馈项被点击:", activity);
+  router.push(`/feedback/detail/${activity.id}`);
 }
 
 function handleTextClick(activity: Activity) {
-  console.log("反馈文字被点击:", activity);
+  router.push(`/feedback/detail/${activity.id}`);
 }
 
 onMounted(() => {

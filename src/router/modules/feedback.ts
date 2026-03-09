@@ -25,6 +25,15 @@ export default {
         title: "提交反馈",
         showLink: false
       }
+    },
+    {
+      path: "/feedback/detail/:id",
+      name: "FeedbackDetail",
+      component: () => import("@/views/feedback/detail.vue"),
+      meta: {
+        title: "反馈详情",
+        showLink: false
+      }
     }
   ]
 };

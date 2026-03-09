@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { message } from "@/utils/message";
-
 interface Activity {
   title: string;
   content: string;
@@ -23,12 +21,10 @@ const emit = defineEmits<Emits>();
 
 function handleClick(activity: Activity) {
   activity.isCompleted = !activity.isCompleted;
-  message(`切换是否完成：${activity.isCompleted}`);
   emit("click", activity);
 }
 
 function handleTextClick(activity: Activity) {
-  message(`点击了文字：${activity.content}`);
   emit("textClick", activity);
 }
 </script>
