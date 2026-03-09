@@ -52,6 +52,11 @@ const handlePasswordChange = async () => {
     return;
   }
   
+  if (newPassword.value.length > 50) {
+    ElMessage.error("密码长度不能超过50位");
+    return;
+  }
+  
   try {
     const result = await updateUser({
       passwordHash: newPassword.value
