@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
 import Dialog from "@/components/Dialog.vue";
+import { getUserInfo } from "@/api/user";
+import { onMounted } from "vue";
 
 defineOptions({
   name: "UserCenter"
@@ -13,6 +15,7 @@ const email = ref("");
 const gender = ref();
 const birthday = ref("");
 const editable = ref(false);
+const avatar = ref("");
 
 const handleEdit = () => {
   editable.value = true;
@@ -21,6 +24,28 @@ const handleEdit = () => {
 const handleSaveConfirm = () => {
   editable.value = false;
 };
+
+const loadUserInfo = async () => {
+  try {
+    const result = await getUserInfo();
+    if (result.data) {
+      nickname.value = result.data.username || "";
+      email.value = result.data.account || "";
+      gender.value = result.data.gender ? result.data.gender.toString() : "3";
+      if (result.data.birth) {
+        const birthDate = new Date(result.data.birth);
+        birthday.value = birthDate.toISOString().split('T')[0];
+      }
+      avatar.value = result.data.avatar ? result.data.avatar.split('?')[0] : circleUrl;
+    }
+  } catch (error) {
+    console.error("获取用户信息失败:", error);
+  }
+};
+
+onMounted(() => {
+  loadUserInfo();
+});
 </script>
 
 <template>
@@ -32,7 +57,7 @@ const handleSaveConfirm = () => {
         </div>
       </template>
       <div class="avatar-wrapper">
-        <el-avatar size="large" :src="circleUrl" />
+        <el-avatar size="large" :src="avatar" />
       </div>
       <div class="form-item">
         <el-input

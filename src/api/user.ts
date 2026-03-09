@@ -16,6 +16,10 @@ export type UserResult = {
     avatar: string;
     /** `token` */
     token: string;
+    /** 性别 */
+    gender: number;
+    /** 生日 */
+    birth: string;
   };
 };
 
@@ -27,4 +31,9 @@ export const getLogin = (data?: object) => {
 /** 登出 */
 export const getLogout = () => {
   return http.request("get", "/api/security/logout");
+};
+
+/** 获取用户信息 */
+export const getUserInfo = () => {
+  return http.request<UserResult>("get", "/api/user/info");
 };
