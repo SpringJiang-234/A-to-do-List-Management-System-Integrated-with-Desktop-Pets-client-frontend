@@ -34,6 +34,20 @@ const handleFileChange = async (event: Event) => {
   const file = target.files?.[0];
   if (!file) return;
   
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/jpg"];
+  if (!allowedTypes.includes(file.type)) {
+    ElMessage.error("只支持上传图片格式（JPG、PNG、GIF、WebP）");
+    target.value = "";
+    return;
+  }
+  
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    ElMessage.error("图片大小不能超过 5MB");
+    target.value = "";
+    return;
+  }
+  
   try {
     const uploadResult = await uploadAvatar(file);
     if (uploadResult.code === 200) {
