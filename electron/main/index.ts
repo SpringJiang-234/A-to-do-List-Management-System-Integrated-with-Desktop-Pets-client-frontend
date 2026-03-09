@@ -191,7 +191,7 @@ const appMenu = (fullscreenLabel: string) => {
 
 // New window example arg: new windows url
 ipcMain.handle("open-win", (_, arg) => {
-  const isTransparent = arg === "transparent";
+  const isTransparent = arg === "new-windows";
   
   const childWindow = new BrowserWindow({
     width: isTransparent ? 400 : 1024,
@@ -213,9 +213,12 @@ ipcMain.handle("open-win", (_, arg) => {
   if (arg === "blank") {
     const blankHtml = join(process.env.PUBLIC, "blank.html");
     childWindow.loadFile(blankHtml);
-  } else if (arg === "transparent") {
-    const transparentHtml = join(process.env.PUBLIC, "transparent.html");
-    childWindow.loadFile(transparentHtml);
+  } else if (arg === "new-windows") {
+    if (process.env.VITE_DEV_SERVER_URL) {
+      childWindow.loadURL(`${url}#/new-windows`);
+    } else {
+      childWindow.loadFile(indexHtml, { hash: "new-windows" });
+    }
   } else {
     if (process.env.VITE_DEV_SERVER_URL) {
       childWindow.loadURL(`${url}#${arg}`);

@@ -44,5 +44,15 @@ export default [
         component: () => import("@/layout/redirect.vue")
       }
     ]
+  },
+  // 透明窗口（桌宠）
+  {
+    path: "/new-windows",
+    name: "DesktopPetWindow",
+    component: () => import("@/views/new-windows/index.vue"),
+    meta: {
+      title: "桌宠窗口",
+      showLink: false
+    }
   }
 ] satisfies Array<RouteConfigsTable>;

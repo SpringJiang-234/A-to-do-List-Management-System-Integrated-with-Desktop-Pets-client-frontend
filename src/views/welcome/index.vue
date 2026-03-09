@@ -5,7 +5,7 @@ defineOptions({
 
 const openNewWindow = async () => {
   try {
-    await (window as any).ipcRenderer.invoke("open-win", "transparent");
+    await (window as any).ipcRenderer.invoke("open-win", "new-windows");
   } catch (error) {
     console.error("打开新窗口失败:", error);
   }
