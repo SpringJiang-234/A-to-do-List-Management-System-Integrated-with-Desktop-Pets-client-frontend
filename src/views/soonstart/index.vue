@@ -89,20 +89,42 @@ const formatTime = (timeValue: string | Date): string => {
 };
 
 const handleConfirm = async () => {
-  try {
+    if (valueType.value === "倒计时") {
+      const hours = timeValue1.value.getHours();
+      const minutes = timeValue1.value.getMinutes();
+      const seconds = timeValue1.value.getSeconds();
+      if (hours === 0 && minutes === 0 && seconds === 0) {
+        message("倒计时时长不能为0", { type: "error" });
+        return;
+      }
+    } else if (valueType.value === "番茄钟") {
+      const focusHours = timeValue2.value.getHours();
+      const focusMinutes = timeValue2.value.getMinutes();
+      const focusSeconds = timeValue2.value.getSeconds();
+      if (focusHours === 0 && focusMinutes === 0 && focusSeconds === 0) {
+        message("专注时长不能为0", { type: "error" });
+        return;
+      }
+      
+      const breakHours = timeValue3.value.getHours();
+      const breakMinutes = timeValue3.value.getMinutes();
+      const breakSeconds = timeValue3.value.getSeconds();
+      if (breakHours === 0 && breakMinutes === 0 && breakSeconds === 0) {
+        message("休息时长不能为0", { type: "error" });
+        return;
+      }
+    }
+  
+    try {
     const params = new URLSearchParams();
     params.append("valueType", valueType.value);
 
     if (valueType.value === "倒计时") {
       params.append("timeValue1", timeValue1.value.toISOString());
-      message(`倒计时时长：${formatTime(timeValue1.value)}`, { type: "success" });
     } else if (valueType.value === "番茄钟") {
       params.append("timeValue2", timeValue2.value.toISOString());
       params.append("timeValue3", timeValue3.value.toISOString());
       params.append("timeValue4", timeValue4.value.toString());
-      message(
-        `专注时长：${formatTime(timeValue2.value)}，休息时长：${formatTime(timeValue3.value)}，循环次数：${timeValue4.value}`, { type: "success" }
-      );
     }
 
     if (todoId.value) {

@@ -161,25 +161,30 @@ const handleTimerComplete = async () => {
     }
   };
   
-  if (valueType.value === "番茄钟" && !isBreak.value && timeValue4.value && timeValue4.value > 1) {
+  if (valueType.value === "番茄钟" && !isBreak.value) {
+    const focusTimeSeconds = timeValue2.value.getHours() * 3600 + timeValue2.value.getMinutes() * 60 + timeValue2.value.getSeconds();
+    await updateFocusTimeToBackend(focusTimeSeconds);
+    
     if (currentCycle.value < timeValue4.value) {
-      const focusTimeSeconds = timeValue2.value.getHours() * 3600 + timeValue2.value.getMinutes() * 60 + timeValue2.value.getSeconds();
-      await updateFocusTimeToBackend(focusTimeSeconds);
       message(`第${currentCycle.value}个番茄钟完成，开始休息`, { type: "success" });
       isBreak.value = true;
       startTimer();
     } else {
-      const focusTimeSeconds = timeValue2.value.getHours() * 3600 + timeValue2.value.getMinutes() * 60 + timeValue2.value.getSeconds();
-      await updateFocusTimeToBackend(focusTimeSeconds);
+      message(`第${currentCycle.value}个番茄钟完成，开始休息`, { type: "success" });
+      isBreak.value = true;
+      startTimer();
+    }
+  } else if (valueType.value === "番茄钟" && isBreak.value) {
+    if (currentCycle.value < timeValue4.value) {
+      message(`休息完成，开始第${currentCycle.value + 1}个番茄钟`, { type: "success" });
+      isBreak.value = false;
+      currentCycle.value++;
+      startTimer();
+    } else {
       message(`所有番茄钟完成！`, { type: "success" });
       remainingTime.value = 0;
       isCompleted.value = true;
     }
-  } else if (valueType.value === "番茄钟" && isBreak.value) {
-    message(`休息完成，开始第${currentCycle.value + 1}个番茄钟`, { type: "success" });
-    isBreak.value = false;
-    currentCycle.value++;
-    startTimer();
   } else if (valueType.value === "倒计时") {
     const countdownSeconds = timeValue1.value.getHours() * 3600 + timeValue1.value.getMinutes() * 60 + timeValue1.value.getSeconds();
     await updateFocusTimeToBackend(countdownSeconds);
