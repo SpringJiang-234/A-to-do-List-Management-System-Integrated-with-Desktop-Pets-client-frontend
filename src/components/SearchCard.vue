@@ -315,7 +315,7 @@ const onSubmit = () => {
                     <el-tooltip
                       content="重置除时间视图外的条件"
                       placement="top"
-                      effect="light"
+                      effect="dark"
                     >
                       <el-button
                         :icon="HeroiconsArrowPath"
