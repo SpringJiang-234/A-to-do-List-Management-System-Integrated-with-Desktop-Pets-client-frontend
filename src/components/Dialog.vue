@@ -13,7 +13,9 @@
     width="500"
     :before-close="handleClose"
   >
-    <span>{{ content }}</span>
+    <slot>
+      <span>{{ content }}</span>
+    </slot>
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>

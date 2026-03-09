@@ -16,6 +16,8 @@ const birthday = ref("");
 const editable = ref(false);
 const avatar = ref("");
 const fileInputRef = ref<HTMLInputElement | null>(null);
+const newPassword = ref("");
+const confirmPassword = ref("");
 
 const handleEdit = () => {
   editable.value = true;
@@ -27,6 +29,44 @@ const handleSaveConfirm = () => {
 
 const handleAvatarClick = () => {
   fileInputRef.value?.click();
+};
+
+const handlePasswordChange = async () => {
+  if (!newPassword.value) {
+    ElMessage.error("请输入新密码");
+    return;
+  }
+  
+  if (!confirmPassword.value) {
+    ElMessage.error("请确认新密码");
+    return;
+  }
+  
+  if (newPassword.value !== confirmPassword.value) {
+    ElMessage.error("两次输入的密码不一致");
+    return;
+  }
+  
+  if (newPassword.value.length < 6) {
+    ElMessage.error("密码长度不能少于6位");
+    return;
+  }
+  
+  try {
+    const result = await updateUser({
+      passwordHash: newPassword.value
+    });
+    
+    if (result.code === 200) {
+      ElMessage.success("密码修改成功");
+      newPassword.value = "";
+      confirmPassword.value = "";
+    } else {
+      ElMessage.error(result.msg || "密码修改失败");
+    }
+  } catch (error) {
+    ElMessage.error("密码修改失败，请重试");
+  }
 };
 
 const handleFileChange = async (event: Event) => {
@@ -169,8 +209,17 @@ onMounted(() => {
         <el-switch v-model="editable" active-text="修改" inactive-text="保存" />
       </div>
       <div class="form-item">
-        <Dialog buttonText="修改密码" title="修改密码" content="确认要修改密码吗？" closeConfirmMessage="确认关闭弹窗吗？"
-          confirmButtonType="primary" buttonType="primary" @confirm="handleSaveConfirm" />
+        <Dialog buttonText="修改密码" title="修改密码" closeConfirmMessage="确认关闭弹窗吗？"
+          confirmButtonType="primary" buttonType="primary" @confirm="handlePasswordChange">
+          <el-form label-width="80px">
+            <el-form-item label="新密码">
+              <el-input v-model="newPassword" type="password" placeholder="请输入新密码" show-password />
+            </el-form-item>
+            <el-form-item label="确认密码">
+              <el-input v-model="confirmPassword" type="password" placeholder="请确认新密码" show-password />
+            </el-form-item>
+          </el-form>
+        </Dialog>
       </div>
       <div class="form-item">
         <el-button type="danger">注销账户</el-button>
