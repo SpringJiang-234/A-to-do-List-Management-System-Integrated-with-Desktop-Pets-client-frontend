@@ -14,14 +14,16 @@ const timeValue1 = ref(route.query.timeValue1 ? new Date(route.query.timeValue1 
 const timeValue2 = ref(route.query.timeValue2 ? new Date(route.query.timeValue2 as string) : new Date("1970-01-01T00:25:00"));
 const timeValue3 = ref(route.query.timeValue3 ? new Date(route.query.timeValue3 as string) : new Date("1970-01-01T00:05:00"));
 const timeValue4 = ref(route.query.timeValue4 ? parseInt(route.query.timeValue4 as string) : 4);
+const todoTitle = ref(route.query.todoTitle as string || "");
 
 const formatTime = (timeValue: string | Date): string => {
-  if (!timeValue) return "0小时0分钟";
+  if (!timeValue) return "0小时0分钟0秒";
 
   const date = typeof timeValue === "string" ? new Date(timeValue) : timeValue;
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  return `${hours}小时${minutes}分钟`;
+  const seconds = date.getSeconds();
+  return `${hours}小时${minutes}分钟${seconds}秒`;
 };
 
 const formatTimeForDisplay = (timeValue: string | Date): string => {
@@ -64,14 +66,13 @@ const startTimer = () => {
   if (isRunning.value) return;
   
   isRunning.value = true;
-  isBreak.value = false;
   
   let targetSeconds = 0;
   
   if (valueType.value === "倒计时" && timeValue1.value) {
     const date = timeValue1.value;
     targetSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-  } else if (valueType.value === "番茄钟" && timeValue2.value) {
+  } else if (valueType.value === "番茄钟" && !isBreak.value && timeValue2.value) {
     const date = timeValue2.value;
     targetSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
   } else if (valueType.value === "番茄钟" && isBreak.value && timeValue3.value) {
@@ -108,6 +109,11 @@ const resetTimer = () => {
   isBreak.value = false;
 };
 
+const completeTimer = () => {
+  stopTimer();
+  message(`计时完成！`, { type: "success" });
+};
+
 const handleTimerComplete = () => {
   stopTimer();
   
@@ -115,14 +121,14 @@ const handleTimerComplete = () => {
     if (currentCycle.value < timeValue4.value) {
       message(`第${currentCycle.value}个番茄钟完成，开始休息`, { type: "success" });
       isBreak.value = true;
-      currentCycle.value++;
       startTimer();
     } else {
       message(`所有番茄钟完成！`, { type: "success" });
     }
   } else if (valueType.value === "番茄钟" && isBreak.value) {
-    message(`休息完成，开始第${currentCycle.value}个番茄钟`, { type: "success" });
+    message(`休息完成，开始第${currentCycle.value + 1}个番茄钟`, { type: "success" });
     isBreak.value = false;
+    currentCycle.value++;
     startTimer();
   } else {
     message(`计时完成！`, { type: "success" });
@@ -145,6 +151,9 @@ onUnmounted(() => {
         <span v-if="valueType === '倒计时'">倒计时</span>
         <span v-if="valueType === '正计时'">正计时</span>
       </div>
+      <div v-if="todoTitle" class="todo-title">
+        {{ todoTitle }}
+      </div>
     </div>
     
     <div class="timer-controls">
@@ -153,6 +162,9 @@ onUnmounted(() => {
       </el-button>
       <el-button v-if="isRunning" type="warning" @click="stopTimer">
         暂停
+      </el-button>
+      <el-button v-if="valueType === '正计时'" type="success" @click="completeTimer">
+        完成
       </el-button>
       <el-button v-if="isRunning || remainingTime > 0" type="danger" @click="resetTimer">
         重置
@@ -214,6 +226,13 @@ onUnmounted(() => {
   font-size: 16px;
   color: var(--el-text-color-regular);
   margin-top: 8px;
+}
+
+.todo-title {
+  font-size: 14px;
+  color: #909399;
+  margin-top: 12px;
+  font-weight: 500;
 }
 
 .timer-controls {

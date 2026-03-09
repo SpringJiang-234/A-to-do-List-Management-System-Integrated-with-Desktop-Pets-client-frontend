@@ -105,6 +105,14 @@ const handleConfirm = async () => {
       );
     }
 
+    if (todoId.value) {
+      const selectedTodo = searchResults.value.find((todo: any) => todo.id === todoId.value);
+      if (selectedTodo) {
+        params.append("todoId", selectedTodo.id.toString());
+        params.append("todoTitle", selectedTodo.title);
+      }
+    }
+
     await (window as any).ipcRenderer.invoke("open-win", `compound-timer?${params.toString()}`);
   } catch (error) {
     console.error("打开计时窗口失败:", error);
