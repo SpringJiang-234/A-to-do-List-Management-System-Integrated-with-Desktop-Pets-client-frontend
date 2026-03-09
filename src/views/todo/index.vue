@@ -201,9 +201,7 @@ const loadTodoList = async () => {
     const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
     if (userInfo?.id) {
       const params: any = {
-        userId: userInfo.id,
-        pageNum: 1,
-        pageSize: 1000
+        userId: userInfo.id
       };
 
       if (todoStore.filter.title) {
@@ -215,7 +213,7 @@ const loadTodoList = async () => {
       }
 
       if (todoStore.filter.categories && todoStore.filter.categories.length > 0 && todoStore.filter.categories.length < categories.value.length) {
-        params.categoryId = parseInt(todoStore.filter.categories[0]);
+        params.categoryIdList = todoStore.filter.categories.map((cat: string) => parseInt(cat));
       }
 
       if (todoStore.filter.tags && todoStore.filter.tags.length > 0 && todoStore.filter.tags.length < tags.value.length) {
@@ -223,7 +221,7 @@ const loadTodoList = async () => {
       }
 
       if (todoStore.filter.priorities && todoStore.filter.priorities.length > 0 && todoStore.filter.priorities.length < priorities.length) {
-        params.priority = parseInt(todoStore.filter.priorities[0]);
+        params.priorityList = todoStore.filter.priorities.map((prio: string) => parseInt(prio));
       }
 
       if (todoStore.filter.time) {
@@ -239,11 +237,11 @@ const loadTodoList = async () => {
       }
 
       if (todoStore.filter.status && todoStore.filter.status.length > 0 && todoStore.filter.status.length < statusOptions.length) {
-        params.status = parseInt(todoStore.filter.status[0]);
+        params.statusList = todoStore.filter.status.map((stat: string) => parseInt(stat));
       }
 
       if (todoStore.filter.isTop && todoStore.filter.isTop.length > 0 && todoStore.filter.isTop.length < topOptions.length) {
-        params.isTop = parseInt(todoStore.filter.isTop[0]);
+        params.isTopList = todoStore.filter.isTop.map((top: string) => parseInt(top));
       }
 
       console.log("loadTodoList 搜索参数:", params);

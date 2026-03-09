@@ -213,7 +213,7 @@ const onSubmit = async () => {
     }
 
     if (formInline.categories && formInline.categories.length > 0 && formInline.categories.length < categories.value.length) {
-      params.categoryId = parseInt(formInline.categories[0]);
+      params.categoryIdList = formInline.categories.map((cat: string) => parseInt(cat));
     }
 
     if (formInline.tags && formInline.tags.length > 0 && formInline.tags.length < tags.value.length) {
@@ -221,7 +221,7 @@ const onSubmit = async () => {
     }
 
     if (formInline.priorities && formInline.priorities.length > 0 && formInline.priorities.length < priorities.length) {
-      params.priority = parseInt(formInline.priorities[0]);
+      params.priorityList = formInline.priorities.map((prio: string) => parseInt(prio));
     }
 
     if (formInline.time) {
@@ -237,11 +237,11 @@ const onSubmit = async () => {
     }
 
     if (formInline.status && formInline.status.length > 0 && formInline.status.length < statusOptions.length) {
-      params.status = parseInt(formInline.status[0]);
+      params.statusList = formInline.status.map((stat: string) => parseInt(stat));
     }
 
     if (formInline.isTop && formInline.isTop.length > 0 && formInline.isTop.length < topOptions.length) {
-      params.isTop = parseInt(formInline.isTop[0]);
+      params.isTopList = formInline.isTop.map((top: string) => parseInt(top));
     }
 
     console.log("搜索参数:", params);
