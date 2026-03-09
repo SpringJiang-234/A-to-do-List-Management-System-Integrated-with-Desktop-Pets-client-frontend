@@ -48,3 +48,10 @@ export const getUserInfo = () => {
 export const updateUser = (data?: object) => {
   return http.request<UpdateUserResult>("post", "/api/user/update", { data });
 };
+
+/** 上传用户头像 */
+export const uploadAvatar = (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return http.request<{ code: number; msg: string; data: string }>("post", "/api/user/uploadAvatar", { data: formData });
+};

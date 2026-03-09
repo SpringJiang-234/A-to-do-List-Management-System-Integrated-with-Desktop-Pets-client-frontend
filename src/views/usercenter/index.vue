@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
 import Dialog from "@/components/Dialog.vue";
-import { getUserInfo, updateUser } from "@/api/user";
-import { onMounted, watch } from "vue";
+import { getUserInfo, updateUser, uploadAvatar } from "@/api/user";
+import { onMounted, watch, ref } from "vue";
 import { ElMessage } from "element-plus";
 
 defineOptions({
   name: "UserCenter"
 });
-
-import { ref } from "vue";
 
 const nickname = ref("");
 const email = ref("");
@@ -17,6 +15,7 @@ const gender = ref();
 const birthday = ref("");
 const editable = ref(false);
 const avatar = ref("");
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const handleEdit = () => {
   editable.value = true;
@@ -24,6 +23,43 @@ const handleEdit = () => {
 
 const handleSaveConfirm = () => {
   editable.value = false;
+};
+
+const handleAvatarClick = () => {
+  fileInputRef.value?.click();
+};
+
+const handleFileChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+  
+  try {
+    const uploadResult = await uploadAvatar(file);
+    if (uploadResult.code === 200) {
+      const avatarUrl = uploadResult.data ? uploadResult.data.split('?')[0] : circleUrl;
+      avatar.value = avatarUrl;
+      
+      const updateResult = await updateUser({
+        nickname: nickname.value,
+        gender: gender.value ? parseInt(gender.value) : 3,
+        birth: birthday.value,
+        avatar: avatarUrl
+      });
+      
+      if (updateResult.code === 200) {
+        ElMessage.success("头像上传成功");
+      } else {
+        ElMessage.error(updateResult.msg || "更新头像失败");
+      }
+    } else {
+      ElMessage.error(uploadResult.msg || "头像上传失败");
+    }
+  } catch (error) {
+    ElMessage.error("头像上传失败，请重试");
+  }
+  
+  target.value = "";
 };
 
 const loadUserInfo = async () => {
@@ -76,9 +112,16 @@ onMounted(() => {
           <h3>个人中心</h3>
         </div>
       </template>
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept="image/*"
+        style="display: none"
+        @change="handleFileChange"
+      />
       <div class="avatar-wrapper">
         <el-tooltip :disabled="!editable" class="box-item" effect="dark" content="点击修改头像" placement="top">
-          <el-avatar size="large" :src="avatar" />
+          <el-avatar size="large" :src="avatar" @click="handleAvatarClick" />
         </el-tooltip>
       </div>
       <div class="form-item">
