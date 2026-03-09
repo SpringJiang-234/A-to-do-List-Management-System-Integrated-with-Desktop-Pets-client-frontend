@@ -256,7 +256,9 @@ const handleMenuAction = async (action: string) => {
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            {{ activity.title }}
+            <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+              <span>{{ activity.title }}</span>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>
@@ -270,7 +272,9 @@ const handleMenuAction = async (action: string) => {
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            {{ activity.title }}
+            <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+              <span>{{ activity.title }}</span>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>
@@ -284,7 +288,9 @@ const handleMenuAction = async (action: string) => {
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            {{ activity.title }}
+            <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+              <span>{{ activity.title }}</span>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>
@@ -298,7 +304,9 @@ const handleMenuAction = async (action: string) => {
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            {{ activity.title }}
+            <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+              <span>{{ activity.title }}</span>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>
@@ -312,7 +320,9 @@ const handleMenuAction = async (action: string) => {
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            {{ activity.title }}
+            <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+              <span>{{ activity.title }}</span>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>
@@ -326,7 +336,9 @@ const handleMenuAction = async (action: string) => {
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            {{ activity.title }}
+            <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+              <span>{{ activity.title }}</span>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>
@@ -340,7 +352,9 @@ const handleMenuAction = async (action: string) => {
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            {{ activity.title }}
+            <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+              <span>{{ activity.title }}</span>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>

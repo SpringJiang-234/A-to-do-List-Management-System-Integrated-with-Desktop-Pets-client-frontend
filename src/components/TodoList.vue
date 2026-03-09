@@ -185,13 +185,17 @@ async function handleMenuAction(action: string) {
               : 'white'
           }"
         ></div>
-        <span 
-          :class="['todo-title', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
-          @click.stop="handleTextClick(activity)"
-        >
-          {{ activity.title }}
-        </span>
-        <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startTime, activity.endTime) }}</span>
+        <div class="todo-info">
+          <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+            <span 
+              :class="['todo-title', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
+              @click.stop="handleTextClick(activity)"
+            >
+              {{ activity.title }}
+            </span>
+          </el-tooltip>
+          <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startTime, activity.endTime) }}</span>
+        </div>
       </div>
       <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">
         {{ activity.content }}
@@ -229,6 +233,14 @@ async function handleMenuAction(action: string) {
   margin-bottom: 8px;
 }
 
+.todo-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+}
+
 .custom-node {
   width: 12px;
   height: 12px;
@@ -252,6 +264,9 @@ async function handleMenuAction(action: string) {
   font-size: 14px;
   flex: 1;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .line-through {

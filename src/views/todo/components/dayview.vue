@@ -224,12 +224,14 @@ async function handleMenuAction(action: string) {
             ></div>
           </template>
           <!-- 只有点击标题才跳到详细页 -->
-          <span 
-            :class="['todo-text', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
-            @click.stop="handleTextClick(activity)"
-          >
-            {{ activity.title }}
-          </span>
+          <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+            <span 
+              :class="['todo-text', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
+              @click.stop="handleTextClick(activity)"
+            >
+              {{ activity.title }}
+            </span>
+          </el-tooltip>
         </el-timeline-item>
       </el-timeline>
     </div>
