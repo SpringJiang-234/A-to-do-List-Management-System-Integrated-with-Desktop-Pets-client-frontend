@@ -277,27 +277,6 @@ const onSubmit = () => {
                       width="240px"
                     />
                   </el-form-item>
-                  <el-form-item v-if="isNonContinuousTask">
-                    <el-date-picker
-                      v-model="formInline.time"
-                      type="date"
-                      placeholder="请选择非连续任务的日期"
-                    />
-                  </el-form-item>
-                  <el-form-item v-if="isContinuousTask">
-                    <el-date-picker
-                      v-model="formInline.startTime"
-                      type="date"
-                      placeholder="请选择连续任务的开始日期"
-                    />
-                  </el-form-item>
-                  <el-form-item v-if="isContinuousTask">
-                    <el-date-picker
-                      v-model="formInline.endTime"
-                      type="date"
-                      placeholder="请选择连续任务的结束日期"
-                    />
-                  </el-form-item>
                   <el-form-item>
                     <Select
                       v-model="formInline.status"
