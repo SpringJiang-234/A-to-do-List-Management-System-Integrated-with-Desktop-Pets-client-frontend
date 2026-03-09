@@ -76,6 +76,7 @@
     "responsive-storage": "^2.2.0",
     "sortablejs": "^1.15.6",
     "vue": "^3.5.22",
+    "vue-demi": "^0.14.10",
     "vue-router": "^4.6.3",
     "vue-tippy": "^6.7.1",
     "vue-types": "^6.0.0"
@@ -103,7 +104,7 @@
     "code-inspector-plugin": "^1.2.10",
     "cross-env": "^10.0.0",
     "cssnano": "^7.1.1",
-    "electron": "^37.2.6",
+    "electron": "^40.8.0",
     "electron-builder": "25.1.8",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",

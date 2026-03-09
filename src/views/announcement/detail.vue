@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { getAnnouncementDetail } from "@/api/announcement";
@@ -22,6 +22,34 @@ const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return "";
   return dayjs(timestamp).format("YYYY-MM-DD HH:mm:ss");
 };
+
+const parseMarkdown = (markdown: string): string => {
+  if (!markdown) return "";
+  
+  let html = markdown;
+  
+  html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
+  html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
+  html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+  
+  html = html.replace(/\*\*(.*)\*\*/gim, "<strong>$1</strong>");
+  html = html.replace(/\*(.*)\*/gim, "<em>$1</em>");
+  
+  html = html.replace(/!\[(.*?)\]\((.*?)\)/gim, '<img src="$2" alt="$1" />');
+  html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>');
+  
+  html = html.replace(/`(.*?)`/gim, "<code>$1</code>");
+  
+  html = html.replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>");
+  
+  html = html.replace(/\n$/gim, "");
+  
+  return html;
+};
+
+const renderedContent = computed(() => {
+  return parseMarkdown(content.value);
+});
 
 const loadAnnouncementDetail = async () => {
   try {
@@ -63,7 +91,7 @@ onMounted(() => {
         </div>
       </template>
       <div class="detail-content">
-        <div class="markdown-content" v-html="content"></div>
+        <div class="markdown-content" v-html="renderedContent"></div>
         <div class="update-time">
           <span class="time-label">最新修改时间：</span>
           <span class="time-value">{{ updateTime }}</span>
