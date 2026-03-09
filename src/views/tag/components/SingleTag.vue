@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getTodoList } from "@/api/todo";
+import { getTodoListByCategoryOrTag } from "@/api/todo";
 import TodoList from "@/components/TodoList.vue";
 
 interface Activity {
@@ -52,8 +52,8 @@ const loadTodoList = async () => {
 
   try {
     loading.value = true;
-    const response = await getTodoList({
-      tagIdList: [tagId.value]
+    const response = await getTodoListByCategoryOrTag({
+      tagId: tagId.value
     });
     originalTodoList.value = response.data || [];
   } catch (error) {

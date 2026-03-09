@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { message } from "@/utils/message";
 import TodoList from "@/components/TodoList.vue";
-import { getTodoList, completeTodo, cancelCompleteTodo } from "@/api/todo";
+import { getTodoListByCategoryOrTag, completeTodo, cancelCompleteTodo } from "@/api/todo";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import FluentAlertUrgent16Filled from "~icons/fluent/alert-urgent-16-filled?width=16px&height=16px";
@@ -38,7 +38,7 @@ const loadTodoListByPriority = async (priority: number) => {
       return [];
     }
 
-    const response = await getTodoList({
+    const response = await getTodoListByCategoryOrTag({
       userId: userInfo.id,
       priority: priority
     });

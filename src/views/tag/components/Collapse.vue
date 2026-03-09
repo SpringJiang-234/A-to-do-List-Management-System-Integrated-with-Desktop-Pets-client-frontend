@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { getTagList } from "@/api/tag";
-import { getTodoList } from "@/api/todo";
+import { getTodoListByCategoryOrTag } from "@/api/todo";
 import TodoList from "@/components/TodoList.vue";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
@@ -74,8 +74,8 @@ const loadTags = async () => {
 
 const loadTagTodos = async (tagId: number, tagName: string) => {
   try {
-    const response = await getTodoList({
-      tagIdList: [tagId]
+    const response = await getTodoListByCategoryOrTag({
+      tagId: tagId
     });
     const originalTodoList = response.data || [];
 

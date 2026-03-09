@@ -52,6 +52,7 @@ type ClientTodoQuery = {
   status?: number;
   isTop?: number;
   tagIdList?: number[];
+  tagId?: number;
 };
 
 type ClientTodoDTO = {
@@ -78,6 +79,10 @@ type Result<T> = {
 
 export const getTodoList = (params: ClientTodoQuery) => {
   return http.request<Result<ClientTodoVO[]>>("post", "/api/todo/list", { data: params });
+};
+
+export const getTodoListByCategoryOrTag = (params: ClientTodoQuery) => {
+  return http.request<Result<ClientTodoVO[]>>("post", "/api/todo/list-by-category-or-tag", { data: params });
 };
 
 export const getTodoDetails = (id: number) => {
