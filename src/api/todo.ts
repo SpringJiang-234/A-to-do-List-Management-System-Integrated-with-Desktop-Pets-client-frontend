@@ -112,3 +112,12 @@ export const updateTodo = (data: ClientTodoDTO) => {
 export const deleteTodo = (id: number) => {
   return http.request<Result<void>>("get", `/api/todo/delete/${id}`);
 };
+
+type UpdateFocusTimeDTO = {
+  id: number;
+  focusTime: number;
+};
+
+export const updateFocusTime = (data: UpdateFocusTimeDTO) => {
+  return http.request<Result<void>>("post", "/api/todo/updateFocusTime", { data });
+};

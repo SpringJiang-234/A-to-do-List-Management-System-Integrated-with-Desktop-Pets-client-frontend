@@ -2,6 +2,9 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { message } from "@/utils/message";
+import { updateFocusTime } from "@/api/todo";
+import { userKey, type DataInfo } from "@/utils/auth";
+import { storageLocal } from "@pureadmin/utils";
 
 defineOptions({
   name: "CompoundTimer"
@@ -41,6 +44,7 @@ const isRunning = ref(false);
 const timer = ref<NodeJS.Timeout | null>(null);
 const currentCycle = ref(1);
 const isBreak = ref(false);
+const isCompleted = ref(false);
 
 onMounted(() => {
   if (valueType.value === "正计时") {
@@ -80,11 +84,15 @@ const startTimer = () => {
     targetSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
   }
   
-  if (targetSeconds > 0) {
+  if (targetSeconds > 0 && remainingTime.value === 0) {
     remainingTime.value = targetSeconds;
-    
+  }
+  
+  if (valueType.value === "正计时" || remainingTime.value > 0) {
     timer.value = setInterval(() => {
-      if (remainingTime.value > 0) {
+      if (valueType.value === "正计时") {
+        remainingTime.value++;
+      } else if (remainingTime.value > 0) {
         remainingTime.value--;
       } else {
         stopTimer();
@@ -109,29 +117,79 @@ const resetTimer = () => {
   isBreak.value = false;
 };
 
-const completeTimer = () => {
+const completeTimer = async () => {
   stopTimer();
-  message(`计时完成！`, { type: "success" });
+  
+  const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+  const todoId = route.query.todoId ? parseInt(route.query.todoId as string) : null;
+  
+  if (todoId && userInfo?.token) {
+    try {
+      await updateFocusTime({
+        id: todoId,
+        focusTime: remainingTime.value
+      });
+      message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, { type: "success" });
+    } catch (error) {
+      console.error("更新专注时间失败:", error);
+      message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, { type: "success" });
+    }
+  } else {
+    message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, { type: "success" });
+  }
+  
+  remainingTime.value = 0;
+  isCompleted.value = true;
 };
 
-const handleTimerComplete = () => {
+const handleTimerComplete = async () => {
   stopTimer();
+  
+  const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+  const todoId = route.query.todoId ? parseInt(route.query.todoId as string) : null;
+  
+  const updateFocusTimeToBackend = async (focusTime: number) => {
+    if (todoId && userInfo?.token) {
+      try {
+        await updateFocusTime({
+          id: todoId,
+          focusTime: focusTime
+        });
+      } catch (error) {
+        console.error("更新专注时间失败:", error);
+      }
+    }
+  };
   
   if (valueType.value === "番茄钟" && !isBreak.value && timeValue4.value && timeValue4.value > 1) {
     if (currentCycle.value < timeValue4.value) {
+      const focusTimeSeconds = timeValue2.value.getHours() * 3600 + timeValue2.value.getMinutes() * 60 + timeValue2.value.getSeconds();
+      await updateFocusTimeToBackend(focusTimeSeconds);
       message(`第${currentCycle.value}个番茄钟完成，开始休息`, { type: "success" });
       isBreak.value = true;
       startTimer();
     } else {
+      const focusTimeSeconds = timeValue2.value.getHours() * 3600 + timeValue2.value.getMinutes() * 60 + timeValue2.value.getSeconds();
+      await updateFocusTimeToBackend(focusTimeSeconds);
       message(`所有番茄钟完成！`, { type: "success" });
+      remainingTime.value = 0;
+      isCompleted.value = true;
     }
   } else if (valueType.value === "番茄钟" && isBreak.value) {
     message(`休息完成，开始第${currentCycle.value + 1}个番茄钟`, { type: "success" });
     isBreak.value = false;
     currentCycle.value++;
     startTimer();
+  } else if (valueType.value === "倒计时") {
+    const countdownSeconds = timeValue1.value.getHours() * 3600 + timeValue1.value.getMinutes() * 60 + timeValue1.value.getSeconds();
+    await updateFocusTimeToBackend(countdownSeconds);
+    message(`计时完成！`, { type: "success" });
+    remainingTime.value = 0;
+    isCompleted.value = true;
   } else {
     message(`计时完成！`, { type: "success" });
+    remainingTime.value = 0;
+    isCompleted.value = true;
   }
 };
 
@@ -145,21 +203,19 @@ onUnmounted(() => {
     <div class="timer-display">
       <div class="time-text">{{ formatRemainingTime(remainingTime) }}</div>
       <div class="timer-info">
-        <span v-if="valueType === '番茄钟'">第 {{ currentCycle }} 个番茄钟</span>
-        <span v-if="valueType === '番茄钟' && isBreak">休息中</span>
-        <span v-if="valueType === '番茄钟' && !isBreak">专注中</span>
-        <span v-if="valueType === '倒计时'">倒计时</span>
-        <span v-if="valueType === '正计时'">正计时</span>
+        <span v-if="isCompleted">此次计时已累计</span>
+        <span v-if="!isCompleted && valueType === '番茄钟'">第 {{ currentCycle }} 个番茄钟</span>
+        <span v-if="!isCompleted && valueType === '番茄钟' && isBreak">休息中</span>
+        <span v-if="!isCompleted && valueType === '番茄钟' && !isBreak">专注中</span>
+        <span v-if="!isCompleted && valueType === '倒计时'">倒计时</span>
+        <span v-if="!isCompleted && valueType === '正计时'">正计时</span>
       </div>
       <div v-if="todoTitle" class="todo-title">
         {{ todoTitle }}
       </div>
     </div>
     
-    <div class="timer-controls">
-      <el-button v-if="!isRunning" type="primary" @click="startTimer">
-        开始
-      </el-button>
+    <div class="timer-controls" v-if="!isCompleted">
       <el-button v-if="isRunning" type="warning" @click="stopTimer">
         暂停
       </el-button>
