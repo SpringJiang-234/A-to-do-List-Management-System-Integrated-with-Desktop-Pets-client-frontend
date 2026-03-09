@@ -210,10 +210,7 @@ ipcMain.handle("open-win", (_, arg) => {
     }
   });
 
-  if (arg === "blank") {
-    const blankHtml = join(process.env.PUBLIC, "blank.html");
-    childWindow.loadFile(blankHtml);
-  } else if (arg === "new-windows") {
+  if (arg === "new-windows") {
     if (process.env.VITE_DEV_SERVER_URL) {
       childWindow.loadURL(`${url}#/new-windows`);
     } else {
