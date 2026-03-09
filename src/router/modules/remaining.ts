@@ -49,7 +49,7 @@ export default [
   {
     path: "/new-windows",
     name: "DesktopPetWindow",
-    component: () => import("@/views/new-windows/index.vue"),
+    component: () => import("@/views/new-windows/desktoppet-window.vue"),
     meta: {
       title: "桌宠窗口",
       showLink: false
