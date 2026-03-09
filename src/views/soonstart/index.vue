@@ -70,6 +70,7 @@ watch(() => todoStore.filter, () => {
 
 onMounted(() => {
   console.log('onMounted 被调用');
+  todoStore.filter.status = ["1"];
   loadSearchResults();
 });
 
