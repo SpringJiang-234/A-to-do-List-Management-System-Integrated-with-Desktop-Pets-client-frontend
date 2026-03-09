@@ -85,25 +85,10 @@ const loadAllPriorityTodos = async () => {
 };
 
 async function handleClick(activity: Activity) {
-  try {
-    if (activity.status === 2) {
-      await cancelCompleteTodo(activity.id);
-      activity.status = 1;
-      message("取消完成待办", { type: "success" });
-    } else {
-      await completeTodo(activity.id);
-      activity.status = 2;
-      message("完成待办", { type: "success" });
-    }
-    await loadAllPriorityTodos();
-  } catch (error) {
-    console.error("更新待办状态失败:", error);
-    message("更新失败，请重试", { type: "error" });
-  }
+  await loadAllPriorityTodos();
 }
 
 function handleTextClick(activity: Activity) {
-  message(`点击了文字：${activity.content}`);
 }
 
 onMounted(() => {
