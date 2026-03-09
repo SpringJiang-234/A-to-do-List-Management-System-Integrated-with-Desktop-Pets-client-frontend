@@ -204,6 +204,8 @@ ipcMain.handle("open-win", (_, arg) => {
     backgroundColor: isTransparent ? '#00ffffff' : undefined,
     title: isTransparent ? "" : "Main window",
     icon: isTransparent ? undefined : join(process.env.PUBLIC, "favicon.ico"),
+    center: true,
+    show: false,
     webPreferences: {
       preload,
       nodeIntegration: true,
@@ -224,6 +226,10 @@ ipcMain.handle("open-win", (_, arg) => {
       childWindow.loadFile(indexHtml, { hash: arg });
     }
   }
+  
+  childWindow.once('ready-to-show', () => {
+    childWindow.show();
+  });
   
   return { success: true };
 });

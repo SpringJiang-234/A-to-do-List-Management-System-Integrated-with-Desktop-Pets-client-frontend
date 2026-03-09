@@ -9,14 +9,6 @@ defineOptions({
 
 const route = useRoute();
 
-interface Props {
-  valueType?: string;
-  timeValue1?: string;
-  timeValue2?: string;
-  timeValue3?: string;
-  timeValue4?: string;
-}
-
 const valueType = ref(route.query.valueType as string || "番茄钟");
 const timeValue1 = ref(route.query.timeValue1 ? new Date(route.query.timeValue1 as string) : new Date("1970-01-01T02:00:00"));
 const timeValue2 = ref(route.query.timeValue2 ? new Date(route.query.timeValue2 as string) : new Date("1970-01-01T00:25:00"));
@@ -47,6 +39,19 @@ const isRunning = ref(false);
 const timer = ref<NodeJS.Timeout | null>(null);
 const currentCycle = ref(1);
 const isBreak = ref(false);
+
+onMounted(() => {
+  if (valueType.value === "正计时") {
+    isRunning.value = true;
+    timer.value = setInterval(() => {
+      remainingTime.value++;
+    }, 1000);
+  } else if (valueType.value === "倒计时" && timeValue1.value) {
+    startTimer();
+  } else if (valueType.value === "番茄钟" && timeValue2.value) {
+    startTimer();
+  }
+});
 
 const formatRemainingTime = (seconds: number): string => {
   const hours = Math.floor(seconds / 3600);
@@ -124,19 +129,6 @@ const handleTimerComplete = () => {
   }
 };
 
-onMounted(() => {
-  if (valueType.value === "正计时") {
-    isRunning.value = true;
-    timer.value = setInterval(() => {
-      remainingTime.value++;
-    }, 1000);
-  } else if (valueType.value === "倒计时" && timeValue1.value) {
-    startTimer();
-  } else if (valueType.value === "番茄钟" && timeValue2.value) {
-    startTimer();
-  }
-});
-
 onUnmounted(() => {
   stopTimer();
 });
@@ -200,8 +192,10 @@ onUnmounted(() => {
   justify-content: center;
   align-items: center;
   background-color: transparent;
-  padding: 20px;
+  padding: 0;
   box-sizing: border-box;
+  position: relative;
+  min-height: 100vh;
 }
 
 .timer-display {
@@ -212,7 +206,7 @@ onUnmounted(() => {
 .time-text {
   font-size: 56px;
   font-weight: bold;
-  color: var(--el-color-primary);
+  color: #000000;
   font-family: monospace;
 }
 
