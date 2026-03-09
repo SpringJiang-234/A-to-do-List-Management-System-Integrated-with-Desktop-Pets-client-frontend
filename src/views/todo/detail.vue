@@ -169,6 +169,8 @@ const fetchTodoDetails = async () => {
   }
 };
 
+const activeNames = ref<string[]>(["1"]);
+
 const handleCancel = () => {
   isEditMode.value = false;
   fetchTodoDetails();
@@ -238,101 +240,111 @@ watch(
       </template>
       <el-empty v-if="!todoId" description="待办 ID 无效，请从待办列表点击查看详情" />
       <div v-else v-loading="loading">
-        <el-form v-if="todoForm.id !== 0" label-width="100px">
-          <el-form-item label="标题">
-            <el-input v-if="isEditMode" v-model="todoForm.title" placeholder="请输入待办标题" />
-            <el-input v-else :value="todoForm.title" readonly />
-          </el-form-item>
-          <el-form-item label="内容">
-            <el-input v-if="isEditMode" v-model="todoForm.content" type="textarea" placeholder="请输入待办内容" />
-            <el-input v-else :value="todoForm.content" type="textarea" readonly />
-          </el-form-item>
-          <el-form-item label="类别">
-            <el-select v-if="isEditMode" v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
-              <el-option
-                v-for="item in categories"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <el-input v-else :value="todoForm.categoryName" readonly />
-          </el-form-item>
-          <el-form-item label="开始时间">
-            <el-date-picker
-              v-if="isEditMode"
-              v-model="todoForm.startTime"
-              type="datetime"
-              placeholder="选择开始时间"
-              format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
-            />
-            <el-input v-else :value="formatDateTime(todoForm.startTime)" readonly />
-          </el-form-item>
-          <el-form-item label="结束时间">
-            <el-date-picker
-              v-if="isEditMode"
-              v-model="todoForm.endTime"
-              type="datetime"
-              placeholder="选择结束时间"
-              format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
-            />
-            <el-input v-else :value="formatDateTime(todoForm.endTime)" readonly />
-          </el-form-item>
-          <el-form-item label="优先级">
-            <el-select v-if="isEditMode" v-model="todoForm.priority" placeholder="请选择优先级">
-              <el-option label="不重要不紧急" :value="1" />
-              <el-option label="不重要但紧急" :value="2" />
-              <el-option label="重要不紧急" :value="3" />
-              <el-option label="重要且紧急" :value="4" />
-            </el-select>
-            <el-input v-else :value="priorityText" readonly />
-          </el-form-item>
-          <el-form-item label="状态">
-            <el-select v-if="isEditMode" v-model="todoForm.status" placeholder="请选择状态">
-              <el-option label="未完成" :value="1" />
-              <el-option label="完成" :value="2" />
-              <el-option label="放弃" :value="3" />
-            </el-select>
-            <el-input v-else :value="statusText" readonly />
-          </el-form-item>
-          <el-form-item label="是否置顶">
-            <el-switch v-if="isEditMode" v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
-            <el-input v-else :value="isTopText" readonly />
-          </el-form-item>
-          <el-form-item label="专注时间">
-            <el-input :value="formatFocusTime(todoForm.focusTime)" readonly />
-          </el-form-item>
-          <el-form-item label="标签">
-            <el-select v-if="isEditMode" v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
-              <el-option
-                v-for="item in tags"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <div v-else-if="todoForm.tagIdList && todoForm.tagIdList.length > 0" class="tags-container">
-              <el-tag 
-                v-for="tag in tags.filter(t => todoForm.tagIdList.includes(t.value))" 
-                :key="tag.value"
-                class="tag-item"
-              >
-                {{ tag.label }}
-              </el-tag>
+        <div v-if="todoForm.id !== 0" class="detail-content">
+          <div class="todo-section">
+            <div class="section-title">
+              <el-input v-if="isEditMode" v-model="todoForm.title" placeholder="请输入待办标题" />
+              <div v-else>{{ todoForm.title }}</div>
             </div>
-            <el-input v-else value="无标签" readonly />
-          </el-form-item>
-          <el-form-item v-if="isEditMode">
+            <div class="todo-content">
+              <el-input v-if="isEditMode" v-model="todoForm.content" type="textarea" placeholder="请输入待办内容" />
+              <div v-else class="todo-content-text">{{ todoForm.content }}</div>
+            </div>
+          </div>
+          
+          <el-collapse v-model="activeNames" class="options-collapse">
+            <el-collapse-item title="其他选项" name="1">
+              <el-form label-width="100px">
+                <el-form-item label="类别">
+                  <el-select v-if="isEditMode" v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
+                    <el-option
+                      v-for="item in categories"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                  <el-input v-else :value="todoForm.categoryName" readonly />
+                </el-form-item>
+                <el-form-item label="开始时间">
+                  <el-date-picker
+                    v-if="isEditMode"
+                    v-model="todoForm.startTime"
+                    type="datetime"
+                    placeholder="选择开始时间"
+                    format="YYYY-MM-DD HH:mm:ss"
+                    value-format="YYYY-MM-DD HH:mm:ss"
+                  />
+                  <el-input v-else :value="formatDateTime(todoForm.startTime)" readonly />
+                </el-form-item>
+                <el-form-item label="结束时间">
+                  <el-date-picker
+                    v-if="isEditMode"
+                    v-model="todoForm.endTime"
+                    type="datetime"
+                    placeholder="选择结束时间"
+                    format="YYYY-MM-DD HH:mm:ss"
+                    value-format="YYYY-MM-DD HH:mm:ss"
+                  />
+                  <el-input v-else :value="formatDateTime(todoForm.endTime)" readonly />
+                </el-form-item>
+                <el-form-item label="优先级">
+                  <el-select v-if="isEditMode" v-model="todoForm.priority" placeholder="请选择优先级">
+                    <el-option label="不重要不紧急" :value="1" />
+                    <el-option label="不重要但紧急" :value="2" />
+                    <el-option label="重要不紧急" :value="3" />
+                    <el-option label="重要且紧急" :value="4" />
+                  </el-select>
+                  <el-input v-else :value="priorityText" readonly />
+                </el-form-item>
+                <el-form-item label="状态">
+                  <el-select v-if="isEditMode" v-model="todoForm.status" placeholder="请选择状态">
+                    <el-option label="未完成" :value="1" />
+                    <el-option label="完成" :value="2" />
+                    <el-option label="放弃" :value="3" />
+                  </el-select>
+                  <el-input v-else :value="statusText" readonly />
+                </el-form-item>
+                <el-form-item label="是否置顶">
+                  <el-switch v-if="isEditMode" v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
+                  <el-input v-else :value="isTopText" readonly />
+                </el-form-item>
+                <el-form-item label="专注时间">
+                  <el-input :value="formatFocusTime(todoForm.focusTime)" readonly />
+                </el-form-item>
+                <el-form-item label="标签">
+                  <el-select v-if="isEditMode" v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
+                    <el-option
+                      v-for="item in tags"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                  <div v-else-if="todoForm.tagIdList && todoForm.tagIdList.length > 0" class="tags-container">
+                    <el-tag 
+                      v-for="tag in tags.filter(t => todoForm.tagIdList.includes(t.value))" 
+                      :key="tag.value"
+                      class="tag-item"
+                    >
+                      {{ tag.label }}
+                    </el-tag>
+                  </div>
+                  <el-input v-else value="无标签" readonly />
+                </el-form-item>
+              </el-form>
+            </el-collapse-item>
+          </el-collapse>
+          
+          <div class="button-actions" v-if="isEditMode">
             <el-button type="primary" @click="handleSubmit" :loading="submitting">
               确定
             </el-button>
             <el-button @click="handleCancel">
               取消
             </el-button>
-          </el-form-item>
-        </el-form>
+          </div>
+        </div>
         <el-empty v-else-if="!loading" description="未找到待办详情" />
       </div>
     </el-card>
@@ -360,6 +372,168 @@ watch(
   padding: 4px;
 }
 
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.todo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--el-border-color);
+}
+
+.section-title :deep(.el-input__wrapper) {
+  padding: 0;
+  box-shadow: none;
+}
+
+.section-title :deep(.el-input__inner) {
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  line-height: 1.6;
+}
+
+.section-title :deep(.el-input__wrapper:hover) {
+  box-shadow: none;
+}
+
+.section-title :deep(.el-input__wrapper.is-focus) {
+  box-shadow: none;
+}
+
+.todo-title {
+  font-size: 16px;
+  color: var(--el-text-color-primary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.todo-title :deep(.el-input__wrapper) {
+  padding: 0;
+  box-shadow: none;
+}
+
+.todo-title :deep(.el-input__inner) {
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  color: var(--el-text-color-primary);
+  line-height: 1.6;
+}
+
+.todo-title :deep(.el-input__wrapper:hover) {
+  box-shadow: none;
+}
+
+.todo-title :deep(.el-input__wrapper.is-focus) {
+  box-shadow: none;
+  border-bottom: 2px solid var(--el-color-primary);
+}
+
+.todo-content {
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
+  border: none;
+  padding: 0;
+}
+
+.todo-content-text {
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding: 12px;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
+  border: none;
+  margin: 0;
+}
+
+.todo-content :deep(.el-textarea__wrapper) {
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.todo-content :deep(.el-textarea__inner) {
+  border: 0px !important;
+  outline: none !important;
+  padding: 12px;
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  line-height: 1.8;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
+}
+
+.todo-content :deep(.el-textarea__wrapper:hover) {
+  box-shadow: none !important;
+}
+
+.todo-content :deep(.el-textarea__wrapper.is-focus) {
+  box-shadow: none !important;
+}
+
+.options-collapse {
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.options-collapse :deep(.el-collapse-item__header) {
+  border-bottom: none;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.options-collapse :deep(.el-collapse-item__wrap) {
+  border: none;
+}
+
+.collapse-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.option-label {
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.option-value {
+  color: var(--el-text-color-regular);
+  flex: 1;
+}
+
 .tags-container {
   display: flex;
   flex-wrap: wrap;
@@ -368,5 +542,11 @@ watch(
 
 .tag-item {
   margin: 0;
+}
+
+.button-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
 }
 </style>

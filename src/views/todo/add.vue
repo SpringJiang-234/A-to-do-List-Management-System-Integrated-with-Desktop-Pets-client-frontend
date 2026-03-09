@@ -95,6 +95,8 @@ const loadTags = async () => {
   }
 };
 
+const activeNames = ref<string[]>(["1"]);
+
 const handleCancel = () => {
   router.back();
 };
@@ -158,78 +160,81 @@ loadTags();
           </el-button>
         </div>
       </template>
-      <el-form label-width="100px">
-        <el-form-item label="标题" required>
-          <el-input v-model="todoForm.title" placeholder="请输入待办标题" />
-        </el-form-item>
-        <el-form-item label="内容">
-          <el-input v-model="todoForm.content" type="textarea" placeholder="请输入待办内容" />
-        </el-form-item>
-        <el-form-item label="类别">
-          <el-select v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
-            <el-option
-              v-for="item in categories"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="优先级">
-          <el-select v-model="todoForm.priority" placeholder="请选择优先级">
-            <el-option label="不重要不紧急" :value="1" />
-            <el-option label="不重要但紧急" :value="2" />
-            <el-option label="重要不紧急" :value="3" />
-            <el-option label="重要且紧急" :value="4" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="todoForm.status" placeholder="请选择状态">
-            <el-option label="未完成" :value="1" />
-            <el-option label="完成" :value="2" />
-            <el-option label="放弃" :value="3" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="开始时间">
-          <el-date-picker
-            v-model="todoForm.startTime"
-            type="datetime"
-            placeholder="选择开始时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item label="结束时间">
-          <el-date-picker
-            v-model="todoForm.endTime"
-            type="datetime"
-            placeholder="选择结束时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item label="是否置顶">
-          <el-switch v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
-        </el-form-item>
-        <el-form-item label="标签">
-          <el-select v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
-            <el-option
-              v-for="item in tags"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
+      <div class="detail-content">
+        <div class="todo-section">
+          <div class="section-title">
+            <el-input v-model="todoForm.title" placeholder="请输入待办标题" />
+          </div>
+          <div class="todo-content">
+            <el-input v-model="todoForm.content" type="textarea" placeholder="请输入待办内容" />
+          </div>
+        </div>
+        
+        <el-collapse v-model="activeNames" class="options-collapse">
+          <el-collapse-item title="其他选项" name="1">
+            <el-form label-width="100px">
+              <el-form-item label="类别">
+                <el-select v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
+                  <el-option
+                    v-for="item in categories"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="优先级">
+                  <el-select v-model="todoForm.priority" placeholder="请选择优先级">
+                    <el-option label="不重要不紧急" :value="1" />
+                    <el-option label="不重要但紧急" :value="2" />
+                    <el-option label="重要不紧急" :value="3" />
+                    <el-option label="重要且紧急" :value="4" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="开始时间">
+                <el-date-picker
+                  v-model="todoForm.startTime"
+                  type="datetime"
+                  placeholder="选择开始时间"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                />
+              </el-form-item>
+              <el-form-item label="结束时间">
+                <el-date-picker
+                  v-model="todoForm.endTime"
+                  type="datetime"
+                  placeholder="选择结束时间"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                />
+              </el-form-item>
+              <el-form-item label="是否置顶">
+                <el-switch v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
+              </el-form-item>
+              <el-form-item label="标签">
+                <el-select v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
+                  <el-option
+                    v-for="item in tags"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-collapse-item>
+        </el-collapse>
+        
+        <div class="button-actions">
           <el-button type="primary" @click="handleSubmit" :loading="submitting">
             确定
           </el-button>
           <el-button @click="handleCancel">
             取消
           </el-button>
-        </el-form-item>
-      </el-form>
+        </div>
+      </div>
     </el-card>
   </div>
 </template>
@@ -247,5 +252,152 @@ loadTags();
 
 .close-button {
   padding: 4px;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.todo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--el-border-color);
+}
+
+.section-title :deep(.el-input__wrapper) {
+  padding: 0;
+  box-shadow: none;
+}
+
+.section-title :deep(.el-input__inner) {
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  line-height: 1.6;
+}
+
+.section-title :deep(.el-input__wrapper:hover) {
+  box-shadow: none;
+}
+
+.section-title :deep(.el-input__wrapper.is-focus) {
+  box-shadow: none;
+}
+
+.todo-title {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.todo-title :deep(.el-input__wrapper) {
+  padding: 0;
+  box-shadow: none;
+}
+
+.todo-title :deep(.el-input__inner) {
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  color: var(--el-text-color-primary);
+  line-height: 1.6;
+}
+
+.todo-title :deep(.el-input__wrapper:hover) {
+  box-shadow: none;
+}
+
+.todo-title :deep(.el-input__wrapper.is-focus) {
+  box-shadow: none;
+  border-bottom: 2px solid var(--el-color-primary);
+}
+
+.todo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.todo-content :deep(.el-textarea__wrapper) {
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.todo-content :deep(.el-textarea__inner) {
+  border: 0px !important;
+  outline: none !important;
+  padding: 12px;
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  line-height: 1.8;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
+}
+
+.todo-content :deep(.el-textarea__wrapper:hover) {
+  box-shadow: none !important;
+}
+
+.todo-content :deep(.el-textarea__wrapper.is-focus) {
+  box-shadow: none !important;
+}
+
+.options-collapse {
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.options-collapse :deep(.el-collapse-item__header) {
+  border-bottom: none;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.options-collapse :deep(.el-collapse-item__wrap) {
+  border: none;
+}
+
+.collapse-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.option-label {
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.option-value {
+  flex: 1;
+}
+
+.button-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
 }
 </style>
