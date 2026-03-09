@@ -1,13 +1,76 @@
 <script setup lang="ts">
 import { message } from "@/utils/message";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import SearchCard from "@/components/SearchCard.vue";
 import GameIconsTomato from "~icons/game-icons/tomato?width=16px&height=16px";
 import StreamlineSharpResetClockSolid from "~icons/streamline-sharp/reset-clock-solid?width=16px&height=16px";
 import MeteorIconsClockRotate from "~icons/meteor-icons/clock-rotate?width=16px&height=16px";
+import { useTodoStore } from "@/store/modules/todo";
+import { watch } from "vue";
+import { userKey, type DataInfo } from "@/utils/auth";
+import { storageLocal } from "@pureadmin/utils";
 
 defineOptions({
   name: "Soonstart"
+});
+
+const todoStore = useTodoStore();
+const todoId = ref<number | null>(null);
+const searchResults = ref<any[]>([]);
+
+const loadSearchResults = async () => {
+  console.log('loadSearchResults 被调用');
+  console.log('todoStore.filter:', todoStore.filter);
+  
+  const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+  console.log('userInfo:', userInfo);
+  
+  if (!userInfo?.id) {
+    console.error('用户信息不存在');
+    return;
+  }
+  
+  try {
+    const response = await fetch('http://localhost:8848/api/todo/list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userInfo.token}`
+      },
+      body: JSON.stringify({
+        userId: userInfo.id,
+        title: todoStore.filter.title,
+        content: todoStore.filter.content,
+        categoryIdList: todoStore.filter.categories.map((cat: string) => parseInt(cat)),
+        tagIdList: todoStore.filter.tags.map((tag: string) => parseInt(tag)),
+        priorityList: todoStore.filter.priorities.map((prio: string) => parseInt(prio)),
+        statusList: todoStore.filter.status.map((stat: string) => parseInt(stat)),
+        isTopList: todoStore.filter.isTop.map((top: string) => parseInt(top))
+      })
+    });
+    const data = await response.json();
+    console.log('API 响应:', data);
+    if (data.code === 200) {
+      searchResults.value = data.data || [];
+      console.log('搜索结果:', searchResults.value);
+      console.log('searchResults.value.length:', searchResults.value.length);
+    } else {
+      console.error('API 返回错误:', data.msg);
+    }
+  } catch (error) {
+    console.error('加载搜索结果失败:', error);
+  }
+};
+
+watch(() => todoStore.filter, () => {
+  console.log('todoStore.filter 发生变化');
+  searchResults.value = [];
+  loadSearchResults();
+}, { deep: true });
+
+onMounted(() => {
+  console.log('onMounted 被调用');
+  loadSearchResults();
 });
 
 const valueType = ref("番茄钟"); //选择计时方式:番茄钟、正计时、倒计时
@@ -29,7 +92,7 @@ const handleConfirm = async () => {
   try {
     const params = new URLSearchParams();
     params.append("valueType", valueType.value);
-    
+
     if (valueType.value === "倒计时") {
       params.append("timeValue1", timeValue1.value.toISOString());
       message(`倒计时时长：${formatTime(timeValue1.value)}`, { type: "success" });
@@ -41,7 +104,7 @@ const handleConfirm = async () => {
         `专注时长：${formatTime(timeValue2.value)}，休息时长：${formatTime(timeValue3.value)}，循环次数：${timeValue4.value}`, { type: "success" }
       );
     }
-    
+
     await (window as any).ipcRenderer.invoke("open-win", `compound-timer?${params.toString()}`);
   } catch (error) {
     console.error("打开计时窗口失败:", error);
@@ -77,25 +140,27 @@ const options = [
       <!-- 要实现可能需要todo加一个计时字段 -->
       <!-- 根据选择的计时类型弹出新的窗口用于计时 -->
       <div class="icon-container">
-        <GameIconsTomato
-          width="64"
-          height="64"
-          @click="handleIconClick('番茄钟')"
-        />
-        <StreamlineSharpResetClockSolid
-          width="64"
-          height="64"
-          @click="handleIconClick('正计时')"
-        />
-        <MeteorIconsClockRotate
-          width="64"
-          height="64"
-          @click="handleIconClick('倒计时')"
-        />
+        <GameIconsTomato width="64" height="64" @click="handleIconClick('番茄钟')" />
+        <StreamlineSharpResetClockSolid width="64" height="64" @click="handleIconClick('正计时')" />
+        <MeteorIconsClockRotate width="64" height="64" @click="handleIconClick('倒计时')" />
       </div>
     </el-card>
     <SearchCard :show-time-view-button="false" />
-    <!-- 直接放待办卡片 -->
+    <!-- 单选待办 -->
+    <el-card shadow="never">
+      <template #header>
+        选择要计时的待办
+      </template>
+      <el-radio-group v-model="todoId">
+        <el-radio 
+          v-for="todo in searchResults" 
+          :key="todo.id" 
+          :value="todo.id"
+        >
+          {{ todo.title }}
+        </el-radio>
+      </el-radio-group>
+    </el-card>
     <el-card shadow="never">
       <template #header>
         <div class="card-header">
@@ -104,17 +169,8 @@ const options = [
           </div>
         </div>
       </template>
-      <el-select
-        v-model="valueType"
-        placeholder="选择计时方式"
-        style="width: 220px"
-      >
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
+      <el-select v-model="valueType" placeholder="选择计时方式" style="width: 220px">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <div class="time-pickers">
         <!-- 如果是正计时，只需要按钮开始 -->
