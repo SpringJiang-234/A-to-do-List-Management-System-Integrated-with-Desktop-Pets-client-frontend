@@ -186,7 +186,7 @@ async function handleMenuAction(action: string) {
           }"
         ></div>
         <div class="todo-info">
-          <el-tooltip :content="activity.title" placement="top" :show-after="1000" :show-arrow="false">
+          <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
             <span 
               :class="['todo-title', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
               @click.stop="handleTextClick(activity)"

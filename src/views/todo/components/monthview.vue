@@ -160,7 +160,7 @@ const handleMenuAction = async (action: string) => {
           @click="() => handleClickTodo(todo)"
           @contextmenu.prevent="handleRightClick($event, todo)"
         >
-          <el-tooltip :content="todo.title" placement="top" :show-after="1000" :show-arrow="false">
+          <el-tooltip :content="todo.title" placement="top-start" :show-after="1000" :show-arrow="true">
             <span>{{ todo.title }}</span>
           </el-tooltip>
         </div>
