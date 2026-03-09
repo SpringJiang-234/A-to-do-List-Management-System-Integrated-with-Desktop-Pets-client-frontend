@@ -3,12 +3,18 @@ import { ref, onMounted } from "vue";
 import { message } from "@/utils/message";
 import AnnounceList from "@/components/AnnounceList.vue";
 import { getAnnouncementList } from "@/api/announcement";
+import dayjs from "dayjs";
 
 defineOptions({
   name: "Announcement"
 });
 
 const activities = ref([]);
+
+const formatTimestamp = (timestamp: string) => {
+  if (!timestamp) return "";
+  return dayjs(timestamp).format("YYYY-MM-DD HH:mm:ss");
+};
 
 onMounted(async () => {
   try {
@@ -17,7 +23,7 @@ onMounted(async () => {
       activities.value = result.data.map((item: any) => ({
         title: item.title,
         content: item.content,
-        timestamp: item.updateTime,
+        timestamp: formatTimestamp(item.updateTime),
         isCompleted: item.isTop === "是"
       }));
     } else {

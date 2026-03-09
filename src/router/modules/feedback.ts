@@ -16,6 +16,15 @@ export default {
       meta: {
         title: "反馈"
       }
+    },
+    {
+      path: "/feedback/add",
+      name: "FeedbackAdd",
+      component: () => import("@/views/feedback/add.vue"),
+      meta: {
+        title: "提交反馈",
+        showLink: false
+      }
     }
   ]
 };
