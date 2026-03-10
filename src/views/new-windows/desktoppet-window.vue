@@ -29,8 +29,8 @@ const gifPath = "/祥子鼓掌.gif";
 }
 
 .gif-container img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100px;
+  height: 100px;
   display: block;
 }
 </style>
