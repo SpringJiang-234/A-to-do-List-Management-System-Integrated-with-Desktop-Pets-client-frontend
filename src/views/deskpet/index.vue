@@ -167,6 +167,7 @@ onMounted(() => {
 
 .nickname-input :deep(.el-input__inner) {
   text-align: center;
+  font-size: 18px;
 }
 
 .demo-progress {
