@@ -216,7 +216,7 @@ const topOptions = [
 const timeRules = [
   {
     value: "0",
-    label: "列表"
+    label: "列表视图"
   },
   {
     value: "1",
