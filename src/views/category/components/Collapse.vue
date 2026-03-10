@@ -60,7 +60,22 @@ const loadCategories = async () => {
     const systemCategories = systemResponse.code === 200 ? systemResponse.data : [];
     const userCategories = userResponse.code === 200 ? userResponse.data : [];
 
-    categories.value = [...systemCategories, ...userCategories];
+    const showWork = localStorage.getItem('showWork') !== 'false';
+    const showStudy = localStorage.getItem('showStudy') !== 'false';
+    const showEntertainment = localStorage.getItem('showEntertainment') !== 'false';
+
+    const allCategories = [...systemCategories, ...userCategories].filter(cat => {
+      if (cat.name === '工作') {
+        return showWork;
+      } else if (cat.name === '学习') {
+        return showStudy;
+      } else if (cat.name === '娱乐') {
+        return showEntertainment;
+      }
+      return true;
+    });
+
+    categories.value = allCategories;
 
     for (const category of categories.value) {
       await loadCategoryTodos(category.id, category.name);
