@@ -29,6 +29,7 @@ interface Activity {
   endTime?: string;
   status: number;
   priority?: number;
+  isTop?: number;
   color?: string;
 }
 
@@ -321,7 +322,8 @@ const loadTodoList = async () => {
                 startTime: todo.startTime,
                 endTime: todo.endTime,
                 status: todo.status,
-                priority: todo.priority
+                priority: todo.priority,
+                isTop: todo.isTop
               });
             }
           });

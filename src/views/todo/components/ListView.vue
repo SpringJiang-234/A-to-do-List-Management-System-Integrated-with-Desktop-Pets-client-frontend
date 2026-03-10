@@ -12,6 +12,7 @@ interface Activity {
     endTime?: string;
     status: number;
     priority?: number;
+    isTop?: number;
     color?: string;
 }
 
@@ -27,7 +28,7 @@ const emit = defineEmits<{
 const router = useRouter();
 
 const activities = computed(() => {
-    return props.originalTodoList.map(todo => ({
+    const mappedTodos = props.originalTodoList.map(todo => ({
         id: todo.id,
         title: todo.title,
         content: todo.content,
@@ -36,8 +37,14 @@ const activities = computed(() => {
         endTime: todo.endTime,
         status: todo.status,
         priority: todo.priority,
+        isTop: todo.isTop,
         color: undefined
     }));
+    
+    const pinnedTodos = mappedTodos.filter(todo => todo.isTop === 2);
+    const unpinnedTodos = mappedTodos.filter(todo => todo.isTop !== 2);
+    
+    return [...pinnedTodos, ...unpinnedTodos];
 });
 
 function handleTodoClick(activity: Activity) {

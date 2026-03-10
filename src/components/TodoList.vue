@@ -14,6 +14,7 @@ interface Activity {
   endTime?: string;
   status: number;
   priority?: number;
+  isTop?: number;
   color?: string;
 }
 
@@ -36,6 +37,10 @@ const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const currentIndex = ref(-1);
 const selectedActivity = ref<Activity | null>(null);
+
+const pinnedIndex = computed(() => {
+  return props.activities.findIndex(activity => activity.isTop !== 2);
+});
 
 const getPriorityColor = (priority?: number) => {
   switch (priority) {
@@ -166,12 +171,52 @@ async function handleMenuAction(action: string) {
       </div>
     </el-popover>
 
+    <div v-if="pinnedIndex > 0" class="pinned-section">
+      <div class="pinned-title">置顶</div>
+      <div
+        v-for="(activity, index) in activities.slice(0, pinnedIndex)"
+        :key="index"
+        :class="['todo-item', { 'todo-abandoned': activity.status === 3 }]"
+        @click="handleClick(activity)"
+        @contextmenu.prevent="handleRightClick($event, index)"
+      >
+        <div class="todo-header">
+          <div
+            :class="
+              activity.status === 2 ? 'custom-node-completed' : 'custom-node'
+            "
+            :style="{
+              borderColor: getPriorityColor(activity.priority),
+              backgroundColor: activity.status === 2
+                ? getPriorityColor(activity.priority)
+                : 'white'
+            }"
+          ></div>
+          <div class="todo-info">
+            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+              <span 
+                :class="['todo-title', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
+                @click.stop="handleTextClick(activity)"
+              >
+                {{ activity.title }}
+              </span>
+            </el-tooltip>
+            <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startTime, activity.endTime) }}</span>
+          </div>
+        </div>
+        <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">
+          {{ activity.content }}
+        </div>
+      </div>
+      <div class="divider"></div>
+    </div>
+
     <div
-      v-for="(activity, index) in activities"
+      v-for="(activity, index) in activities.slice(pinnedIndex)"
       :key="index"
       :class="['todo-item', { 'todo-abandoned': activity.status === 3 }]"
       @click="handleClick(activity)"
-      @contextmenu.prevent="handleRightClick($event, index)"
+      @contextmenu.prevent="handleRightClick($event, pinnedIndex + index)"
     >
       <div class="todo-header">
         <div
@@ -209,6 +254,25 @@ async function handleMenuAction(action: string) {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.pinned-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pinned-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  padding: 8px 0;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--el-border-color);
+  margin: 8px 0;
 }
 
 .todo-item {
