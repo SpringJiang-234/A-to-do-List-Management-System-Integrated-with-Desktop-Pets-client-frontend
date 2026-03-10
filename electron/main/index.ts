@@ -205,6 +205,7 @@ ipcMain.handle("open-win", (_, arg) => {
     title: isTransparent ? "" : "Main window",
     icon: isTransparent ? undefined : join(process.env.PUBLIC, "favicon.ico"),
     center: true,
+    alwaysOnTop: true,
     show: false,
     webPreferences: {
       preload,
@@ -229,6 +230,9 @@ ipcMain.handle("open-win", (_, arg) => {
   
   childWindow.once('ready-to-show', () => {
     childWindow.show();
+    childWindow.setAlwaysOnTop(true, 'screen-saver');
+    childWindow.moveTop();
+    childWindow.focus();
   });
   
   return { success: true };
