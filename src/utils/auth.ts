@@ -75,6 +75,9 @@ export function setTokenFromLogin(data: any) {
   const { token, username, account, role } = data;
   const { isRemembered, loginDay } = useUserStoreHook();
   
+  // 先清除旧的 localStorage 和 cookie
+  removeToken();
+  
   const dataWithRoles = {
     ...data,
     roles: [role],
