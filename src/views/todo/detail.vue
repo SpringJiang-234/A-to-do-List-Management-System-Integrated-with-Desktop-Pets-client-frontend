@@ -9,6 +9,7 @@ import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import { Close } from "@element-plus/icons-vue";
 import Vditor from "./components/Vditor.vue";
+import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 defineOptions({
   name: "TodoDetail"
@@ -16,6 +17,7 @@ defineOptions({
 
 const route = useRoute();
 const router = useRouter();
+const desktopPetStore = useDesktopPetStoreHook();
 
 const todoId = ref<number>(0);
 const todoForm = ref({
@@ -202,7 +204,11 @@ const handleSubmit = async () => {
 
   try {
     submitting.value = true;
+    const oldStatus = todoForm.value.status;
     await updateTodo(todoForm.value);
+    if (todoForm.value.status === 2 && oldStatus !== 2) {
+      await desktopPetStore.loadDesktopPetInfo();
+    }
     message("修改成功", { type: "success" });
     router.back();
   } catch (error) {

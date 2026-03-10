@@ -9,12 +9,14 @@ import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import { Close } from "@element-plus/icons-vue";
 import Vditor from "./components/Vditor.vue";
+import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 defineOptions({
   name: "TodoAdd"
 });
 
 const router = useRouter();
+const desktopPetStore = useDesktopPetStoreHook();
 
 const todoForm = ref({
   title: "",
@@ -143,6 +145,7 @@ const handleSubmit = async () => {
       isTop: todoForm.value.isTop,
       tagIdList: todoForm.value.tagIdList
     });
+    await desktopPetStore.loadDesktopPetInfo();
     message("添加成功", { type: "success" });
     router.back();
   } catch (error) {

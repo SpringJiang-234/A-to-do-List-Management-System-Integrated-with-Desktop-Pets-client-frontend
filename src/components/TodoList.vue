@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { completeTodo, cancelCompleteTodo, abandonTodo, deleteTodo } from "@/api/todo";
 import dayjs from "dayjs";
+import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 interface Activity {
   id: number;
@@ -32,6 +33,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const router = useRouter();
+const desktopPetStore = useDesktopPetStoreHook();
 
 const contextMenuVisible = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
@@ -79,6 +81,7 @@ async function handleClick(activity: Activity) {
     } else {
       await completeTodo(activity.id);
       activity.status = 2;
+      await desktopPetStore.loadDesktopPetInfo();
       message("完成待办", { type: "success" });
     }
     emit("click", activity);
