@@ -76,7 +76,7 @@ const formatTimestamp = (timestamp: string, startTime?: string, endTime?: string
   if (!timestamp) return "";
   
   const formatTime = (time: string) => {
-    return dayjs(time).format("YYYY-MM-DD HH:mm:ss");
+    return dayjs(time).format("YYYY-MM-DD HH:mm");
   };
   
   if (startTime && endTime && startTime !== endTime) {
