@@ -85,8 +85,8 @@ const loadTags = async () => {
       const userTags = userResponse.code === 200 ? userResponse.data : [];
       
       const allTags = [
-        ...systemTags.map(tag => ({ value: tag.id, label: tag.name })),
-        ...userTags.map(tag => ({ value: tag.id, label: tag.name }))
+        ...systemTags.map(tag => ({ value: tag.id, label: tag.name, color: tag.color })),
+        ...userTags.map(tag => ({ value: tag.id, label: tag.name, color: tag.color }))
       ];
       
       tags.value = allTags;
@@ -94,6 +94,19 @@ const loadTags = async () => {
   } catch (error) {
     console.error("加载标签列表失败:", error);
   }
+};
+
+const convertToRgbaWithOpacity = (hexColor: string, opacity: number = 0.3): string => {
+  if (!hexColor || !hexColor.startsWith('#')) {
+    return hexColor;
+  }
+  
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
 const activeNames = ref<string[]>(["1"]);
@@ -183,6 +196,9 @@ loadTags();
         <el-collapse v-model="activeNames" class="options-collapse">
           <el-collapse-item title="其他选项" name="1">
             <el-form label-width="100px">
+              <el-form-item label="是否置顶">
+                <el-switch v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
+              </el-form-item>
               <el-form-item label="类别">
                 <el-select v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
                   <el-option
@@ -193,6 +209,18 @@ loadTags();
                   />
                 </el-select>
               </el-form-item>
+              <el-form-item label="标签">
+                <el-select v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
+                  <el-option
+                    v-for="item in tags"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                    <el-tag :style="{ backgroundColor: convertToRgbaWithOpacity(item.color), borderColor: convertToRgbaWithOpacity(item.color), color: '#000000' }">{{ item.label }}</el-tag>
+                  </el-option>
+                </el-select>
+              </el-form-item>
               <el-form-item label="优先级">
                   <el-select v-model="todoForm.priority" placeholder="请选择优先级">
                     <el-option label="不重要不紧急" :value="1" />
@@ -201,7 +229,7 @@ loadTags();
                     <el-option label="重要且紧急" :value="4" />
                   </el-select>
                 </el-form-item>
-                <el-form-item label="开始时间">
+              <el-form-item label="开始时间">
                 <el-date-picker
                   v-model="todoForm.startTime"
                   type="datetime"
@@ -218,19 +246,6 @@ loadTags();
                   format="YYYY-MM-DD HH:mm:ss"
                   value-format="YYYY-MM-DD HH:mm:ss"
                 />
-              </el-form-item>
-              <el-form-item label="是否置顶">
-                <el-switch v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
-              </el-form-item>
-              <el-form-item label="标签">
-                <el-select v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
-                  <el-option
-                    v-for="item in tags"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
               </el-form-item>
             </el-form>
           </el-collapse-item>

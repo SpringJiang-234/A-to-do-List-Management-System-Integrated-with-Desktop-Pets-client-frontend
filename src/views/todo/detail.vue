@@ -118,8 +118,8 @@ const loadTags = async () => {
       const userTags = userResponse.code === 200 ? userResponse.data : [];
       
       const allTags = [
-        ...systemTags.map(tag => ({ value: tag.id, label: tag.name })),
-        ...userTags.map(tag => ({ value: tag.id, label: tag.name }))
+        ...systemTags.map(tag => ({ value: tag.id, label: tag.name, color: tag.color })),
+        ...userTags.map(tag => ({ value: tag.id, label: tag.name, color: tag.color }))
       ];
       
       tags.value = allTags;
@@ -127,6 +127,19 @@ const loadTags = async () => {
   } catch (error) {
     console.error("加载标签列表失败:", error);
   }
+};
+
+const convertToRgbaWithOpacity = (hexColor: string, opacity: number = 0.3): string => {
+  if (!hexColor || !hexColor.startsWith('#')) {
+    return hexColor;
+  }
+  
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
 const fetchTodoDetails = async () => {
@@ -266,6 +279,10 @@ watch(
           <el-collapse v-model="activeNames" class="options-collapse">
             <el-collapse-item title="其他选项" name="1">
               <el-form label-width="100px">
+                <el-form-item label="是否置顶">
+                  <el-switch v-if="isEditMode" v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
+                  <el-input v-else :value="isTopText" readonly />
+                </el-form-item>
                 <el-form-item label="类别">
                   <el-select v-if="isEditMode" v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
                     <el-option
@@ -276,6 +293,49 @@ watch(
                     />
                   </el-select>
                   <el-input v-else :value="todoForm.categoryName" readonly />
+                </el-form-item>
+                <el-form-item label="标签">
+                  <el-select v-if="isEditMode" v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
+                    <el-option
+                      v-for="item in tags"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                      <el-tag :style="{ backgroundColor: convertToRgbaWithOpacity(item.color), borderColor: convertToRgbaWithOpacity(item.color), color: '#000000' }">{{ item.label }}</el-tag>
+                    </el-option>
+                  </el-select>
+                  <div v-else-if="todoForm.tagIdList && todoForm.tagIdList.length > 0" class="tags-container">
+                    <el-tag 
+                      v-for="tag in tags.filter(t => todoForm.tagIdList.includes(t.value))" 
+                      :key="tag.value"
+                      class="tag-item"
+                      :style="{ backgroundColor: convertToRgbaWithOpacity(tag.color), borderColor: convertToRgbaWithOpacity(tag.color), color: '#000000' }"
+                    >
+                      {{ tag.label }}
+                    </el-tag>
+                  </div>
+                  <el-input v-else value="无标签" readonly />
+                </el-form-item>
+                <el-form-item label="优先级">
+                  <el-select v-if="isEditMode" v-model="todoForm.priority" placeholder="请选择优先级">
+                    <el-option label="不重要不紧急" :value="1" />
+                    <el-option label="不重要但紧急" :value="2" />
+                    <el-option label="重要不紧急" :value="3" />
+                    <el-option label="重要且紧急" :value="4" />
+                  </el-select>
+                  <el-input v-else :value="priorityText" readonly />
+                </el-form-item>
+                <el-form-item label="专注时间">
+                  <el-input :value="formatFocusTime(todoForm.focusTime)" readonly />
+                </el-form-item>
+                <el-form-item label="状态">
+                  <el-select v-if="isEditMode" v-model="todoForm.status" placeholder="请选择状态">
+                    <el-option label="未完成" :value="1" />
+                    <el-option label="完成" :value="2" />
+                    <el-option label="放弃" :value="3" />
+                  </el-select>
+                  <el-input v-else :value="statusText" readonly />
                 </el-form-item>
                 <el-form-item label="开始时间">
                   <el-date-picker
@@ -298,50 +358,6 @@ watch(
                     value-format="YYYY-MM-DD HH:mm:ss"
                   />
                   <el-input v-else :value="formatDateTime(todoForm.endTime)" readonly />
-                </el-form-item>
-                <el-form-item label="优先级">
-                  <el-select v-if="isEditMode" v-model="todoForm.priority" placeholder="请选择优先级">
-                    <el-option label="不重要不紧急" :value="1" />
-                    <el-option label="不重要但紧急" :value="2" />
-                    <el-option label="重要不紧急" :value="3" />
-                    <el-option label="重要且紧急" :value="4" />
-                  </el-select>
-                  <el-input v-else :value="priorityText" readonly />
-                </el-form-item>
-                <el-form-item label="状态">
-                  <el-select v-if="isEditMode" v-model="todoForm.status" placeholder="请选择状态">
-                    <el-option label="未完成" :value="1" />
-                    <el-option label="完成" :value="2" />
-                    <el-option label="放弃" :value="3" />
-                  </el-select>
-                  <el-input v-else :value="statusText" readonly />
-                </el-form-item>
-                <el-form-item label="是否置顶">
-                  <el-switch v-if="isEditMode" v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
-                  <el-input v-else :value="isTopText" readonly />
-                </el-form-item>
-                <el-form-item label="专注时间">
-                  <el-input :value="formatFocusTime(todoForm.focusTime)" readonly />
-                </el-form-item>
-                <el-form-item label="标签">
-                  <el-select v-if="isEditMode" v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
-                    <el-option
-                      v-for="item in tags"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
-                  </el-select>
-                  <div v-else-if="todoForm.tagIdList && todoForm.tagIdList.length > 0" class="tags-container">
-                    <el-tag 
-                      v-for="tag in tags.filter(t => todoForm.tagIdList.includes(t.value))" 
-                      :key="tag.value"
-                      class="tag-item"
-                    >
-                      {{ tag.label }}
-                    </el-tag>
-                  </div>
-                  <el-input v-else value="无标签" readonly />
                 </el-form-item>
               </el-form>
             </el-collapse-item>
