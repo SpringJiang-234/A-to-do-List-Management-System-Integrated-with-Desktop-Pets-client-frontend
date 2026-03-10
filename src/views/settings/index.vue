@@ -28,7 +28,7 @@ const categoryList = ref<any[]>([]);
 const tagList = ref<any[]>([]);
 const newCategoryName = ref("");
 const newTagName = ref("");
-const newTagColor = ref("#409EFF");
+const newTagColor = ref("rgba(64, 158, 255, 0.3)");
 
 const userId = ref<number>(0);
 
@@ -205,6 +205,19 @@ async function deleteTagItem(tag: any) {
       ElMessage.error("删除标签失败");
     }
   }
+}
+
+function convertToRgbaWithOpacity(hexColor: string, opacity: number = 0.3): string {
+  if (!hexColor || !hexColor.startsWith('#')) {
+    return hexColor;
+  }
+  
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
 function updateRouteShowLink() {
@@ -428,15 +441,14 @@ watch(showEntertainment, (newVal) => {
         <div class="add-tag">
           <el-input v-model="newTagName" placeholder="请输入标签名称" style="width: 200px; margin-right: 10px;"
             @keyup.enter="addTag" />
-          <el-color-picker v-model="newTagColor" />
+          <el-color-picker v-model="newTagColor" :alpha="0.3" />
           <el-button type="primary" @click="addTag" style="margin-left: 10px;">添加标签</el-button>
         </div>
         <VueDraggable v-model="tagList" :animation="150" ghost-class="ghost" class="tag-list" @update="onTagUpdate">
           <div v-for="tag in tagList" :key="tag.id" class="tag-item">
             <div class="tag-content">
               <span class="drag-handle">⋮⋮</span>
-              <span class="tag-color" :style="{ backgroundColor: tag.color }"></span>
-              <span class="tag-name">{{ tag.name }}</span>
+              <el-tag :style="{ backgroundColor: convertToRgbaWithOpacity(tag.color), borderColor: convertToRgbaWithOpacity(tag.color), color: '#000000' }">{{ tag.name }}</el-tag>
             </div>
             <el-button type="danger" size="small" text @click="deleteTagItem(tag)">
               删除
@@ -537,8 +549,7 @@ watch(showEntertainment, (newVal) => {
   user-select: none;
 }
 
-.category-name,
-.tag-name {
+.category-name {
   font-size: 14px;
   color: #303133;
 }
@@ -549,14 +560,6 @@ watch(showEntertainment, (newVal) => {
   background-color: #67c23a;
   color: white;
   border-radius: 4px;
-}
-
-.tag-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px #dcdfe6;
 }
 
 .ghost {
