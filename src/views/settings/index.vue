@@ -20,6 +20,10 @@ const valueReport = ref(localStorage.getItem('valueReport') !== 'false');
 const valueAnnouncement = ref(localStorage.getItem('valueAnnouncement') !== 'false');
 const valueFeedback = ref(localStorage.getItem('valueFeedback') !== 'false');
 
+const hideWork = ref(localStorage.getItem('hideWork') === 'true');
+const hideStudy = ref(localStorage.getItem('hideStudy') === 'true');
+const hideEntertainment = ref(localStorage.getItem('hideEntertainment') === 'true');
+
 const categoryList = ref<any[]>([]);
 const tagList = ref<any[]>([]);
 const newCategoryName = ref("");
@@ -41,7 +45,7 @@ async function loadCategories() {
   try {
     const res = await getCategoryList(userId.value);
     if (res.code === 200) {
-      categoryList.value = res.data || [];
+      categoryList.value = (res.data || []).sort((a, b) => b.sortOrder - a.sortOrder);
     }
   } catch (error) {
     console.error("加载分类失败:", error);
@@ -52,7 +56,7 @@ async function loadTags() {
   try {
     const res = await getTagList(userId.value);
     if (res.code === 200) {
-      tagList.value = res.data || [];
+      tagList.value = (res.data || []).sort((a, b) => b.sortOrder - a.sortOrder);
     }
   } catch (error) {
     console.error("加载标签失败:", error);
@@ -61,10 +65,12 @@ async function loadTags() {
 
 async function onCategoryUpdate() {
   try {
-    for (let i = 0; i < categoryList.value.length; i++) {
+    const total = categoryList.value.length;
+    for (let i = 0; i < total; i++) {
       const category = categoryList.value[i];
-      if (category.sortOrder !== i + 1) {
-        category.sortOrder = i + 1;
+      const newSortOrder = total - i;
+      if (category.sortOrder !== newSortOrder) {
+        category.sortOrder = newSortOrder;
         await updateCategory({
           id: category.id,
           name: category.name,
@@ -82,10 +88,12 @@ async function onCategoryUpdate() {
 
 async function onTagUpdate() {
   try {
-    for (let i = 0; i < tagList.value.length; i++) {
+    const total = tagList.value.length;
+    for (let i = 0; i < total; i++) {
       const tag = tagList.value[i];
-      if (tag.sortOrder !== i + 1) {
-        tag.sortOrder = i + 1;
+      const newSortOrder = total - i;
+      if (tag.sortOrder !== newSortOrder) {
+        tag.sortOrder = newSortOrder;
         await updateTag({
           id: tag.id,
           name: tag.name,
@@ -108,9 +116,10 @@ async function addCategory() {
     return;
   }
   try {
+    const maxSortOrder = categoryList.value.length > 0 ? categoryList.value[0].sortOrder + 1 : 1;
     const res = await insertCategory({
       name: newCategoryName.value.trim(),
-      sortOrder: categoryList.value.length + 1
+      sortOrder: maxSortOrder
     });
     if (res.code === 200) {
       ElMessage.success("添加分类成功");
@@ -157,10 +166,11 @@ async function addTag() {
     return;
   }
   try {
+    const maxSortOrder = tagList.value.length > 0 ? tagList.value[0].sortOrder + 1 : 1;
     const res = await insertTag({
       name: newTagName.value.trim(),
       color: newTagColor.value,
-      sortOrder: tagList.value.length + 1
+      sortOrder: maxSortOrder
     });
     if (res.code === 200) {
       ElMessage.success("添加标签成功");
@@ -225,7 +235,7 @@ function updateRouteShowLink() {
       } else if (route.path === '/feedback') {
         route.meta.showLink = settings.feedback;
       }
-      
+
       if (route.children) {
         updateRoutes(route.children);
       }
@@ -233,15 +243,15 @@ function updateRouteShowLink() {
   }
 
   const permissionStore = usePermissionStoreHook();
-  
+
   updateRoutes(permissionStore.constantMenus as any[]);
   updateRoutes(router.options.routes as any[]);
-  
+
   permissionStore.handleWholeMenus([]);
-  
+
   const wholeMenus = permissionStore.wholeMenus;
   updateRoutes(wholeMenus as any[]);
-  
+
   emitter.emit("menuChange", true);
 }
 
@@ -273,6 +283,16 @@ watch(valueFeedback, (newVal) => {
   localStorage.setItem('valueFeedback', String(newVal));
   updateRouteShowLink();
 });
+
+watch(hideWork, (newVal) => {
+  localStorage.setItem('hideWork', String(newVal));
+});
+watch(hideStudy, (newVal) => {
+  localStorage.setItem('hideStudy', String(newVal));
+});
+watch(hideEntertainment, (newVal) => {
+  localStorage.setItem('hideEntertainment', String(newVal));
+});
 </script>
 
 <template>
@@ -289,7 +309,7 @@ watch(valueFeedback, (newVal) => {
       <div class="switch-container">
         <el-switch v-model="valueCategory" class="mb-2" active-text="显示分类" inactive-text="隐藏分类" />
         <el-switch v-model="valueTag" class="mb-2" active-text="显示标签" inactive-text="隐藏标签" />
-        <el-switch v-model="valuePriority" class="mb-2" active-text="显示优先级" inactive-text="隐藏优先级" /> 
+        <el-switch v-model="valuePriority" class="mb-2" active-text="显示优先级" inactive-text="隐藏优先级" />
         <el-switch v-model="valueStartTimer" class="mb-2" active-text="显示开始计时" inactive-text="隐藏开始计时" />
         <el-switch v-model="valueReport" class="mb-2" active-text="显示报表" inactive-text="隐藏报表" />
         <el-switch v-model="valueAnnouncement" class="mb-2" active-text="显示公告" inactive-text="隐藏公告" />
@@ -331,39 +351,29 @@ watch(valueFeedback, (newVal) => {
         </div>
       </template>
       <div class="category-settings">
+        <div class="system-category-management">
+          <h5>系统分类管理</h5>
+          <div class="switch-container">
+            <el-switch v-model="hideWork" class="mb-2" active-text="显示工作" inactive-text="隐藏工作" />
+            <el-switch v-model="hideStudy" class="mb-2" active-text="显示学习" inactive-text="隐藏学习" />
+            <el-switch v-model="hideEntertainment" class="mb-2" active-text="显示娱乐" inactive-text="隐藏娱乐" />
+          </div>
+        </div>
         <div class="add-category">
-          <el-input
-            v-model="newCategoryName"
-            placeholder="请输入分类名称"
-            style="width: 200px; margin-right: 10px;"
-            @keyup.enter="addCategory"
-          />
+          <el-input v-model="newCategoryName" placeholder="请输入分类名称" style="width: 200px; margin-right: 10px;"
+            @keyup.enter="addCategory" />
           <el-button type="primary" @click="addCategory">添加分类</el-button>
         </div>
-        <VueDraggable
-          v-model="categoryList"
-          :animation="150"
-          ghost-class="ghost"
-          class="category-list"
-          @update="onCategoryUpdate"
-        >
-          <div
-            v-for="category in categoryList"
-            :key="category.id"
-            class="category-item"
-          >
+        <VueDraggable v-model="categoryList" :animation="150" ghost-class="ghost" class="category-list"
+          @update="onCategoryUpdate">
+          <div v-for="category in categoryList" :key="category.id" class="category-item">
             <div class="category-content">
               <span class="drag-handle">⋮⋮</span>
               <span class="category-name">{{ category.name }}</span>
               <span v-if="category.isDefault === 1" class="default-tag">默认</span>
             </div>
-            <el-button
-              v-if="category.isDefault !== 1"
-              type="danger"
-              size="small"
-              text
-              @click="deleteCategoryItem(category)"
-            >
+            <el-button v-if="category.isDefault !== 1" type="danger" size="small" text
+              @click="deleteCategoryItem(category)">
               删除
             </el-button>
           </div>
@@ -380,38 +390,19 @@ watch(valueFeedback, (newVal) => {
       </template>
       <div class="tag-settings">
         <div class="add-tag">
-          <el-input
-            v-model="newTagName"
-            placeholder="请输入标签名称"
-            style="width: 200px; margin-right: 10px;"
-            @keyup.enter="addTag"
-          />
+          <el-input v-model="newTagName" placeholder="请输入标签名称" style="width: 200px; margin-right: 10px;"
+            @keyup.enter="addTag" />
           <el-color-picker v-model="newTagColor" />
           <el-button type="primary" @click="addTag" style="margin-left: 10px;">添加标签</el-button>
         </div>
-        <VueDraggable
-          v-model="tagList"
-          :animation="150"
-          ghost-class="ghost"
-          class="tag-list"
-          @update="onTagUpdate"
-        >
-          <div
-            v-for="tag in tagList"
-            :key="tag.id"
-            class="tag-item"
-          >
+        <VueDraggable v-model="tagList" :animation="150" ghost-class="ghost" class="tag-list" @update="onTagUpdate">
+          <div v-for="tag in tagList" :key="tag.id" class="tag-item">
             <div class="tag-content">
               <span class="drag-handle">⋮⋮</span>
               <span class="tag-color" :style="{ backgroundColor: tag.color }"></span>
               <span class="tag-name">{{ tag.name }}</span>
             </div>
-            <el-button
-              type="danger"
-              size="small"
-              text
-              @click="deleteTagItem(tag)"
-            >
+            <el-button type="danger" size="small" text @click="deleteTagItem(tag)">
               删除
             </el-button>
           </div>
@@ -429,6 +420,7 @@ watch(valueFeedback, (newVal) => {
 .switch-container {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
 .switch-container :deep(.el-switch) {
@@ -438,6 +430,30 @@ watch(valueFeedback, (newVal) => {
 .category-settings,
 .tag-settings {
   padding: 10px 0;
+}
+
+.system-category-management {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+
+.system-category-management h5 {
+  margin: 0 0 15px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.system-category-management .switch-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.system-category-management .switch-container :deep(.el-switch) {
+  margin-right: 20px;
 }
 
 .add-category,
