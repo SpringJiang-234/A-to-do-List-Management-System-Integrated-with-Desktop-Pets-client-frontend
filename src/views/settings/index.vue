@@ -19,6 +19,8 @@ const valueStartTimer = ref(localStorage.getItem('valueStartTimer') !== 'false')
 const valueReport = ref(localStorage.getItem('valueReport') !== 'false');
 const valueAnnouncement = ref(localStorage.getItem('valueAnnouncement') !== 'false');
 const valueFeedback = ref(localStorage.getItem('valueFeedback') !== 'false');
+const valueCompleted = ref(localStorage.getItem('valueCompleted') !== 'false');
+const defaultView = ref(localStorage.getItem('defaultView') || '0');
 
 const showWork = ref(localStorage.getItem('showWork') !== 'false');
 const showStudy = ref(localStorage.getItem('showStudy') !== 'false');
@@ -331,6 +333,24 @@ watch(valueFeedback, (newVal) => {
   localStorage.setItem('valueFeedback', String(newVal));
   updateRouteShowLink();
 });
+watch(valueCompleted, (newVal) => {
+  localStorage.setItem('valueCompleted', String(newVal));
+  if (newVal) {
+    localStorage.setItem('searchStatus', '[]');
+  } else {
+    localStorage.setItem('searchStatus', '["1"]');
+  }
+  window.dispatchEvent(new CustomEvent('searchSettingsChanged', {
+    detail: { type: 'status', value: newVal ? '[]' : '["1"]' }
+  }));
+});
+watch(defaultView, (newVal) => {
+  localStorage.setItem('defaultView', String(newVal));
+  localStorage.setItem('searchTime', String(newVal));
+  window.dispatchEvent(new CustomEvent('searchSettingsChanged', {
+    detail: { type: 'time', value: String(newVal) }
+  }));
+});
 
 watch(showWork, (newVal) => {
   localStorage.setItem('showWork', String(newVal));
@@ -392,7 +412,27 @@ watch(showEntertainment, (newVal) => {
       </template>
       <!-- - 提示方式（多选）：弹对话框、通知、语音或提示音（如果桌宠选4则亮起，否则灰色不可动）-->
     </el-card>
-
+    <el-card shadow="never">
+      <template #header>
+        <div class="card-header">
+          <div class="header-content">
+            <h4>待办设置</h4>
+          </div>
+        </div>
+      </template>
+      <div class="select-container">
+        <span class="select-label">默认视图：</span>
+        <el-select v-model="defaultView" placeholder="请选择默认视图" style="width: 200px;">
+          <el-option label="列表视图" value="0" />
+          <el-option label="日视图" value="1" />
+          <el-option label="周视图" value="2" />
+          <el-option label="月视图" value="3" />
+        </el-select>
+      </div>
+      <div class="switch-container">
+        <el-switch v-model="valueCompleted" class="mb-2" active-text="显示已完成待办" inactive-text="隐藏已完成待办" />
+      </div>
+    </el-card>
     <el-card shadow="never">
       <template #header>
         <div class="card-header">
@@ -471,10 +511,22 @@ watch(showEntertainment, (newVal) => {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 20px;
 }
 
 .switch-container :deep(.el-switch) {
   margin-right: 20px;
+}
+
+.select-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-label {
+  font-size: 14px;
+  color: var(--el-text-color-primary);
 }
 
 .category-settings,

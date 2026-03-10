@@ -64,9 +64,59 @@ const loadCategoriesAndTags = async () => {
 
 onMounted(() => {
   loadCategoriesAndTags();
+  
+  const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+  const savedTime = localStorage.getItem('searchTime');
+  const savedStatus = localStorage.getItem('searchStatus');
+  
+  console.log('savedTime:', savedTime);
+  console.log('savedStatus:', savedStatus);
+  
+  if (savedTime) {
+    formInline.time = savedTime;
+    todoStore.filter.timeRule = savedTime;
+  } else {
+    const defaultView = localStorage.getItem('defaultView');
+    const time = defaultView || '0';
+    formInline.time = time;
+    todoStore.filter.timeRule = time;
+    console.log('使用默认视图:', time);
+  }
+  
+  console.log('最终 todoStore.filter.timeRule:', todoStore.filter.timeRule);
+  
+  if (savedStatus) {
+    try {
+      formInline.status = JSON.parse(savedStatus);
+    } catch (e) {
+      console.error('解析 savedStatus 失败:', e);
+    }
+  } else if (!valueCompleted) {
+    formInline.status = ["1"];
+  }
+  
+  window.addEventListener('searchSettingsChanged', (e: any) => {
+    if (e.detail.type === 'time') {
+      formInline.time = e.detail.value;
+      todoStore.filter.timeRule = e.detail.value;
+      console.log('检测到视图设置变化:', e.detail.value);
+      onSubmit();
+    }
+    if (e.detail.type === 'status') {
+      try {
+        formInline.status = JSON.parse(e.detail.value);
+        console.log('检测到状态设置变化:', e.detail.value);
+        onSubmit();
+      } catch (err) {
+        console.error('解析 searchStatus 失败:', err);
+      }
+    }
+  });
 });
 
 const handleTimeRuleChange = (value: string) => {
+  localStorage.setItem('searchTime', value);
+  
   todoStore.setFilter({
     title: todoStore.filter.title,
     content: todoStore.filter.content,
@@ -243,6 +293,9 @@ const onSubmit = async () => {
     }
 
     console.log("搜索参数:", params);
+
+    localStorage.setItem('searchTime', formInline.time || '');
+    localStorage.setItem('searchStatus', JSON.stringify(formInline.status));
 
     const response = await getTodoList(params);
 

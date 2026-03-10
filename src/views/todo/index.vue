@@ -384,6 +384,9 @@ onMounted(() => {
 });
 
 onActivated(() => {
+  const savedTime = localStorage.getItem('searchTime');
+  const savedStatus = localStorage.getItem('searchStatus');
+  
   todoStore.setFilter({
     title: "",
     content: "",
@@ -391,12 +394,12 @@ onActivated(() => {
     tags: [],
     priorities: [],
     isContinuous: [],
-    time: "",
+    time: savedTime || "",
     startTime: "",
     endTime: "",
-    status: [],
+    status: savedStatus ? JSON.parse(savedStatus) : [],
     isTop: [],
-    timeRule: todoStore.filter.timeRule
+    timeRule: savedTime || todoStore.filter.timeRule
   });
   loadTodoList();
 });
