@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import circleUrl from "@/assets/images/丰川祥子-YES.gif";
+import { getDesktopPetInfo } from "@/api/deskpet";
 
 defineOptions({
   name: "DeskPet"
@@ -22,6 +23,7 @@ const growthValue = ref(90);
 const vitalityValue = ref(100);
 const moodValue = ref(60);
 const intimacyValue = ref(80);
+const levelValue = ref(1);
 
 const openDeskPetWindow = async () => {
   try {
@@ -30,6 +32,25 @@ const openDeskPetWindow = async () => {
     console.error("打开桌宠窗口失败:", error);
   }
 };
+
+const loadDesktopPetInfo = async () => {
+  try {
+    const result = await getDesktopPetInfo();
+    if (result.code === 200 && result.data) {
+      growthValue.value = result.data.exp || 0;
+      vitalityValue.value = result.data.energy || 0;
+      moodValue.value = result.data.mood || 0;
+      intimacyValue.value = result.data.intimacy || 0;
+      levelValue.value = result.data.level || 1;
+    }
+  } catch (error) {
+    console.error("获取桌宠信息失败:", error);
+  }
+};
+
+onMounted(() => {
+  loadDesktopPetInfo();
+});
 </script>
 
 <template>
@@ -50,7 +71,7 @@ const openDeskPetWindow = async () => {
         <el-avatar size="large" :src="circleUrl" />
       </div>
       <div class="demo-progress">
-        <span>LV.1</span>
+        <span>LV.{{ levelValue }}</span>
         <el-progress
           :percentage="growthValue"
           :format="() => formatProgress('成长值', growthValue)"
