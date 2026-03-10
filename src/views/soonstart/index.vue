@@ -86,11 +86,17 @@ onMounted(() => {
   loadSearchResults();
 });
 
-const valueType = ref("番茄钟"); //选择计时方式:番茄钟、正计时、倒计时
-const timeValue1 = ref(new Date("1970-01-01T02:00:00")); //倒计时时长
-const timeValue2 = ref(new Date("1970-01-01T00:25:00")); //专注时长
-const timeValue3 = ref(new Date("1970-01-01T00:05:00")); //休息时长
-const timeValue4 = ref(4); //循环次数
+const valueType = ref(localStorage.getItem('valueType') || "番茄钟"); //选择计时方式:番茄钟、正计时、倒计时
+const timeValue1 = ref(localStorage.getItem('timeValue1') ? new Date(localStorage.getItem('timeValue1')!) : new Date("1970-01-01T02:00:00")); //倒计时时长
+const timeValue2 = ref(localStorage.getItem('timeValue2') ? new Date(localStorage.getItem('timeValue2')!) : new Date("1970-01-01T00:25:00")); //专注时长
+const timeValue3 = ref(localStorage.getItem('timeValue3') ? new Date(localStorage.getItem('timeValue3')!) : new Date("1970-01-01T00:05:00")); //休息时长
+const timeValue4 = ref(localStorage.getItem('timeValue4') ? parseInt(localStorage.getItem('timeValue4')!) : 4); //循环次数
+
+watch(valueType, (newVal) => localStorage.setItem('valueType', newVal));
+watch(timeValue1, (newVal) => localStorage.setItem('timeValue1', newVal.toISOString()));
+watch(timeValue2, (newVal) => localStorage.setItem('timeValue2', newVal.toISOString()));
+watch(timeValue3, (newVal) => localStorage.setItem('timeValue3', newVal.toISOString()));
+watch(timeValue4, (newVal) => localStorage.setItem('timeValue4', String(newVal)));
 
 const formatTime = (timeValue: string | Date): string => {
   if (!timeValue) return "0小时0分钟";
