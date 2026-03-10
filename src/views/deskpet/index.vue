@@ -97,7 +97,13 @@ onMounted(() => {
       </div>
       <div class="form-item">
         <el-tooltip class="box-item" effect="dark" content="修改昵称后自动保存" placement="top">
-          <el-input v-model="nickname" style="width: 240px" placeholder="输入桌宠昵称" @blur="handleNicknameBlur" />
+          <el-input 
+            v-model="nickname" 
+            class="nickname-input" 
+            style="width: 240px" 
+            placeholder="输入桌宠昵称" 
+            @blur="handleNicknameBlur" 
+          />
         </el-tooltip>
       </div>
       <div class="demo-progress">
@@ -151,6 +157,16 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin-bottom: 16px;
+}
+
+.nickname-input :deep(.el-input__wrapper) {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.nickname-input :deep(.el-input__inner) {
+  text-align: center;
 }
 
 .demo-progress {
