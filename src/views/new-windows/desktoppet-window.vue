@@ -9,7 +9,7 @@ const gifPath = "/祥子鼓掌.gif";
 <template>
   <div class="transparent-container">
     <div class="gif-container">
-      <img :src="gifPath" alt="动画">
+      <img :src="gifPath" alt="动画" draggable="false">
     </div>
   </div>
 </template>
@@ -26,6 +26,8 @@ const gifPath = "/祥子鼓掌.gif";
 
 .gif-container {
   position: relative;
+  -webkit-app-region: drag;
+  user-select: none;
 }
 
 .gif-container img {
