@@ -22,6 +22,14 @@ const growthValue = ref(90);
 const vitalityValue = ref(100);
 const moodValue = ref(60);
 const intimacyValue = ref(80);
+
+const openDeskPetWindow = async () => {
+  try {
+    await (window as any).ipcRenderer.invoke("open-win", "new-windows");
+  } catch (error) {
+    console.error("打开桌宠窗口失败:", error);
+  }
+};
 </script>
 
 <template>
@@ -74,8 +82,7 @@ const intimacyValue = ref(80);
           :text-inside="true"
         />
         <div class="form-item">
-          <el-button type="primary" style="width: 115px">召唤桌宠</el-button>
-          <el-button type="primary" style="width: 115px">关闭桌宠</el-button>
+          <el-button type="primary" style="width: 115px" @click="openDeskPetWindow">召唤桌宠</el-button>
         </div>
       </div>
     </el-card>
