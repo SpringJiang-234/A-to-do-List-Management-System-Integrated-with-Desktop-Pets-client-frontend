@@ -79,6 +79,7 @@ async function onCategoryUpdate() {
       }
     }
     ElMessage.success("分类排序更新成功");
+    window.location.reload();
   } catch (error) {
     console.error("更新分类排序失败:", error);
     ElMessage.error("更新分类排序失败");
@@ -103,6 +104,7 @@ async function onTagUpdate() {
       }
     }
     ElMessage.success("标签排序更新成功");
+    window.location.reload();
   } catch (error) {
     console.error("更新标签排序失败:", error);
     ElMessage.error("更新标签排序失败");
@@ -124,7 +126,7 @@ async function addCategory() {
     if (res.code === 200) {
       ElMessage.success("添加分类成功");
       newCategoryName.value = "";
-      loadCategories();
+      window.location.reload();
     } else {
       ElMessage.error(res.msg || "添加分类失败");
     }
@@ -148,7 +150,7 @@ async function deleteCategoryItem(category: any) {
     const res = await deleteCategory(category.id);
     if (res.code === 200) {
       ElMessage.success("删除分类成功");
-      loadCategories();
+      window.location.reload();
     } else {
       ElMessage.error(res.msg || "删除分类失败");
     }
@@ -175,7 +177,7 @@ async function addTag() {
     if (res.code === 200) {
       ElMessage.success("添加标签成功");
       newTagName.value = "";
-      loadTags();
+      window.location.reload();
     } else {
       ElMessage.error(res.msg || "添加标签失败");
     }
@@ -195,7 +197,7 @@ async function deleteTagItem(tag: any) {
     const res = await deleteTag(tag.id);
     if (res.code === 200) {
       ElMessage.success("删除标签成功");
-      loadTags();
+      window.location.reload();
     } else {
       ElMessage.error(res.msg || "删除标签失败");
     }
