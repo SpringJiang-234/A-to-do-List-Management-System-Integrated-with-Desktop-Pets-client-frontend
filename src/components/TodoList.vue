@@ -11,8 +11,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status: number;
   priority?: number;
   isTop?: number;
@@ -58,18 +58,18 @@ const getPriorityColor = (priority?: number) => {
   }
 };
 
-const formatTimestamp = (timestamp: string, startTime?: string, endTime?: string) => {
+const formatTimestamp = (timestamp: string, startDate?: string, endDate?: string) => {
   if (!timestamp) return "";
   
-  const formatTime = (time: string) => {
-    return dayjs(time).format("YYYY-MM-DD HH:mm");
+  const formatDate = (date: string) => {
+    return dayjs(date).format("YYYY-MM-DD");
   };
   
-  if (startTime && endTime && startTime !== endTime) {
-    return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+  if (startDate && endDate && startDate !== endDate) {
+    return `${formatDate(startDate)} - ${formatDate(endDate)}`;
   }
   
-  return formatTime(timestamp);
+  return formatDate(timestamp);
 };
 
 async function handleClick(activity: Activity) {
@@ -204,7 +204,7 @@ async function handleMenuAction(action: string) {
                 {{ activity.title }}
               </span>
             </el-tooltip>
-            <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startTime, activity.endTime) }}</span>
+            <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startDate, activity.endDate) }}</span>
           </div>
         </div>
         <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">
@@ -242,7 +242,7 @@ async function handleMenuAction(action: string) {
               {{ activity.title }}
             </span>
           </el-tooltip>
-          <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startTime, activity.endTime) }}</span>
+          <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startDate, activity.endDate) }}</span>
         </div>
       </div>
       <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">

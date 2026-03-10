@@ -8,8 +8,8 @@ interface Activity {
     title: string;
     content: string;
     timestamp: string;
-    startTime?: string;
-    endTime?: string;
+    startDate?: string;
+    endDate?: string;
     status: number;
     priority?: number;
     isTop?: number;
@@ -32,9 +32,9 @@ const activities = computed(() => {
         id: todo.id,
         title: todo.title,
         content: todo.content,
-        timestamp: todo.startTime || todo.createTime || "",
-        startTime: todo.startTime,
-        endTime: todo.endTime,
+        timestamp: todo.startDate || todo.createTime || "",
+        startDate: todo.startDate,
+        endDate: todo.endDate,
         status: todo.status,
         priority: todo.priority,
         isTop: todo.isTop,

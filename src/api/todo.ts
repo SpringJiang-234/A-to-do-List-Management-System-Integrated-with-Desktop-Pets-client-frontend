@@ -5,8 +5,8 @@ type ClientTodoVO = {
   userId: number;
   title: string;
   content: string;
-  startTime: string;
-  endTime: string;
+  startDate: string;
+  endDate: string;
   status: number;
   isTop: number;
   priority: number;
@@ -25,8 +25,8 @@ type ClientTodoDetails = {
   userId: number;
   title: string;
   content: string;
-  startTime: string;
-  endTime: string;
+  startDate: string;
+  endDate: string;
   status: string;
   isTop: string;
   categoryName: string;
@@ -63,8 +63,8 @@ type ClientTodoDTO = {
   content?: string;
   categoryId?: number;
   priority?: number;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status?: number;
   finishTime?: string;
   isDelete?: number;

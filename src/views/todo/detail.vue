@@ -31,8 +31,8 @@ const todoForm = ref({
   status: 1 as number,
   isTop: 1 as number,
   tagIdList: [] as number[],
-  startTime: "",
-  endTime: "",
+  startDate: "",
+  endDate: "",
   focusTime: 0 as number
 });
 const loading = ref(false);
@@ -77,6 +77,11 @@ const formatDateTime = (dateTime: string) => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  return dateStr;
 };
 
 const formatFocusTime = (seconds: number) => {
@@ -165,8 +170,8 @@ const fetchTodoDetails = async () => {
       status: parseInt(data.status) || 1,
       isTop: parseInt(data.isTop) || 1,
       tagIdList: data.tags ? data.tags.map((tag: any) => tag.id) : [],
-      startTime: formatDateTime(data.startTime),
-      endTime: formatDateTime(data.endTime),
+      startDate: formatDate(data.startDate),
+      endDate: formatDate(data.endDate),
       focusTime: data.focusTime || 0
     };
     
@@ -343,27 +348,27 @@ watch(
                   </el-select>
                   <el-input v-else :value="statusText" readonly />
                 </el-form-item>
-                <el-form-item label="开始时间">
+                <el-form-item label="开始日期">
                   <el-date-picker
                     v-if="isEditMode"
-                    v-model="todoForm.startTime"
-                    type="datetime"
-                    placeholder="选择开始时间"
-                    format="YYYY-MM-DD HH:mm:ss"
-                    value-format="YYYY-MM-DD HH:mm:ss"
+                    v-model="todoForm.startDate"
+                    type="date"
+                    placeholder="选择开始日期"
+                    format="YYYY-MM-DD"
+                    value-format="YYYY-MM-DD"
                   />
-                  <el-input v-else :value="formatDateTime(todoForm.startTime)" readonly />
+                  <el-input v-else :value="formatDate(todoForm.startDate)" readonly />
                 </el-form-item>
-                <el-form-item label="结束时间">
+                <el-form-item label="结束日期">
                   <el-date-picker
                     v-if="isEditMode"
-                    v-model="todoForm.endTime"
-                    type="datetime"
-                    placeholder="选择结束时间"
-                    format="YYYY-MM-DD HH:mm:ss"
-                    value-format="YYYY-MM-DD HH:mm:ss"
+                    v-model="todoForm.endDate"
+                    type="date"
+                    placeholder="选择结束日期"
+                    format="YYYY-MM-DD"
+                    value-format="YYYY-MM-DD"
                   />
-                  <el-input v-else :value="formatDateTime(todoForm.endTime)" readonly />
+                  <el-input v-else :value="formatDate(todoForm.endDate)" readonly />
                 </el-form-item>
               </el-form>
             </el-collapse-item>

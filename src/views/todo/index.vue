@@ -25,8 +25,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status: number;
   priority?: number;
   isTop?: number;
@@ -229,12 +229,12 @@ const loadTodoList = async () => {
         params.time = todoStore.filter.time;
       }
 
-      if (todoStore.filter.startTime) {
-        params.startTime = todoStore.filter.startTime;
+      if (todoStore.filter.startDate) {
+        params.startDate = todoStore.filter.startDate;
       }
 
-      if (todoStore.filter.endTime) {
-        params.endTime = todoStore.filter.endTime;
+      if (todoStore.filter.endDate) {
+        params.endDate = todoStore.filter.endDate;
       }
 
       if (todoStore.filter.status && todoStore.filter.status.length > 0 && todoStore.filter.status.length < statusOptions.length) {
@@ -255,9 +255,9 @@ const loadTodoList = async () => {
         if (todoStore.filter.isContinuous && todoStore.filter.isContinuous.length > 0 && todoStore.filter.isContinuous.length < 2) {
           const isContinuousTask = todoStore.filter.isContinuous.includes("1");
           originalTodoList.value = originalTodoList.value.filter(todo => {
-            const startTime = todo.startTime ? new Date(todo.startTime).getTime() : 0;
-            const endTime = todo.endTime ? new Date(todo.endTime).getTime() : 0;
-            const isContinuous = startTime !== endTime;
+            const startDate = todo.startDate ? new Date(todo.startDate).getTime() : 0;
+            const endDate = todo.endDate ? new Date(todo.endDate).getTime() : 0;
+            const isContinuous = startDate !== endDate;
             return isContinuousTask ? isContinuous : !isContinuous;
           });
         }
@@ -268,21 +268,21 @@ const loadTodoList = async () => {
         const newDateTodoMap = new Map<string, number[]>();
         
         response.data.forEach(record => {
-          const startTime = record.startTime ? new Date(record.startTime) : new Date();
-          const endTime = record.endTime ? new Date(record.endTime) : new Date();
+          const startDate = record.startDate ? new Date(record.startDate) : new Date();
+          const endDate = record.endDate ? new Date(record.endDate) : new Date();
           
-          const startDate = new Date(startTime);
-          startDate.setHours(0, 0, 0, 0);
+          const start = new Date(startDate);
+          start.setHours(0, 0, 0, 0);
           
-          const endDate = new Date(endTime);
-          endDate.setHours(0, 0, 0, 0);
+          const end = new Date(endDate);
+          end.setHours(0, 0, 0, 0);
           
-          const currentDate = new Date(startDate);
+          const currentDate = new Date(start);
           const assignedDates: string[] = [];
           
           console.log(`\n待办ID: ${record.id}, 标题: "${record.title}"`);
-          console.log(`  开始时间: ${record.startTime}`);
-          console.log(`  结束时间: ${record.endTime}`);
+          console.log(`  开始时间: ${record.startDate}`);
+          console.log(`  结束时间: ${record.endDate}`);
           
           while (currentDate <= endDate) {
             const year = currentDate.getFullYear();
@@ -319,8 +319,8 @@ const loadTodoList = async () => {
                 title: todo.title,
                 content: todo.content,
                 timestamp: new Date(dateKey).toISOString(),
-                startTime: todo.startTime,
-                endTime: todo.endTime,
+                startDate: todo.startDate,
+                endDate: todo.endDate,
                 status: todo.status,
                 priority: todo.priority,
                 isTop: todo.isTop
@@ -395,8 +395,8 @@ onActivated(() => {
     priorities: [],
     isContinuous: [],
     time: savedTime || "",
-    startTime: "",
-    endTime: "",
+    startDate: "",
+    endDate: "",
     status: savedStatus ? JSON.parse(savedStatus) : [],
     isTop: [],
     timeRule: savedTime || todoStore.filter.timeRule

@@ -14,8 +14,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -54,8 +54,8 @@ const currentDayTodos = computed(() => {
         title: todo.title,
         content: todo.content,
         timestamp: dateKey,
-        startTime: todo.startTime,
-        endTime: todo.endTime,
+        startDate: todo.startDate,
+        endDate: todo.endDate,
         status: todo.status,
         priority: todo.priority
       };
@@ -72,15 +72,15 @@ const currentDate = computed(() => {
   return `${year} 年 ${month} 月 ${day} 日`;
 });
 
-const formatTimestamp = (timestamp: string, startTime?: string, endTime?: string) => {
+const formatTimestamp = (timestamp: string, startDate?: string, endDate?: string) => {
   if (!timestamp) return "";
   
   const formatTime = (time: string) => {
     return dayjs(time).format("YYYY-MM-DD HH:mm");
   };
   
-  if (startTime && endTime && startTime !== endTime) {
-    return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+  if (startDate && endDate && startDate !== endDate) {
+    return `${formatTime(startDate)} - ${formatTime(endDate)}`;
   }
   
   return formatTime(timestamp);
@@ -208,7 +208,7 @@ async function handleMenuAction(action: string) {
         <el-timeline-item
           v-for="(activity, index) in currentDayTodos"
           :key="index"
-          :timestamp="formatTimestamp(activity.timestamp, activity.startTime, activity.endTime)"
+          :timestamp="formatTimestamp(activity.timestamp, activity.startDate, activity.endDate)"
           :hollow="activity.status !== 2"
           :color="getPriorityColor(activity.priority)"
           @click="handleClick(activity)"

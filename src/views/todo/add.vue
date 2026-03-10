@@ -27,8 +27,8 @@ const todoForm = ref({
   status: 1 as number,
   isTop: 1 as number,
   tagIdList: [] as number[],
-  startTime: "",
-  endTime: ""
+  startDate: "",
+  endDate: ""
 });
 const loading = ref(false);
 const submitting = ref(false);
@@ -140,8 +140,8 @@ const handleSubmit = async () => {
       content: todoForm.value.content,
       categoryId: todoForm.value.categoryId,
       priority: todoForm.value.priority,
-      startTime: todoForm.value.startTime,
-      endTime: todoForm.value.endTime,
+      startDate: todoForm.value.startDate,
+      endDate: todoForm.value.endDate,
       isTop: todoForm.value.isTop,
       tagIdList: todoForm.value.tagIdList
     });
@@ -232,22 +232,22 @@ loadTags();
                     <el-option label="重要且紧急" :value="4" />
                   </el-select>
                 </el-form-item>
-              <el-form-item label="开始时间">
+              <el-form-item label="开始日期">
                 <el-date-picker
-                  v-model="todoForm.startTime"
-                  type="datetime"
-                  placeholder="选择开始时间"
-                  format="YYYY-MM-DD HH:mm:ss"
-                  value-format="YYYY-MM-DD HH:mm:ss"
+                  v-model="todoForm.startDate"
+                  type="date"
+                  placeholder="选择开始日期"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
                 />
               </el-form-item>
-              <el-form-item label="结束时间">
+              <el-form-item label="结束日期">
                 <el-date-picker
-                  v-model="todoForm.endTime"
-                  type="datetime"
-                  placeholder="选择结束时间"
-                  format="YYYY-MM-DD HH:mm:ss"
-                  value-format="YYYY-MM-DD HH:mm:ss"
+                  v-model="todoForm.endDate"
+                  type="date"
+                  placeholder="选择结束日期"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
                 />
               </el-form-item>
             </el-form>

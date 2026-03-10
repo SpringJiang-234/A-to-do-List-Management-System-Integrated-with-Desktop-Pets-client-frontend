@@ -125,8 +125,8 @@ const handleTimeRuleChange = (value: string) => {
     priorities: todoStore.filter.priorities,
     isContinuous: todoStore.filter.isContinuous,
     time: todoStore.filter.time,
-    startTime: todoStore.filter.startTime,
-    endTime: todoStore.filter.endTime,
+    startDate: todoStore.filter.startDate,
+    endDate: todoStore.filter.endDate,
     status: todoStore.filter.status,
     isTop: todoStore.filter.isTop,
     timeRule: value
@@ -141,8 +141,8 @@ const resetForm = () => {
   formInline.priorities = [];
   formInline.isContinuous = [];
   formInline.time = "";
-  formInline.startTime = "";
-  formInline.endTime = "";
+  formInline.startDate = "";
+  formInline.endDate = "";
   formInline.status = [];
   formInline.isTop = [];
 };
@@ -155,8 +155,8 @@ const formInline = reactive({
   priorities: [],
   isContinuous: [],
   time: "",
-  startTime: "",
-  endTime: "",
+  startDate: "",
+  endDate: "",
   status: [],
   isTop: []
 });
@@ -276,12 +276,12 @@ const onSubmit = async () => {
       params.time = formInline.time;
     }
 
-    if (formInline.startTime) {
-      params.startTime = formInline.startTime;
+    if (formInline.startDate) {
+      params.startDate = formInline.startDate;
     }
 
-    if (formInline.endTime) {
-      params.endTime = formInline.endTime;
+    if (formInline.endDate) {
+      params.endDate = formInline.endDate;
     }
 
     if (formInline.status && formInline.status.length > 0 && formInline.status.length < statusOptions.length) {
@@ -308,8 +308,8 @@ const onSubmit = async () => {
         priorities: formInline.priorities,
         isContinuous: formInline.isContinuous,
         time: formInline.time,
-        startTime: formInline.startTime,
-        endTime: formInline.endTime,
+        startDate: formInline.startDate,
+        endDate: formInline.endDate,
         status: formInline.status,
         isTop: formInline.isTop,
         timeRule: todoStore.filter.timeRule

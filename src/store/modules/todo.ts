@@ -9,8 +9,8 @@ export interface TodoFilter {
   priorities: string[];
   isContinuous: string[];
   time: string;
-  startTime: string;
-  endTime: string;
+  startDate: string;
+  endDate: string;
   status: string[];
   isTop: string[];
   timeRule: string;
@@ -26,8 +26,8 @@ export const useTodoStore = defineStore("pure-todo", {
       priorities: [],
       isContinuous: [],
       time: "",
-      startTime: "",
-      endTime: "",
+      startDate: "",
+      endDate: "",
       status: [],
       isTop: [],
       timeRule: ""
