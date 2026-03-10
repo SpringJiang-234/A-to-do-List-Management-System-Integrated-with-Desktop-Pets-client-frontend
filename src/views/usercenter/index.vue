@@ -2,7 +2,7 @@
 import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
 import Dialog from "@/components/Dialog.vue";
 import { getUserInfo, updateUser, uploadAvatar } from "@/api/user";
-import { onMounted, watch, ref } from "vue";
+import { onMounted, watch, ref, computed } from "vue";
 import { ElMessage } from "element-plus";
 import { useUserStoreHook } from "@/store/modules/user";
 
@@ -21,6 +21,12 @@ const avatar = ref("");
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const newPassword = ref("");
 const confirmPassword = ref("");
+
+const genderText = computed(() => {
+  if (gender.value === "1") return "男";
+  if (gender.value === "2") return "女";
+  return "未知";
+});
 
 const handleEdit = () => {
   editable.value = true;
@@ -189,27 +195,28 @@ onMounted(() => {
       </div>
       <div class="form-item">
         <el-tooltip :disabled="!editable" class="box-item" effect="dark" content="不可修改邮箱账号" placement="top">
-          <el-input v-model="email" style="width: 240px" placeholder="邮箱账号" disabled />
+          <el-input v-model="email" style="width: 240px" placeholder="邮箱账号" readonly />
         </el-tooltip>
       </div>
       <div class="form-item">
         <el-tooltip :disabled="!editable" class="box-item" effect="dark" content="可修改昵称" placement="top">
-          <el-input v-model="nickname" :disabled="!editable" style="width: 240px" placeholder="输入新昵称" />
+          <el-input v-model="nickname" :readonly="!editable" style="width: 240px" placeholder="输入新昵称" />
         </el-tooltip>
       </div>
       <div class="form-item">
         <el-tooltip :disabled="!editable" class="box-item" effect="dark" content="可修改性别" placement="top">
-          <el-select v-model="gender" :disabled="!editable" style="width: 240px" placeholder="选择性别">
+          <el-select v-if="editable" v-model="gender" style="width: 240px" placeholder="选择性别">
             <el-option label="男" value="1" />
             <el-option label="女" value="2" />
             <el-option label="未知" value="3" />
           </el-select>
+          <el-input v-else :value="genderText" readonly style="width: 240px" />
         </el-tooltip>
       </div>
       <div class="form-item">
         <el-tooltip :disabled="!editable" class="box-item" effect="dark" content="可修改生日" placement="top">
           <div>
-            <el-date-picker v-model="birthday" :disabled="!editable" type="date" value-format="yyyy-MM-dd"
+            <el-date-picker v-model="birthday" :readonly="!editable" type="date" value-format="yyyy-MM-dd"
               style="width: 240px" placeholder="选择生日" />
           </div>
         </el-tooltip>
