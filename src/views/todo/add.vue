@@ -8,6 +8,7 @@ import { message } from "@/utils/message";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import { Close } from "@element-plus/icons-vue";
+import Vditor from "./components/Vditor.vue";
 
 defineOptions({
   name: "TodoAdd"
@@ -166,7 +167,16 @@ loadTags();
             <el-input v-model="todoForm.title" placeholder="请输入待办标题" />
           </div>
           <div class="todo-content">
-            <el-input v-model="todoForm.content" type="textarea" placeholder="请输入待办内容" />
+            <Vditor
+              v-model="todoForm.content"
+              :options="{
+                height: 300,
+                placeholder: '请输入待办内容',
+                counter: {
+                  enable: true
+                }
+              }"
+            />
           </div>
         </div>
         

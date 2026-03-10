@@ -3624,6 +3624,11 @@ detect-node@^2.0.4:
   resolved "https://registry.npmmirror.com/detect-node/-/detect-node-2.1.0.tgz#c9c70775a49c3d03bc2c06d9a73be550f978f8b1"
   integrity sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==
 
+diff-match-patch@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.npmmirror.com/diff-match-patch/-/diff-match-patch-1.0.5.tgz#abb584d5f10cd1196dfc55aa03701592ae3f7b37"
+  integrity sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==
+
 dir-compare@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmmirror.com/dir-compare/-/dir-compare-4.2.0.tgz#d1d4999c14fbf55281071fdae4293b3b9ce86f19"
@@ -7763,6 +7768,13 @@ util-deprecate@^1.0.1, util-deprecate@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmmirror.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
+
+vditor@^3.11.2:
+  version "3.11.2"
+  resolved "https://registry.npmmirror.com/vditor/-/vditor-3.11.2.tgz#612a405c74b71278a4eea188db3c7d93c0884c11"
+  integrity sha512-8QguQQUPWbBFocnfQmWjz4jiykQnvsmCuhOomGIVVK7vc+dQq2h8w9qQQuEjUTZpnZT5fEdYbj4aLr1NGdAZaA==
+  dependencies:
+    diff-match-patch "^1.0.5"
 
 verror@^1.10.0:
   version "1.10.1"

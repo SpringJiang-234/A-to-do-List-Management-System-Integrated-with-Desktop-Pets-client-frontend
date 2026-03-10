@@ -8,6 +8,7 @@ import { message } from "@/utils/message";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import { Close } from "@element-plus/icons-vue";
+import Vditor from "./components/Vditor.vue";
 
 defineOptions({
   name: "TodoDetail"
@@ -247,8 +248,17 @@ watch(
               <div v-else>{{ todoForm.title }}</div>
             </div>
             <div class="todo-content">
-              <el-input v-if="isEditMode" v-model="todoForm.content" type="textarea" placeholder="请输入待办内容" />
-              <div v-else class="todo-content-text">{{ todoForm.content }}</div>
+              <Vditor
+                v-model="todoForm.content"
+                :options="{
+                  height: 300,
+                  placeholder: '请输入待办内容',
+                  counter: {
+                    enable: true
+                  },
+                  readonly: !isEditMode
+                }"
+              />
             </div>
           </div>
           
