@@ -58,7 +58,7 @@ const handleSubmit = async () => {
     <el-card shadow="never">
       <template #header>
         <div class="header-content">
-          <div>提交反馈</div>
+          <h3>提交反馈</h3>
           <el-button 
             type="primary" 
             circle 

@@ -88,7 +88,7 @@ onMounted(() => {
     <el-card shadow="never">
       <template #header>
         <div class="header-content">
-          <div>反馈详情</div>
+          <h3>反馈详情</h3>
           <el-button 
             type="primary" 
             circle 

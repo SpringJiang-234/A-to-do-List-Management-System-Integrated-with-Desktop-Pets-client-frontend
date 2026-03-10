@@ -219,7 +219,7 @@ watch(
     <el-card shadow="never">
       <template #header>
         <div class="header-content">
-          <div>待办详情</div>
+          <h3>待办详情</h3>
           <div class="header-actions">
             <el-switch 
               v-model="isEditMode" 
