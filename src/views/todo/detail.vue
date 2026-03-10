@@ -249,6 +249,7 @@ watch(
             </div>
             <div class="todo-content">
               <Vditor
+                v-if="isEditMode || todoForm.content"
                 v-model="todoForm.content"
                 :options="{
                   height: 300,
