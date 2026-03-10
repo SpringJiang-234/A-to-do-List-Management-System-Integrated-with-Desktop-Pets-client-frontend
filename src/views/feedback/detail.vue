@@ -110,14 +110,14 @@ onMounted(() => {
           
           <div class="feedback-meta">
             <span class="meta-item">
+              <span class="meta-label">创建时间：</span>
+              <span class="meta-value">{{ createTime }}</span>
+            </span>
+            <span class="meta-item">
               <span class="meta-label">处理状态：</span>
               <el-tag :type="statusTagType" size="small">
                 {{ statusText }}
               </el-tag>
-            </span>
-            <span class="meta-item">
-              <span class="meta-label">创建时间：</span>
-              <span class="meta-value">{{ createTime }}</span>
             </span>
           </div>
           
