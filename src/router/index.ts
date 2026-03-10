@@ -54,6 +54,47 @@ export const constantRoutes: Array<RouteRecordRaw> = formatTwoStageRoutes(
   formatFlatteningRoutes(buildHierarchyTree(ascending(routes.flat(Infinity))))
 );
 
+/** 根据设置动态设置路由的 showLink */
+function updateRouteShowLink() {
+  const settings = {
+    category: localStorage.getItem('valueCategory') !== 'false',
+    tag: localStorage.getItem('valueTag') !== 'false',
+    priority: localStorage.getItem('valuePriority') !== 'false',
+    soonstart: localStorage.getItem('valueStartTimer') !== 'false',
+    report: localStorage.getItem('valueReport') !== 'false',
+    announcement: localStorage.getItem('valueAnnouncement') !== 'false',
+    feedback: localStorage.getItem('valueFeedback') !== 'false'
+  };
+
+  function updateRoutes(routes: any[]) {
+    routes.forEach(route => {
+      if (route.path === '/category') {
+        route.meta.showLink = settings.category;
+      } else if (route.path === '/tag') {
+        route.meta.showLink = settings.tag;
+      } else if (route.path === '/priority') {
+        route.meta.showLink = settings.priority;
+      } else if (route.path === '/soonstart') {
+        route.meta.showLink = settings.soonstart;
+      } else if (route.path === '/report') {
+        route.meta.showLink = settings.report;
+      } else if (route.path === '/announcement') {
+        route.meta.showLink = settings.announcement;
+      } else if (route.path === '/feedback') {
+        route.meta.showLink = settings.feedback;
+      }
+      
+      if (route.children) {
+        updateRoutes(route.children);
+      }
+    });
+  }
+
+  updateRoutes(constantRoutes);
+}
+
+updateRouteShowLink();
+
 /** 初始的静态路由，用于退出登录时重置路由 */
 const initConstantRoutes: Array<RouteRecordRaw> = cloneDeep(constantRoutes);
 

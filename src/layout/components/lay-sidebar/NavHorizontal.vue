@@ -4,7 +4,7 @@ import { useNav } from "@/layout/hooks/useNav";
 import LaySearch from "../lay-search/index.vue";
 import LayNotice from "../lay-notice/index.vue";
 import { responsiveStorageNameSpace } from "@/config";
-import { ref, nextTick, computed, onMounted } from "vue";
+import { ref, nextTick, computed, onMounted, onBeforeUnmount } from "vue";
 import { storageLocal, isAllEmpty } from "@pureadmin/utils";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import LaySidebarItem from "../lay-sidebar/components/SidebarItem.vue";
@@ -44,6 +44,15 @@ onMounted(() => {
   emitter.on("logoChange", key => {
     showLogo.value = key;
   });
+  
+  emitter.on("menuChange", () => {
+    // 强制刷新菜单
+  });
+});
+
+onBeforeUnmount(() => {
+  emitter.off("logoChange");
+  emitter.off("menuChange");
 });
 </script>
 

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { router, constantRoutes } from "@/router";
+import { usePermissionStoreHook } from "@/store/modules/permission";
+import { emitter } from "@/utils/mitt";
 defineOptions({
   name: "Settings"
 });
@@ -12,13 +15,82 @@ const valueReport = ref(localStorage.getItem('valueReport') !== 'false');
 const valueAnnouncement = ref(localStorage.getItem('valueAnnouncement') !== 'false');
 const valueFeedback = ref(localStorage.getItem('valueFeedback') !== 'false');
 
-watch(valueCategory, (newVal) => localStorage.setItem('valueCategory', String(newVal)));
-watch(valueTag, (newVal) => localStorage.setItem('valueTag', String(newVal)));
-watch(valuePriority, (newVal) => localStorage.setItem('valuePriority', String(newVal)));
-watch(valueStartTimer, (newVal) => localStorage.setItem('valueStartTimer', String(newVal)));
-watch(valueReport, (newVal) => localStorage.setItem('valueReport', String(newVal)));
-watch(valueAnnouncement, (newVal) => localStorage.setItem('valueAnnouncement', String(newVal)));
-watch(valueFeedback, (newVal) => localStorage.setItem('valueFeedback', String(newVal)));
+function updateRouteShowLink() {
+  const settings = {
+    category: localStorage.getItem('valueCategory') !== 'false',
+    tag: localStorage.getItem('valueTag') !== 'false',
+    priority: localStorage.getItem('valuePriority') !== 'false',
+    soonstart: localStorage.getItem('valueStartTimer') !== 'false',
+    report: localStorage.getItem('valueReport') !== 'false',
+    announcement: localStorage.getItem('valueAnnouncement') !== 'false',
+    feedback: localStorage.getItem('valueFeedback') !== 'false'
+  };
+
+  function updateRoutes(routes: any[]) {
+    routes.forEach(route => {
+      if (route.path === '/category') {
+        route.meta.showLink = settings.category;
+      } else if (route.path === '/tag') {
+        route.meta.showLink = settings.tag;
+      } else if (route.path === '/priority') {
+        route.meta.showLink = settings.priority;
+      } else if (route.path === '/soonstart') {
+        route.meta.showLink = settings.soonstart;
+      } else if (route.path === '/report') {
+        route.meta.showLink = settings.report;
+      } else if (route.path === '/announcement') {
+        route.meta.showLink = settings.announcement;
+      } else if (route.path === '/feedback') {
+        route.meta.showLink = settings.feedback;
+      }
+      
+      if (route.children) {
+        updateRoutes(route.children);
+      }
+    });
+  }
+
+  const permissionStore = usePermissionStoreHook();
+  
+  updateRoutes(permissionStore.constantMenus as any[]);
+  updateRoutes(router.options.routes as any[]);
+  
+  permissionStore.handleWholeMenus([]);
+  
+  const wholeMenus = permissionStore.wholeMenus;
+  updateRoutes(wholeMenus as any[]);
+  
+  emitter.emit("menuChange", true);
+}
+
+watch(valueCategory, (newVal) => {
+  localStorage.setItem('valueCategory', String(newVal));
+  updateRouteShowLink();
+});
+watch(valueTag, (newVal) => {
+  localStorage.setItem('valueTag', String(newVal));
+  updateRouteShowLink();
+});
+watch(valuePriority, (newVal) => {
+  localStorage.setItem('valuePriority', String(newVal));
+  updateRouteShowLink();
+});
+watch(valueStartTimer, (newVal) => {
+  localStorage.setItem('valueStartTimer', String(newVal));
+  updateRouteShowLink();
+});
+watch(valueReport, (newVal) => {
+  localStorage.setItem('valueReport', String(newVal));
+  updateRouteShowLink();
+});
+watch(valueAnnouncement, (newVal) => {
+  localStorage.setItem('valueAnnouncement', String(newVal));
+  updateRouteShowLink();
+});
+watch(valueFeedback, (newVal) => {
+  localStorage.setItem('valueFeedback', String(newVal));
+  updateRouteShowLink();
+});
 </script>
 
 <template>

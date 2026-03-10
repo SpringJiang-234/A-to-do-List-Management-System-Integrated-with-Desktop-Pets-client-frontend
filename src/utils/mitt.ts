@@ -9,6 +9,7 @@ type Events = {
   tagViewsChange: string;
   changLayoutRoute: string;
   tagViewsShowModel: string;
+  menuChange: boolean;
 };
 
 export const emitter: Emitter<Events> = mitt<Events>();
