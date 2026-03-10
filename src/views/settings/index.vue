@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { router, constantRoutes } from "@/router";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import { emitter } from "@/utils/mitt";
+import { VueDraggable } from "vue-draggable-plus";
+import { getCategoryList, insertCategory, updateCategory, deleteCategory } from "@/api/category";
+import { getTagList, insertTag, updateTag, deleteTag } from "@/api/tag";
+import { getToken } from "@/utils/auth";
+import { ElMessage, ElMessageBox } from "element-plus";
 defineOptions({
   name: "Settings"
 });
@@ -14,6 +19,183 @@ const valueStartTimer = ref(localStorage.getItem('valueStartTimer') !== 'false')
 const valueReport = ref(localStorage.getItem('valueReport') !== 'false');
 const valueAnnouncement = ref(localStorage.getItem('valueAnnouncement') !== 'false');
 const valueFeedback = ref(localStorage.getItem('valueFeedback') !== 'false');
+
+const categoryList = ref<any[]>([]);
+const tagList = ref<any[]>([]);
+const newCategoryName = ref("");
+const newTagName = ref("");
+const newTagColor = ref("#409EFF");
+
+const userId = ref<number>(0);
+
+onMounted(() => {
+  const userInfo = getToken();
+  if (userInfo) {
+    userId.value = userInfo.id;
+    loadCategories();
+    loadTags();
+  }
+});
+
+async function loadCategories() {
+  try {
+    const res = await getCategoryList(userId.value);
+    if (res.code === 200) {
+      categoryList.value = res.data || [];
+    }
+  } catch (error) {
+    console.error("加载分类失败:", error);
+  }
+}
+
+async function loadTags() {
+  try {
+    const res = await getTagList(userId.value);
+    if (res.code === 200) {
+      tagList.value = res.data || [];
+    }
+  } catch (error) {
+    console.error("加载标签失败:", error);
+  }
+}
+
+async function onCategoryUpdate() {
+  try {
+    for (let i = 0; i < categoryList.value.length; i++) {
+      const category = categoryList.value[i];
+      if (category.sortOrder !== i + 1) {
+        category.sortOrder = i + 1;
+        await updateCategory({
+          id: category.id,
+          name: category.name,
+          sortOrder: category.sortOrder
+        });
+      }
+    }
+    ElMessage.success("分类排序更新成功");
+  } catch (error) {
+    console.error("更新分类排序失败:", error);
+    ElMessage.error("更新分类排序失败");
+    loadCategories();
+  }
+}
+
+async function onTagUpdate() {
+  try {
+    for (let i = 0; i < tagList.value.length; i++) {
+      const tag = tagList.value[i];
+      if (tag.sortOrder !== i + 1) {
+        tag.sortOrder = i + 1;
+        await updateTag({
+          id: tag.id,
+          name: tag.name,
+          color: tag.color,
+          sortOrder: tag.sortOrder
+        });
+      }
+    }
+    ElMessage.success("标签排序更新成功");
+  } catch (error) {
+    console.error("更新标签排序失败:", error);
+    ElMessage.error("更新标签排序失败");
+    loadTags();
+  }
+}
+
+async function addCategory() {
+  if (!newCategoryName.value.trim()) {
+    ElMessage.warning("请输入分类名称");
+    return;
+  }
+  try {
+    const res = await insertCategory({
+      name: newCategoryName.value.trim(),
+      sortOrder: categoryList.value.length + 1
+    });
+    if (res.code === 200) {
+      ElMessage.success("添加分类成功");
+      newCategoryName.value = "";
+      loadCategories();
+    } else {
+      ElMessage.error(res.msg || "添加分类失败");
+    }
+  } catch (error) {
+    console.error("添加分类失败:", error);
+    ElMessage.error("添加分类失败");
+  }
+}
+
+async function deleteCategoryItem(category: any) {
+  if (category.isDefault === 1) {
+    ElMessage.warning("系统默认分类不允许删除");
+    return;
+  }
+  try {
+    await ElMessageBox.confirm("确定要删除这个分类吗？删除后，该分类下的待办事项将归入未分类。", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    });
+    const res = await deleteCategory(category.id);
+    if (res.code === 200) {
+      ElMessage.success("删除分类成功");
+      loadCategories();
+    } else {
+      ElMessage.error(res.msg || "删除分类失败");
+    }
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("删除分类失败:", error);
+      ElMessage.error("删除分类失败");
+    }
+  }
+}
+
+async function addTag() {
+  if (!newTagName.value.trim()) {
+    ElMessage.warning("请输入标签名称");
+    return;
+  }
+  try {
+    const res = await insertTag({
+      name: newTagName.value.trim(),
+      color: newTagColor.value,
+      sortOrder: tagList.value.length + 1
+    });
+    if (res.code === 200) {
+      ElMessage.success("添加标签成功");
+      newTagName.value = "";
+      loadTags();
+    } else {
+      ElMessage.error(res.msg || "添加标签失败");
+    }
+  } catch (error) {
+    console.error("添加标签失败:", error);
+    ElMessage.error("添加标签失败");
+  }
+}
+
+async function deleteTagItem(tag: any) {
+  try {
+    await ElMessageBox.confirm("确定要删除这个标签吗？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    });
+    const res = await deleteTag(tag.id);
+    if (res.code === 200) {
+      ElMessage.success("删除标签成功");
+      loadTags();
+    } else {
+      ElMessage.error(res.msg || "删除标签失败");
+    }
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("删除标签失败:", error);
+      ElMessage.error("删除标签失败");
+    }
+  }
+}
 
 function updateRouteShowLink() {
   const settings = {
@@ -148,7 +330,45 @@ watch(valueFeedback, (newVal) => {
           </div>
         </div>
       </template>
-      <!-- 在这里可以拖拽排序卡片类型分类，也可以添加删除分类 -->
+      <div class="category-settings">
+        <div class="add-category">
+          <el-input
+            v-model="newCategoryName"
+            placeholder="请输入分类名称"
+            style="width: 200px; margin-right: 10px;"
+            @keyup.enter="addCategory"
+          />
+          <el-button type="primary" @click="addCategory">添加分类</el-button>
+        </div>
+        <VueDraggable
+          v-model="categoryList"
+          :animation="150"
+          ghost-class="ghost"
+          class="category-list"
+          @update="onCategoryUpdate"
+        >
+          <div
+            v-for="category in categoryList"
+            :key="category.id"
+            class="category-item"
+          >
+            <div class="category-content">
+              <span class="drag-handle">⋮⋮</span>
+              <span class="category-name">{{ category.name }}</span>
+              <span v-if="category.isDefault === 1" class="default-tag">默认</span>
+            </div>
+            <el-button
+              v-if="category.isDefault !== 1"
+              type="danger"
+              size="small"
+              text
+              @click="deleteCategoryItem(category)"
+            >
+              删除
+            </el-button>
+          </div>
+        </VueDraggable>
+      </div>
     </el-card>
     <el-card shadow="never">
       <template #header>
@@ -158,7 +378,45 @@ watch(valueFeedback, (newVal) => {
           </div>
         </div>
       </template>
-      <!-- 在这里可以拖拽排序标签，也可以添加删除标签 -->
+      <div class="tag-settings">
+        <div class="add-tag">
+          <el-input
+            v-model="newTagName"
+            placeholder="请输入标签名称"
+            style="width: 200px; margin-right: 10px;"
+            @keyup.enter="addTag"
+          />
+          <el-color-picker v-model="newTagColor" />
+          <el-button type="primary" @click="addTag" style="margin-left: 10px;">添加标签</el-button>
+        </div>
+        <VueDraggable
+          v-model="tagList"
+          :animation="150"
+          ghost-class="ghost"
+          class="tag-list"
+          @update="onTagUpdate"
+        >
+          <div
+            v-for="tag in tagList"
+            :key="tag.id"
+            class="tag-item"
+          >
+            <div class="tag-content">
+              <span class="drag-handle">⋮⋮</span>
+              <span class="tag-color" :style="{ backgroundColor: tag.color }"></span>
+              <span class="tag-name">{{ tag.name }}</span>
+            </div>
+            <el-button
+              type="danger"
+              size="small"
+              text
+              @click="deleteTagItem(tag)"
+            >
+              删除
+            </el-button>
+          </div>
+        </VueDraggable>
+      </div>
     </el-card>
   </div>
 </template>
@@ -175,5 +433,82 @@ watch(valueFeedback, (newVal) => {
 
 .switch-container :deep(.el-switch) {
   margin-right: 20px;
+}
+
+.category-settings,
+.tag-settings {
+  padding: 10px 0;
+}
+
+.add-category,
+.add-tag {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.category-list,
+.tag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-item,
+.tag-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.category-item:hover,
+.tag-item:hover {
+  background-color: #e6f7ff;
+}
+
+.category-content,
+.tag-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.drag-handle {
+  cursor: move;
+  color: #909399;
+  font-size: 16px;
+  user-select: none;
+}
+
+.category-name,
+.tag-name {
+  font-size: 14px;
+  color: #303133;
+}
+
+.default-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  background-color: #67c23a;
+  color: white;
+  border-radius: 4px;
+}
+
+.tag-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #dcdfe6;
+}
+
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
 }
 </style>
