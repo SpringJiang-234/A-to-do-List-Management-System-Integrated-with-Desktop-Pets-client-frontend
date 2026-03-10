@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import circleUrl from "@/assets/images/丰川祥子-YES.gif";
-import { getDesktopPetInfo } from "@/api/deskpet";
+import { getDesktopPetInfo, updateDesktopPet } from "@/api/deskpet";
+import { ElMessage } from "element-plus";
 
 defineOptions({
   name: "DeskPet"
@@ -24,6 +25,8 @@ const vitalityValue = ref(100);
 const moodValue = ref(60);
 const intimacyValue = ref(80);
 const levelValue = ref(1);
+const nickname = ref("");
+const originalNickname = ref("");
 
 const openDeskPetWindow = async () => {
   try {
@@ -42,9 +45,31 @@ const loadDesktopPetInfo = async () => {
       moodValue.value = result.data.mood || 0;
       intimacyValue.value = result.data.intimacy || 0;
       levelValue.value = result.data.level || 1;
+      nickname.value = result.data.nickname || "";
+      originalNickname.value = result.data.nickname || "";
     }
   } catch (error) {
     console.error("获取桌宠信息失败:", error);
+  }
+};
+
+const handleNicknameBlur = async () => {
+  if (nickname.value === originalNickname.value) {
+    return;
+  }
+  
+  try {
+    const result = await updateDesktopPet({
+      nickname: nickname.value
+    });
+    if (result.code === 200) {
+      originalNickname.value = nickname.value;
+      ElMessage.success(result.msg || "修改成功");
+    } else {
+      ElMessage.error(result.msg || "修改失败");
+    }
+  } catch (error) {
+    ElMessage.error("修改失败，请重试");
   }
 };
 
@@ -69,6 +94,11 @@ onMounted(() => {
       </template>
       <div class="avatar-wrapper">
         <el-avatar size="large" :src="circleUrl" />
+      </div>
+      <div class="form-item">
+        <el-tooltip class="box-item" effect="dark" content="修改昵称后自动保存" placement="top">
+          <el-input v-model="nickname" style="width: 240px" placeholder="输入桌宠昵称" @blur="handleNicknameBlur" />
+        </el-tooltip>
       </div>
       <div class="demo-progress">
         <span>LV.{{ levelValue }}</span>
@@ -115,6 +145,12 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+}
+
+.form-item {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
 }
 
 .demo-progress {
