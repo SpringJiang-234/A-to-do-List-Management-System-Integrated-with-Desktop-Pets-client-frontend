@@ -33,9 +33,9 @@ export type DesktopPetDTO = {
 };
 
 export const getDesktopPetInfo = () => {
-  return http.request<DesktopPetResult>("get", "/api/client/desktopPet/info");
+  return http.request<DesktopPetResult>("get", "/api/desktopPet/info");
 };
 
 export const updateDesktopPet = (data?: DesktopPetDTO) => {
-  return http.request<UpdateDesktopPetResult>("post", "/api/client/desktopPet/update", { data });
+  return http.request<UpdateDesktopPetResult>("post", "/api/desktopPet/update", { data });
 };
