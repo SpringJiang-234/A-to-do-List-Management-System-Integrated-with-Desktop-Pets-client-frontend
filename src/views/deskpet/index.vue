@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
+import circleUrl from "@/assets/images/丰川祥子-YES.gif";
 
 defineOptions({
   name: "DeskPet"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import circleUrl from "@/assets/images/丰川祥子-更软弱的我.jpg";
+import circleUrl from "@/assets/images/丰川祥子-YES.gif";
 import Dialog from "@/components/Dialog.vue";
 import { getUserInfo, updateUser, uploadAvatar } from "@/api/user";
 import { onMounted, watch, ref, computed } from "vue";
