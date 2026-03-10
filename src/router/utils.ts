@@ -286,6 +286,23 @@ async function loadCategoryRoutes() {
             r.path.startsWith("/category") && r.path !== "/category" && r.path !== "/category/index"
           );
 
+          const showWork = localStorage.getItem('showWork') !== 'false';
+          const showStudy = localStorage.getItem('showStudy') !== 'false';
+          const showEntertainment = localStorage.getItem('showEntertainment') !== 'false';
+
+          categoryChildren.forEach((route: any) => {
+            if (route.meta && route.meta.title) {
+              const title = route.meta.title;
+              if (title === '工作') {
+                route.meta.showLink = showWork;
+              } else if (title === '学习') {
+                route.meta.showLink = showStudy;
+              } else if (title === '娱乐') {
+                route.meta.showLink = showEntertainment;
+              }
+            }
+          });
+
           usePermissionStoreHook().handleWholeMenus(categoryChildren);
 
           console.log("动态分类路由已加载:", categoryRoutes);

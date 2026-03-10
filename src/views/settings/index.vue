@@ -20,9 +20,9 @@ const valueReport = ref(localStorage.getItem('valueReport') !== 'false');
 const valueAnnouncement = ref(localStorage.getItem('valueAnnouncement') !== 'false');
 const valueFeedback = ref(localStorage.getItem('valueFeedback') !== 'false');
 
-const hideWork = ref(localStorage.getItem('hideWork') === 'true');
-const hideStudy = ref(localStorage.getItem('hideStudy') === 'true');
-const hideEntertainment = ref(localStorage.getItem('hideEntertainment') === 'true');
+const showWork = ref(localStorage.getItem('showWork') !== 'false');
+const showStudy = ref(localStorage.getItem('showStudy') !== 'false');
+const showEntertainment = ref(localStorage.getItem('showEntertainment') !== 'false');
 
 const categoryList = ref<any[]>([]);
 const tagList = ref<any[]>([]);
@@ -218,6 +218,12 @@ function updateRouteShowLink() {
     feedback: localStorage.getItem('valueFeedback') !== 'false'
   };
 
+  const categorySettings = {
+    work: localStorage.getItem('showWork') !== 'false',
+    study: localStorage.getItem('showStudy') !== 'false',
+    entertainment: localStorage.getItem('showEntertainment') !== 'false'
+  };
+
   function updateRoutes(routes: any[]) {
     routes.forEach(route => {
       if (route.path === '/category') {
@@ -242,15 +248,42 @@ function updateRouteShowLink() {
     });
   }
 
+  function updateCategoryRoutes(routes: any[]) {
+    routes.forEach(route => {
+      if (route.path === '/category' && route.children) {
+        route.children.forEach((child: any) => {
+          if (child.meta && child.meta.title) {
+            const title = child.meta.title;
+            if (title === '工作') {
+              child.meta.showLink = categorySettings.work;
+            } else if (title === '学习') {
+              child.meta.showLink = categorySettings.study;
+            } else if (title === '娱乐') {
+              child.meta.showLink = categorySettings.entertainment;
+            }
+          }
+        });
+      }
+      
+      if (route.children) {
+        updateCategoryRoutes(route.children);
+      }
+    });
+  }
+
   const permissionStore = usePermissionStoreHook();
 
   updateRoutes(permissionStore.constantMenus as any[]);
   updateRoutes(router.options.routes as any[]);
 
+  updateCategoryRoutes(permissionStore.constantMenus as any[]);
+  updateCategoryRoutes(router.options.routes as any[]);
+
   permissionStore.handleWholeMenus([]);
 
   const wholeMenus = permissionStore.wholeMenus;
   updateRoutes(wholeMenus as any[]);
+  updateCategoryRoutes(wholeMenus as any[]);
 
   emitter.emit("menuChange", true);
 }
@@ -284,14 +317,17 @@ watch(valueFeedback, (newVal) => {
   updateRouteShowLink();
 });
 
-watch(hideWork, (newVal) => {
-  localStorage.setItem('hideWork', String(newVal));
+watch(showWork, (newVal) => {
+  localStorage.setItem('showWork', String(newVal));
+  updateRouteShowLink();
 });
-watch(hideStudy, (newVal) => {
-  localStorage.setItem('hideStudy', String(newVal));
+watch(showStudy, (newVal) => {
+  localStorage.setItem('showStudy', String(newVal));
+  updateRouteShowLink();
 });
-watch(hideEntertainment, (newVal) => {
-  localStorage.setItem('hideEntertainment', String(newVal));
+watch(showEntertainment, (newVal) => {
+  localStorage.setItem('showEntertainment', String(newVal));
+  updateRouteShowLink();
 });
 </script>
 
@@ -354,9 +390,9 @@ watch(hideEntertainment, (newVal) => {
         <div class="system-category-management">
           <h5>系统分类管理</h5>
           <div class="switch-container">
-            <el-switch v-model="hideWork" class="mb-2" active-text="显示工作" inactive-text="隐藏工作" />
-            <el-switch v-model="hideStudy" class="mb-2" active-text="显示学习" inactive-text="隐藏学习" />
-            <el-switch v-model="hideEntertainment" class="mb-2" active-text="显示娱乐" inactive-text="隐藏娱乐" />
+            <el-switch v-model="showWork" class="mb-2" active-text="显示工作" inactive-text="隐藏工作" />
+            <el-switch v-model="showStudy" class="mb-2" active-text="显示学习" inactive-text="隐藏学习" />
+            <el-switch v-model="showEntertainment" class="mb-2" active-text="显示娱乐" inactive-text="隐藏娱乐" />
           </div>
         </div>
         <div class="add-category">
