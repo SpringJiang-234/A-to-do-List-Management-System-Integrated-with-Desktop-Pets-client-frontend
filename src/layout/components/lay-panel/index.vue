@@ -78,7 +78,7 @@ onBeforeUnmount(() => {
       >
         <el-button
           v-tippy="{
-            content: '清空缓存并返回登录页',
+            content: '退出登录',
             placement: 'left-start',
             zIndex: 41000
           }"
@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
           bg
           @click="onReset"
         >
-          清空缓存
+          退出登录
         </el-button>
       </div>
     </div>

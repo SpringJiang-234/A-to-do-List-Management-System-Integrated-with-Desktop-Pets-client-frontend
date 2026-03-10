@@ -108,10 +108,24 @@ export function useDataThemeChange() {
     }
   }
 
-  /** 清空缓存并返回登录页 */
+  /** 退出登录 */
   function onReset() {
     removeToken();
+    
+    const todoSettings = {
+      valueCompleted: localStorage.getItem('valueCompleted'),
+      defaultView: localStorage.getItem('defaultView'),
+      searchTime: localStorage.getItem('searchTime'),
+      searchStatus: localStorage.getItem('searchStatus')
+    };
+    
     storageLocal().clear();
+    
+    localStorage.setItem('valueCompleted', todoSettings.valueCompleted || 'true');
+    localStorage.setItem('defaultView', todoSettings.defaultView || '0');
+    localStorage.setItem('searchTime', todoSettings.searchTime || '0');
+    localStorage.setItem('searchStatus', todoSettings.searchStatus || '[]');
+    
     const { Grey, Weak, MultiTagsCache, EpThemeColor, Layout } = getConfig();
     useAppStoreHook().setLayout(Layout);
     setEpThemeColor(EpThemeColor);
