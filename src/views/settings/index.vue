@@ -19,7 +19,7 @@ const valueStartTimer = ref(localStorage.getItem('valueStartTimer') !== 'false')
 const valueReport = ref(localStorage.getItem('valueReport') !== 'false');
 const valueAnnouncement = ref(localStorage.getItem('valueAnnouncement') !== 'false');
 const valueFeedback = ref(localStorage.getItem('valueFeedback') !== 'false');
-const valueCompleted = ref(localStorage.getItem('valueCompleted') !== 'false');
+const valueCompleted = ref(localStorage.getItem('valueCompleted') === 'true');
 const defaultView = ref(localStorage.getItem('defaultView') || '0');
 
 const showWork = ref(localStorage.getItem('showWork') !== 'false');
