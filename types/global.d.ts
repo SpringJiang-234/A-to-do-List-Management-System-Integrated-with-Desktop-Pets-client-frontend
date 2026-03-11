@@ -35,6 +35,14 @@ declare global {
     mozRequestAnimationFrame: (callback: FrameRequestCallback) => number;
     oRequestAnimationFrame: (callback: FrameRequestCallback) => number;
     msRequestAnimationFrame: (callback: FrameRequestCallback) => number;
+    ipcRenderer: {
+      send: (channel: string, ...args: any[]) => void;
+      on: (channel: string, listener: (...args: any[]) => void) => void;
+      once: (channel: string, listener: (...args: any[]) => void) => void;
+      off: (channel: string, ...args: any[]) => void;
+      removeAllListeners: (channel: string) => void;
+      invoke: (channel: string, ...args: any[]) => Promise<any>;
+    };
   }
 
   /**
