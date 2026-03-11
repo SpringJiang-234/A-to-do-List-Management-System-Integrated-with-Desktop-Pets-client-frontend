@@ -55,6 +55,16 @@ export default [
       showLink: false
     }
   },
+  // 弹窗窗口
+  {
+    path: "/pop-up-window",
+    name: "PopUpWindow",
+    component: () => import("@/views/new-windows/pop-up-window.vue"),
+    meta: {
+      title: "弹窗窗口",
+      showLink: false
+    }
+  },
   // 复合计时器窗口
   {
     path: "/compound-timer",

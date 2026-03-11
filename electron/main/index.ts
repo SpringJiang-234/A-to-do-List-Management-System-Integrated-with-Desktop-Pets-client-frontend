@@ -1,6 +1,7 @@
 import { release } from "node:os";
 import { fileURLToPath } from "node:url";
 import { join, dirname } from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
 import {
   type MenuItem,
   type MenuItemConstructorOptions,
@@ -8,7 +9,8 @@ import {
   Menu,
   shell,
   ipcMain,
-  BrowserWindow
+  BrowserWindow,
+  screen
 } from "electron";
 
 // The built directory structure
@@ -192,18 +194,42 @@ const appMenu = (fullscreenLabel: string) => {
 // New window example arg: new windows url
 ipcMain.handle("open-win", (_, arg) => {
   const isTransparent = arg === "new-windows";
+  const isPopUpWindow = arg === "pop-up-window";
   const isCompoundTimer = arg.startsWith("compound-timer");
   
+  if (isPopUpWindow) {
+    const windows = BrowserWindow.getAllWindows();
+    console.log("所有窗口信息:", windows.map(w => ({
+      title: w.getTitle(),
+      bounds: w.getBounds(),
+      isFocused: w.isFocused(),
+      isVisible: w.isVisible()
+    })));
+
+    const desktopPetWindow = windows.find(w => {
+      const bounds = w.getBounds();
+      const title = w.getTitle();
+      return title.includes("桌宠窗口") && bounds.width >= 95 && bounds.width <= 110 && bounds.height >= 95 && bounds.height <= 110;
+    });
+
+    console.log("找到的桌宠窗口:", desktopPetWindow);
+
+    if (!desktopPetWindow) {
+      console.log("桌宠窗口未运行，无法创建弹窗窗口");
+      return { success: false, message: "桌宠窗口未运行" };
+    }
+  }
+  
   const childWindow = new BrowserWindow({
-    width: isTransparent ? 100 : (isCompoundTimer ? 500 : 1024),
-    height: isTransparent ? 100 : (isCompoundTimer ? 450 : 768),
-    minWidth: isTransparent ? 100 : (isCompoundTimer ? 500 : 1024),
-    minHeight: isTransparent ? 100 : (isCompoundTimer ? 450 : 768),
-    transparent: isTransparent,
-    frame: !isTransparent,
-    backgroundColor: isTransparent ? '#00ffffff' : undefined,
-    title: isTransparent ? "" : "Main window",
-    icon: isTransparent ? undefined : join(process.env.PUBLIC, "favicon.ico"),
+    width: isTransparent ? 100 : (isPopUpWindow ? 200 : (isCompoundTimer ? 500 : 1024)),
+    height: isTransparent ? 100 : (isPopUpWindow ? 150 : (isCompoundTimer ? 450 : 768)),
+    minWidth: isTransparent ? 100 : (isPopUpWindow ? 200 : (isCompoundTimer ? 500 : 1024)),
+    minHeight: isTransparent ? 100 : (isPopUpWindow ? 150 : (isCompoundTimer ? 450 : 768)),
+    transparent: isTransparent || isPopUpWindow,
+    frame: !isTransparent && !isPopUpWindow,
+    backgroundColor: (isTransparent || isPopUpWindow) ? '#00ffffff' : undefined,
+    title: (isTransparent || isPopUpWindow) ? "" : "Main window",
+    icon: (isTransparent || isPopUpWindow) ? undefined : join(process.env.PUBLIC, "favicon.ico"),
     center: true,
     alwaysOnTop: true,
     show: false,
@@ -214,11 +240,21 @@ ipcMain.handle("open-win", (_, arg) => {
     }
   });
 
+  if (isPopUpWindow) {
+    childWindow.setIgnoreMouseEvents(true);
+  }
+
   if (arg === "new-windows") {
     if (process.env.VITE_DEV_SERVER_URL) {
       childWindow.loadURL(`${url}#/new-windows`);
     } else {
       childWindow.loadFile(indexHtml, { hash: "new-windows" });
+    }
+  } else if (arg === "pop-up-window") {
+    if (process.env.VITE_DEV_SERVER_URL) {
+      childWindow.loadURL(`${url}#/pop-up-window`);
+    } else {
+      childWindow.loadFile(indexHtml, { hash: "pop-up-window" });
     }
   } else {
     if (process.env.VITE_DEV_SERVER_URL) {
@@ -229,10 +265,68 @@ ipcMain.handle("open-win", (_, arg) => {
   }
   
   childWindow.once('ready-to-show', () => {
+    if (isTransparent) {
+      try {
+        const positionFilePath = join(process.env.DIST_ELECTRON, "desktop-pet-position.json");
+        const positionData = readFileSync(positionFilePath, "utf-8");
+        const position = JSON.parse(positionData);
+        childWindow.setPosition(position.x, position.y);
+      } catch (error) {
+        console.log("读取桌宠位置失败，使用桌面正中间作为默认位置");
+        const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+        const x = Math.floor((screenWidth - 100) / 2);
+        const y = Math.floor((screenHeight - 100) / 2);
+        childWindow.setPosition(x, y);
+        const position = { x, y };
+        const positionFilePath = join(process.env.DIST_ELECTRON, "desktop-pet-position.json");
+        writeFileSync(positionFilePath, JSON.stringify(position), "utf-8");
+      }
+    }
+    
+    if (isPopUpWindow) {
+        try {
+          const positionFilePath = join(process.env.DIST_ELECTRON, "desktop-pet-position.json");
+          const positionData = readFileSync(positionFilePath, "utf-8");
+          const position = JSON.parse(positionData);
+          childWindow.setPosition(
+            position.x - 50,
+            position.y - 150
+          );
+        } catch (error) {
+          console.log("读取桌宠位置失败，使用桌面正中间作为默认位置");
+          const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+          const x = Math.floor((screenWidth - 100) / 2);
+          const y = Math.floor((screenHeight - 100) / 2);
+          const position = { x, y };
+          const positionFilePath = join(process.env.DIST_ELECTRON, "desktop-pet-position.json");
+          writeFileSync(positionFilePath, JSON.stringify(position), "utf-8");
+          childWindow.setPosition(
+            x - 50,
+            y - 150
+          );
+        }
+      }
+    
     childWindow.show();
     childWindow.setAlwaysOnTop(true, 'screen-saver');
     childWindow.moveTop();
     childWindow.focus();
+    
+    if (isTransparent) {
+      const savePosition = () => {
+        try {
+          const bounds = childWindow.getBounds();
+          const position = { x: bounds.x, y: bounds.y };
+          const positionFilePath = join(process.env.DIST_ELECTRON, "desktop-pet-position.json");
+          writeFileSync(positionFilePath, JSON.stringify(position), "utf-8");
+        } catch (error) {
+          console.error("保存桌宠位置失败:", error);
+        }
+      };
+      
+      childWindow.on('moved', savePosition);
+      savePosition();
+    }
   });
   
   return { success: true };
