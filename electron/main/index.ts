@@ -195,10 +195,10 @@ ipcMain.handle("open-win", (_, arg) => {
   const isCompoundTimer = arg.startsWith("compound-timer");
   
   const childWindow = new BrowserWindow({
-    width: isTransparent ? 400 : (isCompoundTimer ? 500 : 1024),
-    height: isTransparent ? 400 : (isCompoundTimer ? 450 : 768),
-    minWidth: isTransparent ? 400 : (isCompoundTimer ? 500 : 1024),
-    minHeight: isTransparent ? 400 : (isCompoundTimer ? 450 : 768),
+    width: isTransparent ? 100 : (isCompoundTimer ? 500 : 1024),
+    height: isTransparent ? 100 : (isCompoundTimer ? 450 : 768),
+    minWidth: isTransparent ? 100 : (isCompoundTimer ? 500 : 1024),
+    minHeight: isTransparent ? 100 : (isCompoundTimer ? 450 : 768),
     transparent: isTransparent,
     frame: !isTransparent,
     backgroundColor: isTransparent ? '#00ffffff' : undefined,
