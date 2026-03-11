@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { message } from "@/utils/message";
 import TodoList from "@/components/TodoList.vue";
 import { getTodoListByCategoryOrTag, completeTodo, cancelCompleteTodo } from "@/api/todo";
@@ -17,8 +17,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -38,19 +38,26 @@ const loadTodoListByPriority = async (priority: number) => {
       return [];
     }
 
-    const response = await getTodoListByCategoryOrTag({
+    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+    const params: any = {
       userId: userInfo.id,
-      priority: priority
-    });
+      priorityList: [priority]
+    };
+    
+    if (!valueCompleted) {
+      params.statusList = [1];
+    }
+
+    const response = await getTodoListByCategoryOrTag(params);
 
     if (response.code === 200) {
       return response.data.map(todo => ({
         id: todo.id,
         title: todo.title,
         content: todo.content,
-        timestamp: todo.startTime || "",
-        startTime: todo.startTime,
-        endTime: todo.endTime,
+        timestamp: todo.startDate || "",
+        startDate: todo.startDate,
+        endDate: todo.endDate,
         status: todo.status,
         priority: todo.priority
       }));
@@ -91,8 +98,19 @@ async function handleClick(activity: Activity) {
 function handleTextClick(activity: Activity) {
 }
 
+const handleSearchSettingsChanged = (event: any) => {
+  if (event.detail?.type === 'status') {
+    loadAllPriorityTodos();
+  }
+};
+
 onMounted(() => {
   loadAllPriorityTodos();
+  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
 });
 </script>
 

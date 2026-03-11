@@ -334,12 +334,14 @@ watch(valueFeedback, (newVal) => {
   updateRouteShowLink();
 });
 watch(valueCompleted, (newVal) => {
+  console.log("========== 设置：valueCompleted 变化 ==========", newVal);
   localStorage.setItem('valueCompleted', String(newVal));
   if (newVal) {
     localStorage.setItem('searchStatus', '[]');
   } else {
     localStorage.setItem('searchStatus', '["1"]');
   }
+  console.log("========== 触发 searchSettingsChanged 事件 ==========", newVal ? '[]' : '["1"]');
   window.dispatchEvent(new CustomEvent('searchSettingsChanged', {
     detail: { type: 'status', value: newVal ? '[]' : '["1"]' }
   }));

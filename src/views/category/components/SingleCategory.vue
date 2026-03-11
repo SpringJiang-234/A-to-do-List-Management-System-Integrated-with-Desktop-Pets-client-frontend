@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getTodoListByCategoryOrTag } from "@/api/todo";
 import TodoList from "@/components/TodoList.vue";
@@ -9,8 +9,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -52,9 +52,16 @@ const loadTodoList = async () => {
 
   try {
     loading.value = true;
-    const response = await getTodoListByCategoryOrTag({
-      categoryId: categoryId.value
-    });
+    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+    const params: any = {
+      categoryIdList: [categoryId.value]
+    };
+    
+    if (!valueCompleted) {
+      params.statusList = [1];
+    }
+    
+    const response = await getTodoListByCategoryOrTag(params);
     originalTodoList.value = response.data || [];
   } catch (error) {
     console.error("加载待办列表失败:", error);
@@ -77,6 +84,12 @@ function handleTextClick(activity: Activity) {
   router.push(`/todo/detail/${activity.id}`);
 }
 
+const handleSearchSettingsChanged = (event: any) => {
+  if (event.detail?.type === 'status') {
+    loadTodoList();
+  }
+};
+
 watch(
   () => route.meta?.categoryId,
   (newCategoryId) => {
@@ -87,6 +100,14 @@ watch(
   },
   { immediate: true }
 );
+
+onMounted(() => {
+  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+});
 </script>
 
 <template>

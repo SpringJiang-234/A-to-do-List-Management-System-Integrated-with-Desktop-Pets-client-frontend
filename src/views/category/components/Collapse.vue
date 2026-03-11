@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { getCategoryList } from "@/api/category";
 import { getTodoListByCategoryOrTag } from "@/api/todo";
@@ -12,8 +12,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -89,18 +89,29 @@ const loadCategories = async () => {
 
 const loadCategoryTodos = async (categoryId: number, categoryName: string) => {
   try {
-    const response = await getTodoListByCategoryOrTag({
-      categoryId: categoryId
-    });
+    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+    console.log(`========== 加载分类 ${categoryName} 的待办，valueCompleted: ${valueCompleted} ==========`);
+    const params: any = {
+      categoryIdList: [categoryId]
+    };
+    
+    if (!valueCompleted) {
+      params.statusList = [1];
+      console.log("========== 添加 statusList: [1] 只查询未完成待办 ==========");
+    } else {
+      console.log("========== 不添加 statusList，查询所有待办 ==========");
+    }
+    
+    const response = await getTodoListByCategoryOrTag(params);
     const originalTodoList = response.data || [];
 
     const activities = originalTodoList.map(todo => ({
       id: todo.id,
       title: todo.title,
       content: todo.content,
-      timestamp: todo.startTime || "",
-      startTime: todo.startTime,
-      endTime: todo.endTime,
+      timestamp: todo.startDate || "",
+      startDate: todo.startDate,
+      endDate: todo.endDate,
       status: todo.status,
       priority: todo.priority,
       color: undefined
@@ -134,8 +145,23 @@ function handleTextClick(activity: Activity) {
   router.push(`/todo/detail/${activity.id}`);
 }
 
+const handleSearchSettingsChanged = (event: any) => {
+  console.log("========== Collapse 收到 searchSettingsChanged 事件 ==========", event);
+  if (event.detail?.type === 'status') {
+    console.log("========== 重新加载分类待办 ==========");
+    loadCategories();
+  }
+};
+
 onMounted(() => {
+  console.log("========== Collapse 组件已挂载，添加事件监听 ==========");
   loadCategories();
+  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+});
+
+onUnmounted(() => {
+  console.log("========== Collapse 组件卸载，移除事件监听 ==========");
+  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
 });
 </script>
 

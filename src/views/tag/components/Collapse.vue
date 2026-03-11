@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { getTagList } from "@/api/tag";
 import { getTodoListByCategoryOrTag } from "@/api/todo";
@@ -12,8 +12,8 @@ interface Activity {
   title: string;
   content: string;
   timestamp: string;
-  startTime?: string;
-  endTime?: string;
+  startDate?: string;
+  endDate?: string;
   status: number;
   priority?: number;
   color?: string;
@@ -74,18 +74,25 @@ const loadTags = async () => {
 
 const loadTagTodos = async (tagId: number, tagName: string) => {
   try {
-    const response = await getTodoListByCategoryOrTag({
-      tagId: tagId
-    });
+    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+    const params: any = {
+      tagIdList: [tagId]
+    };
+    
+    if (!valueCompleted) {
+      params.statusList = [1];
+    }
+    
+    const response = await getTodoListByCategoryOrTag(params);
     const originalTodoList = response.data || [];
 
     const activities = originalTodoList.map(todo => ({
       id: todo.id,
       title: todo.title,
       content: todo.content,
-      timestamp: todo.startTime || "",
-      startTime: todo.startTime,
-      endTime: todo.endTime,
+      timestamp: todo.startDate || "",
+      startDate: todo.startDate,
+      endDate: todo.endDate,
       status: todo.status,
       priority: todo.priority,
       color: undefined
@@ -119,8 +126,19 @@ function handleTextClick(activity: Activity) {
   router.push(`/todo/detail/${activity.id}`);
 }
 
+const handleSearchSettingsChanged = (event: any) => {
+  if (event.detail?.type === 'status') {
+    loadTags();
+  }
+};
+
 onMounted(() => {
   loadTags();
+  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
 });
 </script>
 
