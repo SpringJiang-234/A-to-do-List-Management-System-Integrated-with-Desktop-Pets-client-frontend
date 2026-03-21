@@ -8,10 +8,17 @@ defineOptions({
 });
 
 const currentGif = ref(summonGifPath);
+const isFading = ref(false);
 
 onMounted(() => {
   setTimeout(() => {
-    currentGif.value = teaGifPath;
+    isFading.value = true;
+    setTimeout(() => {
+      currentGif.value = teaGifPath;
+      setTimeout(() => {
+        isFading.value = false;
+      }, 400);
+    }, 400);
   }, 2000);
 });
 </script>
@@ -19,7 +26,7 @@ onMounted(() => {
 <template>
   <div class="pet-container">
     <div class="gif-container">
-      <img :src="currentGif" alt="动画" draggable="false">
+      <img :class="{ fading: isFading }" :src="currentGif" alt="动画" draggable="false">
     </div>
   </div>
 </template>
@@ -43,6 +50,11 @@ onMounted(() => {
   width: 100px;
   height: 100px;
   display: block;
+  transition: opacity 0.4s ease;
+}
+
+.gif-container img.fading {
+  opacity: 0;
 }
 </style>
 
