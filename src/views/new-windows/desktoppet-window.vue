@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import gifPath from "@/assets/images/丰川祥子-鼓掌.gif";
+import gifPath from "@/assets/images/丰川祥子-喝茶.gif";
 
 defineOptions({
   name: "DesktopPetWindow"
