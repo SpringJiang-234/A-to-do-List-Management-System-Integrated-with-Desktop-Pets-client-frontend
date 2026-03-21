@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import gifPath from "@/assets/images/丰川祥子-喝茶.gif";
+import { ref, onMounted } from "vue";
+import summonGifPath from "@/assets/images/丰川祥子-召唤.gif";
+import teaGifPath from "@/assets/images/丰川祥子-喝茶.gif";
 
 defineOptions({
   name: "DesktopPetWindow"
+});
+
+const currentGif = ref(summonGifPath);
+
+onMounted(() => {
+  setTimeout(() => {
+    currentGif.value = teaGifPath;
+  }, 2000);
 });
 </script>
 
 <template>
   <div class="pet-container">
     <div class="gif-container">
-      <img :src="gifPath" alt="动画" draggable="false">
+      <img :src="currentGif" alt="动画" draggable="false">
     </div>
   </div>
 </template>
