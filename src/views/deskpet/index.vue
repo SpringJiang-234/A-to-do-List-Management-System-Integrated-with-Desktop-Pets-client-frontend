@@ -4,6 +4,7 @@ import circleUrl from "@/assets/images/丰川祥子-YES.gif";
 import { updateDesktopPet } from "@/api/deskpet";
 import { ElMessage } from "element-plus";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 defineOptions({
   name: "DeskPet"
@@ -34,6 +35,9 @@ const originalNickname = ref("");
 const openDeskPetWindow = async () => {
   try {
     await (window as any).ipcRenderer.invoke("open-win", "new-windows");
+    setTimeout(() => {
+      (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.meet);
+    }, 1000);
   } catch (error) {
     console.error("打开桌宠窗口失败:", error);
   }
