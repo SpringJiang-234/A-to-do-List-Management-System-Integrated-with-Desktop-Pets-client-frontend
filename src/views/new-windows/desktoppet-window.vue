@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import gifPath from "@/assets/images/丰川祥子-鼓掌.gif";
+
 defineOptions({
   name: "DesktopPetWindow"
 });
-
-const gifPath = "/祥子鼓掌.gif";
 </script>
 
 <template>
