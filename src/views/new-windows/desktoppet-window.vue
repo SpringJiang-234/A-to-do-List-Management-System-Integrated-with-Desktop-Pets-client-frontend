@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import summonGifPath from "@/assets/images/丰川祥子-召唤.gif";
 import teaGifPath from "@/assets/images/丰川祥子-喝茶.gif";
+import upgradeGifPath from "@/assets/images/丰川祥子-升级.gif";
 
 defineOptions({
   name: "DesktopPetWindow"
@@ -10,7 +11,33 @@ defineOptions({
 const currentGif = ref(summonGifPath);
 const isFading = ref(false);
 
+const playUpgradeAnimation = () => {
+  console.log("========== 收到升级动画事件 ==========");
+  isFading.value = true;
+  setTimeout(() => {
+    currentGif.value = "";
+    setTimeout(() => {
+      currentGif.value = upgradeGifPath;
+      setTimeout(() => {
+        isFading.value = false;
+        setTimeout(() => {
+          isFading.value = true;
+          setTimeout(() => {
+            currentGif.value = teaGifPath;
+            setTimeout(() => {
+              isFading.value = false;
+            }, 400);
+          }, 400);
+        }, 2000);
+      }, 400);
+    }, 400);
+  }, 400);
+};
+
 onMounted(() => {
+  console.log("========== 桌宠窗口已挂载，注册升级动画监听器 ==========");
+  (window as any).ipcRenderer.on('play-upgrade-animation', playUpgradeAnimation);
+  
   setTimeout(() => {
     isFading.value = true;
     setTimeout(() => {
@@ -20,6 +47,10 @@ onMounted(() => {
       }, 400);
     }, 400);
   }, 2000);
+});
+
+onUnmounted(() => {
+  (window as any).ipcRenderer.removeListener('play-upgrade-animation', playUpgradeAnimation);
 });
 </script>
 

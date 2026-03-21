@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import type { CalendarDateType, CalendarInstance } from "element-plus";
 import { message } from "@/utils/message";
 import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
+import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 interface Activity {
   id: number;
@@ -32,6 +33,7 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter();
+const desktopPetStore = useDesktopPetStoreHook();
 
 const calendar = ref<CalendarInstance>();
 const selectDate = (val: CalendarDateType) => {
@@ -63,6 +65,8 @@ const handleMenuAction = async (action: string) => {
   try {
     switch (action) {
       case "toggleComplete":
+        const currentGrowth = desktopPetStore.growthValue;
+        
         if (todo.status === 2) {
           await cancelCompleteTodo(todo.id);
           const cancelTodoItem = props.originalTodoList.find(t => t.id === todo.id);
@@ -78,7 +82,13 @@ const handleMenuAction = async (action: string) => {
             completeTodoItem.status = 2;
           }
           todo.status = 2;
+          await desktopPetStore.loadDesktopPetInfo();
           message("完成待办", { type: "success" });
+          
+          const newGrowth = desktopPetStore.growthValue;
+          if (newGrowth < currentGrowth) {
+            (window as any).ipcRenderer.send('play-upgrade-animation');
+          }
         }
         break;
       case "edit":

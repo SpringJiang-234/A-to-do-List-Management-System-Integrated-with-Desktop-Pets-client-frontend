@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
+import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 defineOptions({
   name: "WeekView"
@@ -40,6 +41,7 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter();
+const desktopPetStore = useDesktopPetStoreHook();
 
 const value = ref("");
 
@@ -171,6 +173,8 @@ const handleMenuAction = async (action: string) => {
   try {
     switch (action) {
       case "toggleComplete":
+        const currentGrowth = desktopPetStore.growthValue;
+        
         if (activity.status === 2) {
           await cancelCompleteTodo(activity.id);
           const todo = props.originalTodoList.find(t => t.id === activity.id);
@@ -186,7 +190,13 @@ const handleMenuAction = async (action: string) => {
             todo.status = 2;
           }
           activity.status = 2;
+          await desktopPetStore.loadDesktopPetInfo();
           message("完成待办", { type: "success" });
+          
+          const newGrowth = desktopPetStore.growthValue;
+          if (newGrowth < currentGrowth) {
+            (window as any).ipcRenderer.send('play-upgrade-animation');
+          }
         }
         break;
       case "edit":

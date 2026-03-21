@@ -118,6 +118,18 @@ async function createWindow() {
 
 app.whenReady().then(createWindow);
 
+ipcMain.on('play-upgrade-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-upgrade-animation');
+  }
+});
+
 app.on("window-all-closed", () => {
   win = null;
   if (process.platform !== "darwin") app.quit();

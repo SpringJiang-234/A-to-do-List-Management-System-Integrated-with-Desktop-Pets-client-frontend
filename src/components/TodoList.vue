@@ -74,6 +74,8 @@ const formatTimestamp = (timestamp: string, startDate?: string, endDate?: string
 
 async function handleClick(activity: Activity) {
   try {
+    const currentGrowth = desktopPetStore.growthValue;
+    
     if (activity.status === 2) {
       await cancelCompleteTodo(activity.id);
       activity.status = 1;
@@ -83,6 +85,14 @@ async function handleClick(activity: Activity) {
       activity.status = 2;
       await desktopPetStore.loadDesktopPetInfo();
       message("完成待办", { type: "success" });
+      
+      const newGrowth = desktopPetStore.growthValue;
+      console.log("旧成长值:", currentGrowth, "新成长值:", newGrowth, "是否升级:", newGrowth < currentGrowth);
+      
+      if (newGrowth < currentGrowth) {
+        console.log("发送升级动画事件");
+        (window as any).ipcRenderer.send('play-upgrade-animation');
+      }
     }
     emit("click", activity);
   } catch (error) {

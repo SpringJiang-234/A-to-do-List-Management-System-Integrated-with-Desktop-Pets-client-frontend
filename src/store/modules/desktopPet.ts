@@ -9,6 +9,7 @@ export interface DesktopPetState {
   intimacyValue: number;
   levelValue: number;
   nickname: string;
+  previousGrowthValue: number;
 }
 
 export const useDesktopPetStore = defineStore("pure-desktop-pet", {
@@ -18,7 +19,8 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
     moodValue: 0,
     intimacyValue: 0,
     levelValue: 1,
-    nickname: ""
+    nickname: "",
+    previousGrowthValue: 0
   } as DesktopPetState),
   actions: {
     async loadDesktopPetInfo() {
@@ -35,6 +37,18 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
       } catch (error) {
         console.error("获取桌宠信息失败:", error);
       }
+    },
+    checkUpgrade() {
+      if (this.growthValue >= 100 && this.previousGrowthValue < 100) {
+        this.previousGrowthValue = this.growthValue;
+        return true;
+      }
+      return false;
+    }
+  },
+  getters: {
+    shouldPlayUpgradeAnimation: (state) => {
+      return state.growthValue >= 100 && state.previousGrowthValue < 100;
     }
   }
 });
