@@ -100,7 +100,7 @@ async function onTagUpdate() {
         await updateTag({
           id: tag.id,
           name: tag.name,
-          color: tag.color,
+          color: convertRgbaToHex(tag.color),
           sortOrder: tag.sortOrder
         });
       }
@@ -173,7 +173,7 @@ async function addTag() {
     const maxSortOrder = tagList.value.length > 0 ? tagList.value[0].sortOrder + 1 : 1;
     const res = await insertTag({
       name: newTagName.value.trim(),
-      color: newTagColor.value,
+      color: convertRgbaToHex(newTagColor.value),
       sortOrder: maxSortOrder
     });
     if (res.code === 200) {
@@ -222,6 +222,32 @@ function convertToRgbaWithOpacity(hexColor: string, opacity: number = 0.3): stri
   const b = parseInt(hex.substring(4, 6), 16);
   
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+function convertRgbaToHex(rgbaColor: string): string {
+  if (!rgbaColor) {
+    return "#409EFF";
+  }
+  
+  if (rgbaColor.startsWith('#')) {
+    return rgbaColor;
+  }
+  
+  const rgbaMatch = rgbaColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+  if (!rgbaMatch) {
+    return "#409EFF";
+  }
+  
+  const r = parseInt(rgbaMatch[1]);
+  const g = parseInt(rgbaMatch[2]);
+  const b = parseInt(rgbaMatch[3]);
+  
+  const toHex = (n: number) => {
+    const hex = n.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
 function updateRouteShowLink() {
