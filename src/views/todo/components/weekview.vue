@@ -191,6 +191,7 @@ const handleMenuAction = async (action: string) => {
     switch (action) {
       case "toggleComplete":
         const previousLevel = desktopPetStore.levelValue;
+        const previousVitality = desktopPetStore.vitalityValue;
 
         if (activity.status === 2) {
           await cancelCompleteTodo(activity.id);
@@ -240,7 +241,7 @@ const handleMenuAction = async (action: string) => {
             }, 2500);
           }
 
-          if (desktopPetStore.checkEnergetic()) {
+          if (desktopPetStore.vitalityValue === 100 && previousVitality < 100) {
             setTimeout(() => {
               (window as any).ipcRenderer.send("play-energetic-animation");
               (window as any).ipcRenderer.invoke(

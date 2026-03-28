@@ -195,7 +195,7 @@ const handleSubmit = async () => {
       sakikoMessages.newTodo
     );
 
-    if (desktopPetStore.checkEnergetic()) {
+    if (desktopPetStore.vitalityValue === 100 && previousVitality < 100) {
       setTimeout(() => {
         (window as any).ipcRenderer.send('play-energetic-animation');
         (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
