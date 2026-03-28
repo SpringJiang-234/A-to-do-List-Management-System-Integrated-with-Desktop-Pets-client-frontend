@@ -41,14 +41,15 @@ enum LoopAnimationType {
   OTHER = 'other'
 }
 
-const currentGif = ref(desktopPetStore.intimacyValue >= 60 ? summonGifPath : summon2GifPath);
+const currentGif = ref("");
 const isFading = ref(false);
 const isUpgrading = ref(false);
 const animationState = ref(AnimationState.SUMMON);
 const currentLoopAnimation = ref(LoopAnimationType.TEA);
 const previousLoopAnimation = ref(LoopAnimationType.TEA);
 const isPlayingOneTimeAnimation = ref(false);
-const intimacyValue = ref(desktopPetStore.intimacyValue);
+const intimacyValue = ref(60);
+const hasInitializedSummon = ref(false);
 
 const setSummonAnimation = () => {
   const summonGif = intimacyValue.value >= 60 ? summonGifPath : summon2GifPath;

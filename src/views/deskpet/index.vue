@@ -34,6 +34,8 @@ const originalNickname = ref("");
 
 const openDeskPetWindow = async () => {
   try {
+    await desktopPetStore.loadDesktopPetInfo();
+    
     await (window as any).ipcRenderer.invoke("open-win", "new-windows");
     
     setTimeout(() => {
