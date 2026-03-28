@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { insertTodo } from "@/api/todo";
 import { getCategoryList } from "@/api/category";
@@ -31,6 +31,21 @@ const todoForm = ref({
   startDate: "",
   endDate: ""
 });
+
+const resetForm = () => {
+  todoForm.value = {
+    title: "",
+    content: "",
+    categoryId: undefined as number | undefined,
+    categoryName: "" as string,
+    priority: 1 as number,
+    status: 1 as number,
+    isTop: 1 as number,
+    tagIdList: [] as number[],
+    startDate: "",
+    endDate: ""
+  };
+};
 const loading = ref(false);
 const submitting = ref(false);
 
@@ -197,8 +212,11 @@ const handleSubmit = async () => {
   }
 };
 
-loadCategories();
-loadTags();
+onMounted(() => {
+  resetForm();
+  loadCategories();
+  loadTags();
+});
 </script>
 
 <template>
