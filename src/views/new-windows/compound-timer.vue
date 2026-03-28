@@ -199,6 +199,19 @@ const resetTimer = () => {
   remainingTime.value = 0;
   currentCycle.value = 1;
   isBreak.value = false;
+  
+  if (valueType.value === "番茄钟") {
+    const categoryName = todoCategoryName.value.toLowerCase();
+    if (categoryName.includes("工作")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else if (categoryName.includes("学习")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else if (categoryName.includes("娱乐")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    }
+  }
 };
 
 const completeTimer = async () => {
