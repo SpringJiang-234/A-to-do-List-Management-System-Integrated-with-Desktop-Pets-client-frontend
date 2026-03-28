@@ -121,7 +121,7 @@ const getPriorityColor = (priority?: number) => {
 /** 点击事件 */
 async function handleClick(activity: Activity) {
   try {
-    const currentGrowth = desktopPetStore.growthValue;
+    const previousLevel = desktopPetStore.levelValue;
     const previousMood = desktopPetStore.moodValue;
 
     if (activity.status === 2) {
@@ -153,7 +153,7 @@ async function handleClick(activity: Activity) {
         );
       }
 
-      if (desktopPetStore.checkUpgrade()) {
+      if (desktopPetStore.levelValue > previousLevel) {
         setTimeout(() => {
           (window as any).ipcRenderer.send("play-upgrade-animation");
           (window as any).ipcRenderer.invoke(

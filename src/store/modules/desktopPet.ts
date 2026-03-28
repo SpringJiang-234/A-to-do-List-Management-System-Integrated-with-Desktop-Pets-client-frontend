@@ -12,6 +12,7 @@ export interface DesktopPetState {
   previousGrowthValue: number;
   previousVitalityValue: number;
   previousMoodValue: number;
+  previousLevelValue: number;
 }
 
 export const useDesktopPetStore = defineStore("pure-desktop-pet", {
@@ -25,7 +26,8 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
       nickname: "",
       previousGrowthValue: 0,
       previousVitalityValue: 0,
-      previousMoodValue: 60
+      previousMoodValue: 60,
+      previousLevelValue: 1
     }) as DesktopPetState,
   actions: {
     async loadDesktopPetInfo() {
@@ -44,8 +46,8 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
       }
     },
     checkUpgrade() {
-      if (this.growthValue >= 100 && this.previousGrowthValue < 100) {
-        this.previousGrowthValue = this.growthValue;
+      if (this.levelValue > this.previousLevelValue) {
+        this.previousLevelValue = this.levelValue;
         return true;
       }
       return false;
@@ -70,6 +72,17 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
       }
       return "none";
     },
+    checkMoodChangeWithoutUpdate() {
+      const moodChanged = this.moodValue >= 60 && this.previousMoodValue < 60;
+      const moodDecreased = this.moodValue < 60 && this.previousMoodValue >= 60;
+
+      if (moodChanged) {
+        return "increased";
+      } else if (moodDecreased) {
+        return "decreased";
+      }
+      return "none";
+    },
     getSummonAnimation() {
       return this.intimacyValue >= 60 ? "summon" : "summon2";
     },
@@ -80,6 +93,7 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
       this.previousGrowthValue = this.growthValue;
       this.previousVitalityValue = this.vitalityValue;
       this.previousMoodValue = this.moodValue;
+      this.previousLevelValue = this.levelValue;
     }
   },
   getters: {

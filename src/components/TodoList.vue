@@ -84,7 +84,7 @@ const formatTimestamp = (
 
 async function handleClick(activity: Activity) {
   try {
-    const currentGrowth = desktopPetStore.growthValue;
+    const previousLevel = desktopPetStore.levelValue;
 
     if (activity.status === 2) {
       await cancelCompleteTodo(activity.id);
@@ -113,7 +113,7 @@ async function handleClick(activity: Activity) {
         );
       }
 
-      if (desktopPetStore.checkUpgrade()) {
+      if (desktopPetStore.levelValue > previousLevel) {
         setTimeout(() => {
           (window as any).ipcRenderer.send("play-upgrade-animation");
           (window as any).ipcRenderer.invoke(

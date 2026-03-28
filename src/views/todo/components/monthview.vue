@@ -11,6 +11,7 @@ import {
   deleteTodo
 } from "@/api/todo";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 interface Activity {
   id: number;
@@ -20,6 +21,7 @@ interface Activity {
   status: number;
   priority?: number;
   color?: string;
+  endDate?: string;
 }
 
 interface MonthData {
@@ -70,7 +72,7 @@ const handleMenuAction = async (action: string) => {
   try {
     switch (action) {
       case "toggleComplete":
-        const currentGrowth = desktopPetStore.growthValue;
+        const previousLevel = desktopPetStore.levelValue;
 
         if (todo.status === 2) {
           await cancelCompleteTodo(todo.id);
@@ -94,9 +96,66 @@ const handleMenuAction = async (action: string) => {
           await desktopPetStore.loadDesktopPetInfo();
           message("完成待办", { type: "success" });
 
-          const newGrowth = desktopPetStore.growthValue;
-          if (newGrowth < currentGrowth) {
-            (window as any).ipcRenderer.send("play-upgrade-animation");
+          const isOverdue =
+            todo.endDate && new Date(todo.endDate) < new Date();
+
+          if (isOverdue) {
+            (window as any).ipcRenderer.send("play-clap-animation");
+            (window as any).ipcRenderer.invoke(
+              "open-win",
+              "pop-up-window",
+              sakikoMessages.complete
+            );
+          } else {
+            (window as any).ipcRenderer.send("play-good-animation");
+            (window as any).ipcRenderer.invoke(
+              "open-win",
+              "pop-up-window",
+              sakikoMessages.onTime
+            );
+          }
+
+          if (desktopPetStore.levelValue > previousLevel) {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-upgrade-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.upgrade
+              );
+            }, 2500);
+          }
+
+          if (desktopPetStore.checkEnergetic()) {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-energetic-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.energetic
+              );
+            }, 2500);
+          }
+
+          const moodChange = desktopPetStore.checkMoodChange();
+          if (moodChange === "increased") {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-tea-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.onTimeMore
+              );
+            }, 2500);
+          } else if (moodChange === "decreased") {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-pointing-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.overdue
+              );
+            }, 2500);
           }
         }
         break;
