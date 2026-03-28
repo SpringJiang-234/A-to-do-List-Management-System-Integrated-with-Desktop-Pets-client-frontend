@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, ref, onMounted } from "vue";
+import { reactive, computed, ref, onMounted, watch } from "vue";
 import Select from "@/components/Select.vue";
 import IconamoonSearchLight from "~icons/iconamoon/search-light";
 import HeroiconsArrowPath from "~icons/heroicons/arrow-path";
@@ -73,6 +73,10 @@ onMounted(() => {
   const valueCompleted = localStorage.getItem("valueCompleted") !== "false";
   const savedTime = localStorage.getItem("searchTime");
   const savedStatus = localStorage.getItem("searchStatus");
+  const savedCategories = localStorage.getItem("searchCategories");
+  const savedTags = localStorage.getItem("searchTags");
+  const savedPriorities = localStorage.getItem("searchPriorities");
+  const savedIsTop = localStorage.getItem("searchIsTop");
 
   console.log("savedTime:", savedTime);
   console.log("savedStatus:", savedStatus);
@@ -100,6 +104,38 @@ onMounted(() => {
     formInline.status = ["1"];
   }
 
+  if (savedCategories) {
+    try {
+      formInline.categories = JSON.parse(savedCategories);
+    } catch (e) {
+      console.error("解析 savedCategories 失败:", e);
+    }
+  }
+
+  if (savedTags) {
+    try {
+      formInline.tags = JSON.parse(savedTags);
+    } catch (e) {
+      console.error("解析 savedTags 失败:", e);
+    }
+  }
+
+  if (savedPriorities) {
+    try {
+      formInline.priorities = JSON.parse(savedPriorities);
+    } catch (e) {
+      console.error("解析 savedPriorities 失败:", e);
+    }
+  }
+
+  if (savedIsTop) {
+    try {
+      formInline.isTop = JSON.parse(savedIsTop);
+    } catch (e) {
+      console.error("解析 savedIsTop 失败:", e);
+    }
+  }
+
   window.addEventListener("searchSettingsChanged", (e: any) => {
     if (e.detail.type === "time") {
       formInline.time = e.detail.value;
@@ -117,6 +153,56 @@ onMounted(() => {
       }
     }
   });
+
+  watch(
+    () => tags.value,
+    newTags => {
+      if (newTags && newTags.length > 0 && formInline.tags.length === 0 && !savedTags) {
+        formInline.tags = newTags.map(tag => tag.value.toString());
+      }
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => categories.value,
+    newCategories => {
+      if (newCategories && newCategories.length > 0 && formInline.categories.length === 0 && !savedCategories) {
+        formInline.categories = newCategories.map(cat => cat.value.toString());
+      }
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => priorities.length,
+    newPrioritiesLength => {
+      if (newPrioritiesLength > 0 && formInline.priorities.length === 0 && !savedPriorities) {
+        formInline.priorities = priorities.map(prio => prio.value.toString());
+      }
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => statusOptions.length,
+    newStatusOptionsLength => {
+      if (newStatusOptionsLength > 0 && formInline.status.length === 0 && !savedStatus && !valueCompleted) {
+        formInline.status = statusOptions.map(status => status.value.toString());
+      }
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => topOptions.length,
+    newTopOptionsLength => {
+      if (newTopOptionsLength > 0 && formInline.isTop.length === 0 && !savedIsTop) {
+        formInline.isTop = topOptions.map(top => top.value.toString());
+      }
+    },
+    { immediate: true }
+  );
 });
 
 const handleTimeRuleChange = (value: string) => {
@@ -327,6 +413,10 @@ const onSubmit = async () => {
 
     localStorage.setItem("searchTime", formInline.time || "");
     localStorage.setItem("searchStatus", JSON.stringify(formInline.status));
+    localStorage.setItem("searchCategories", JSON.stringify(formInline.categories));
+    localStorage.setItem("searchTags", JSON.stringify(formInline.tags));
+    localStorage.setItem("searchPriorities", JSON.stringify(formInline.priorities));
+    localStorage.setItem("searchIsTop", JSON.stringify(formInline.isTop));
 
     const response = await getTodoList(params);
 

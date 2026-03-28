@@ -87,17 +87,7 @@ const formatTimestamp = (
   startDate?: string,
   endDate?: string
 ) => {
-  if (!timestamp) return "";
-
-  const formatTime = (time: string) => {
-    return dayjs(time).format("YYYY-MM-DD HH:mm");
-  };
-
-  if (startDate && endDate && startDate !== endDate) {
-    return `${formatTime(startDate)} - ${formatTime(endDate)}`;
-  }
-
-  return formatTime(timestamp);
+  return "";
 };
 
 const contextMenuVisible = ref(false);
@@ -272,13 +262,6 @@ async function handleMenuAction(action: string) {
         <el-timeline-item
           v-for="(activity, index) in currentDayTodos"
           :key="index"
-          :timestamp="
-            formatTimestamp(
-              activity.timestamp,
-              activity.startDate,
-              activity.endDate
-            )
-          "
           :hollow="activity.status !== 2"
           :color="getPriorityColor(activity.priority)"
           @click="handleClick(activity)"
