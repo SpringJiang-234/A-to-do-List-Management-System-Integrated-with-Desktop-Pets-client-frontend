@@ -7,26 +7,35 @@ export const createCompleteTodoOnTimeAnimationSequence = (
   teaGifPath: string,
   isEnergetic: boolean,
   isUpgrade: boolean,
-  isMoodIncreased: boolean
+  isMoodIncreased: boolean,
+  messages: {
+    complete: string;
+    energetic: string;
+    upgrade: string;
+    onTimeMore: string;
+  }
 ): AnimationTask[] => {
   const sequence: AnimationTask[] = [];
 
   sequence.push({
     gifPath: goodGifPath,
-    type: AnimationType.ONE_TIME
+    type: AnimationType.ONE_TIME,
+    message: messages.complete
   });
 
   if (isEnergetic) {
     sequence.push({
       gifPath: energeticGifPath,
-      type: AnimationType.ONE_TIME
+      type: AnimationType.ONE_TIME,
+      message: messages.energetic
     });
   }
 
   if (isUpgrade) {
     sequence.push({
       gifPath: upgradeGifPath,
-      type: AnimationType.UPGRADE
+      type: AnimationType.UPGRADE,
+      message: messages.upgrade
     });
   }
 
@@ -34,7 +43,8 @@ export const createCompleteTodoOnTimeAnimationSequence = (
     sequence.push({
       gifPath: "",
       type: AnimationType.LOOP,
-      loopType: LoopAnimationType.TEA
+      loopType: LoopAnimationType.TEA,
+      message: messages.onTimeMore
     });
   }
 
@@ -48,26 +58,35 @@ export const createCompleteTodoOverdueAnimationSequence = (
   pointingGifPath: string,
   isEnergetic: boolean,
   isUpgrade: boolean,
-  isMoodDecreased: boolean
+  isMoodDecreased: boolean,
+  messages: {
+    complete: string;
+    energetic: string;
+    upgrade: string;
+    overdue: string;
+  }
 ): AnimationTask[] => {
   const sequence: AnimationTask[] = [];
 
   sequence.push({
     gifPath: clapGifPath,
-    type: AnimationType.ONE_TIME
+    type: AnimationType.ONE_TIME,
+    message: messages.complete
   });
 
   if (isEnergetic) {
     sequence.push({
       gifPath: energeticGifPath,
-      type: AnimationType.ONE_TIME
+      type: AnimationType.ONE_TIME,
+      message: messages.energetic
     });
   }
 
   if (isUpgrade) {
     sequence.push({
       gifPath: upgradeGifPath,
-      type: AnimationType.UPGRADE
+      type: AnimationType.UPGRADE,
+      message: messages.upgrade
     });
   }
 
@@ -75,7 +94,8 @@ export const createCompleteTodoOverdueAnimationSequence = (
     sequence.push({
       gifPath: "",
       type: AnimationType.LOOP,
-      loopType: LoopAnimationType.POINTING
+      loopType: LoopAnimationType.POINTING,
+      message: messages.overdue
     });
   }
 
@@ -85,19 +105,25 @@ export const createCompleteTodoOverdueAnimationSequence = (
 export const createNewTodoAnimationSequence = (
   goodGifPath: string,
   energeticGifPath: string,
-  isEnergetic: boolean
+  isEnergetic: boolean,
+  messages: {
+    newTodo: string;
+    energetic: string;
+  }
 ): AnimationTask[] => {
   const sequence: AnimationTask[] = [];
 
   sequence.push({
     gifPath: goodGifPath,
-    type: AnimationType.ONE_TIME
+    type: AnimationType.ONE_TIME,
+    message: messages.newTodo
   });
 
   if (isEnergetic) {
     sequence.push({
       gifPath: energeticGifPath,
-      type: AnimationType.ONE_TIME
+      type: AnimationType.ONE_TIME,
+      message: messages.energetic
     });
   }
 

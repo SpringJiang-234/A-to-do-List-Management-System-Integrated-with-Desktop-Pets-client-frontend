@@ -19,4 +19,5 @@ export interface AnimationTask {
   loopType?: LoopAnimationType;
   duration?: number;
   callback?: () => void;
+  message?: string;
 }

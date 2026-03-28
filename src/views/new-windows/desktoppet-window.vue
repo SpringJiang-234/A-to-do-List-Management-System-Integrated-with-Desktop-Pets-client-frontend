@@ -104,6 +104,14 @@ const playAnimationTask = (task: AnimationTask): Promise<void> => {
   return new Promise(resolve => {
     const duration = task.duration || 2000;
 
+    if (task.message) {
+      (window as any).ipcRenderer.invoke(
+        "open-win",
+        "pop-up-window",
+        task.message
+      );
+    }
+
     if (task.type === AnimationType.UPGRADE) {
       playUpgradeAnimationInternal(resolve);
     } else if (task.type === AnimationType.LOOP) {
@@ -239,14 +247,22 @@ const playGoodAnimation = () => {
   playOneTimeAnimation(goodGifPath);
 };
 
-const playAbandonAnimation = () => {
+const playAbandonAnimation = (message?: string) => {
   console.log("========== 收到放弃动画事件 ==========");
-  playOneTimeAnimation(abandonGifPath);
+  addToQueue({
+    gifPath: abandonGifPath,
+    type: AnimationType.ONE_TIME,
+    message
+  });
 };
 
-const playDeleteAnimation = () => {
+const playDeleteAnimation = (message?: string) => {
   console.log("========== 收到删除动画事件 ==========");
-  playOneTimeAnimation(deleteGifPath);
+  addToQueue({
+    gifPath: deleteGifPath,
+    type: AnimationType.ONE_TIME,
+    message
+  });
 };
 
 const playIntimateAnimation = () => {
@@ -292,7 +308,13 @@ const playPointingAnimation = () => {
 const playCompleteTodoOnTimeAnimation = (
   isEnergetic: boolean,
   isUpgrade: boolean,
-  isMoodIncreased: boolean
+  isMoodIncreased: boolean,
+  messages: {
+    complete: string;
+    energetic: string;
+    upgrade: string;
+    onTimeMore: string;
+  }
 ) => {
   console.log("========== 收到完成待办按时动画事件 ==========");
   const sequence = createCompleteTodoOnTimeAnimationSequence(
@@ -302,7 +324,8 @@ const playCompleteTodoOnTimeAnimation = (
     teaGifPath,
     isEnergetic,
     isUpgrade,
-    isMoodIncreased
+    isMoodIncreased,
+    messages
   );
   sequence.forEach(task => addToQueue(task));
 };
@@ -310,7 +333,13 @@ const playCompleteTodoOnTimeAnimation = (
 const playCompleteTodoOverdueAnimation = (
   isEnergetic: boolean,
   isUpgrade: boolean,
-  isMoodDecreased: boolean
+  isMoodDecreased: boolean,
+  messages: {
+    complete: string;
+    energetic: string;
+    upgrade: string;
+    overdue: string;
+  }
 ) => {
   console.log("========== 收到完成待办逾期动画事件 ==========");
   const sequence = createCompleteTodoOverdueAnimationSequence(
@@ -320,17 +349,25 @@ const playCompleteTodoOverdueAnimation = (
     pointingGifPath,
     isEnergetic,
     isUpgrade,
-    isMoodDecreased
+    isMoodDecreased,
+    messages
   );
   sequence.forEach(task => addToQueue(task));
 };
 
-const playNewTodoAnimation = (isEnergetic: boolean) => {
+const playNewTodoAnimation = (
+  isEnergetic: boolean,
+  messages: {
+    newTodo: string;
+    energetic: string;
+  }
+) => {
   console.log("========== 收到新建待办动画事件 ==========");
   const sequence = createNewTodoAnimationSequence(
     goodGifPath,
     energeticGifPath,
-    isEnergetic
+    isEnergetic,
+    messages
   );
   sequence.forEach(task => addToQueue(task));
 };
@@ -369,9 +406,16 @@ onMounted(() => {
   (window as any).ipcRenderer.on("play-good-animation", playGoodAnimation);
   (window as any).ipcRenderer.on(
     "play-abandon-animation",
-    playAbandonAnimation
+    (event, message?: string) => {
+      playAbandonAnimation(message);
+    }
   );
-  (window as any).ipcRenderer.on("play-delete-animation", playDeleteAnimation);
+  (window as any).ipcRenderer.on(
+    "play-delete-animation",
+    (event, message?: string) => {
+      playDeleteAnimation(message);
+    }
+  );
   (window as any).ipcRenderer.on(
     "play-intimate-animation",
     playIntimateAnimation
@@ -398,9 +442,20 @@ onMounted(() => {
       event,
       isEnergetic: boolean,
       isUpgrade: boolean,
-      isMoodIncreased: boolean
+      isMoodIncreased: boolean,
+      messages: {
+        complete: string;
+        energetic: string;
+        upgrade: string;
+        onTimeMore: string;
+      }
     ) => {
-      playCompleteTodoOnTimeAnimation(isEnergetic, isUpgrade, isMoodIncreased);
+      playCompleteTodoOnTimeAnimation(
+        isEnergetic,
+        isUpgrade,
+        isMoodIncreased,
+        messages
+      );
     }
   );
   (window as any).ipcRenderer.on(
@@ -409,19 +464,33 @@ onMounted(() => {
       event,
       isEnergetic: boolean,
       isUpgrade: boolean,
-      isMoodDecreased: boolean
+      isMoodDecreased: boolean,
+      messages: {
+        complete: string;
+        energetic: string;
+        upgrade: string;
+        overdue: string;
+      }
     ) => {
       playCompleteTodoOverdueAnimation(
         isEnergetic,
         isUpgrade,
-        isMoodDecreased
+        isMoodDecreased,
+        messages
       );
     }
   );
   (window as any).ipcRenderer.on(
     "play-new-todo-animation",
-    (event, isEnergetic: boolean) => {
-      playNewTodoAnimation(isEnergetic);
+    (
+      event,
+      isEnergetic: boolean,
+      messages: {
+        newTodo: string;
+        energetic: string;
+      }
+    ) => {
+      playNewTodoAnimation(isEnergetic, messages);
     }
   );
   (window as any).ipcRenderer.on(
