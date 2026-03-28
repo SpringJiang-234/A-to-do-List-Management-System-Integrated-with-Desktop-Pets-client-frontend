@@ -10,6 +10,7 @@ import { storageLocal } from "@pureadmin/utils";
 import { Close } from "@element-plus/icons-vue";
 import Vditor from "./components/Vditor.vue";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 defineOptions({
   name: "TodoAdd"
@@ -146,6 +147,10 @@ const handleSubmit = async () => {
       tagIdList: todoForm.value.tagIdList
     });
     await desktopPetStore.loadDesktopPetInfo();
+    
+    (window as any).ipcRenderer.send('play-good-animation');
+    (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.newTodo);
+    
     message("添加成功", { type: "success" });
     router.back();
   } catch (error) {
