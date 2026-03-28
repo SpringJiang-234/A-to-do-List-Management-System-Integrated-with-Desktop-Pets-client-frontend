@@ -185,13 +185,7 @@ onMounted(() => {
   });
   
   setTimeout(() => {
-    isFading.value = true;
-    setTimeout(() => {
-      currentGif.value = teaGifPath;
-      setTimeout(() => {
-        isFading.value = false;
-      }, 400);
-    }, 400);
+    currentGif.value = teaGifPath;
   }, 2000);
 });
 
