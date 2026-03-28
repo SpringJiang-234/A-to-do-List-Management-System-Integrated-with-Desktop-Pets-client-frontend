@@ -101,7 +101,11 @@ async function handleClick(activity: Activity) {
       
       if (newGrowth < currentGrowth) {
         console.log("发送升级动画事件");
-        (window as any).ipcRenderer.send('play-upgrade-animation');
+        (window as any).ipcRenderer.send('set-upgrading', true);
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-upgrade-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.upgrade);
+        }, 3000);
       }
     }
     emit("click", activity);

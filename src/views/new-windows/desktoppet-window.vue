@@ -20,61 +20,109 @@ defineOptions({
 
 const currentGif = ref(summonGifPath);
 const isFading = ref(false);
+const isUpgrading = ref(false);
 
 const playAnimation = (gifPath: string, callback?: () => void) => {
+  if (isUpgrading.value) {
+    isFading.value = true;
+    setTimeout(() => {
+      currentGif.value = "";
+      setTimeout(() => {
+        currentGif.value = gifPath;
+        setTimeout(() => {
+          isFading.value = false;
+          if (callback) {
+            callback();
+          }
+        }, 400);
+      }, 400);
+    }, 400);
+  } else {
+    currentGif.value = gifPath;
+    if (callback) {
+      callback();
+    }
+  }
+};
+
+const playUpgradeAnimation = () => {
+  console.log("========== 收到升级动画事件 ==========");
+  isUpgrading.value = true;
   isFading.value = true;
   setTimeout(() => {
     currentGif.value = "";
     setTimeout(() => {
-      currentGif.value = gifPath;
+      currentGif.value = upgradeGifPath;
       setTimeout(() => {
         isFading.value = false;
-        if (callback) {
-          setTimeout(callback, 2000);
-        } else {
+        setTimeout(() => {
+          isFading.value = true;
           setTimeout(() => {
-            isFading.value = true;
+            currentGif.value = teaGifPath;
             setTimeout(() => {
-              currentGif.value = teaGifPath;
-              setTimeout(() => {
-                isFading.value = false;
-              }, 400);
+              isFading.value = false;
+              isUpgrading.value = false;
             }, 400);
-          }, 2000);
-        }
+          }, 400);
+        }, 2000);
       }, 400);
     }, 400);
   }, 400);
 };
 
-const playUpgradeAnimation = () => {
-  console.log("========== 收到升级动画事件 ==========");
-  playAnimation(upgradeGifPath);
-};
-
 const playClapAnimation = () => {
   console.log("========== 收到鼓掌动画事件 ==========");
-  playAnimation(clapGifPath);
+  playAnimation(clapGifPath, () => {
+    setTimeout(() => {
+      if (!isUpgrading.value) {
+        currentGif.value = teaGifPath;
+      }
+    }, 2000);
+  });
 };
 
 const playGoodAnimation = () => {
   console.log("========== 收到棒棒动画事件 ==========");
-  playAnimation(goodGifPath);
+  playAnimation(goodGifPath, () => {
+    setTimeout(() => {
+      if (!isUpgrading.value) {
+        currentGif.value = teaGifPath;
+      }
+    }, 2000);
+  });
 };
 
 const playAbandonAnimation = () => {
   console.log("========== 收到放弃动画事件 ==========");
-  playAnimation(abandonGifPath);
+  playAnimation(abandonGifPath, () => {
+    setTimeout(() => {
+      if (!isUpgrading.value) {
+        currentGif.value = teaGifPath;
+      }
+    }, 2000);
+  });
 };
 
 const playDeleteAnimation = () => {
   console.log("========== 收到删除动画事件 ==========");
-  playAnimation(deleteGifPath);
+  playAnimation(deleteGifPath, () => {
+    setTimeout(() => {
+      if (!isUpgrading.value) {
+        currentGif.value = teaGifPath;
+      }
+    }, 2000);
+  });
 };
 
 const playIntimateAnimation = () => {
   console.log("========== 收到亲密动画事件 ==========");
-  playAnimation(intimateGifPath);
+  playAnimation(intimateGifPath, () => {
+    setTimeout(() => {
+      if (!isUpgrading.value) {
+        currentGif.value = teaGifPath;
+      }
+    }, 2000);
+  });
 };
 
 const playWorkAnimation = () => {
@@ -123,6 +171,10 @@ onMounted(() => {
   (window as any).ipcRenderer.on('play-study-animation', playStudyAnimation);
   (window as any).ipcRenderer.on('play-entertain-animation', playEntertainAnimation);
   (window as any).ipcRenderer.on('play-other-animation', playOtherAnimation);
+  (window as any).ipcRenderer.on('set-upgrading', (event, upgrading: boolean) => {
+    console.log("========== 设置升级状态 ==========", upgrading);
+    isUpgrading.value = upgrading;
+  });
   
   setTimeout(() => {
     isFading.value = true;

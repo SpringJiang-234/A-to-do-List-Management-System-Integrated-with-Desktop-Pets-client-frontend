@@ -118,6 +118,18 @@ async function createWindow() {
 
 app.whenReady().then(createWindow);
 
+ipcMain.on('set-upgrading', (event, isUpgrading: boolean) => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('set-upgrading', isUpgrading);
+  }
+});
+
 ipcMain.on('play-upgrade-animation', () => {
   const windows = BrowserWindow.getAllWindows();
   const desktopPetWindow = windows.find(w => {
