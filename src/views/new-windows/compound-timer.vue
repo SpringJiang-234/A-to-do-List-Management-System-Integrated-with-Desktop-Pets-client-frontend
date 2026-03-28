@@ -179,16 +179,18 @@ const stopTimer = () => {
     timer.value = null;
   }
   isRunning.value = false;
-
-  const categoryName = todoCategoryName.value.toLowerCase();
-  if (categoryName.includes("工作")) {
-    (window as any).ipcRenderer.send("play-tea-animation");
-  } else if (categoryName.includes("学习")) {
-    (window as any).ipcRenderer.send("play-tea-animation");
-  } else if (categoryName.includes("娱乐")) {
-    (window as any).ipcRenderer.send("play-tea-animation");
-  } else {
-    (window as any).ipcRenderer.send("play-tea-animation");
+  
+  if (valueType.value !== "番茄钟") {
+    const categoryName = todoCategoryName.value.toLowerCase();
+    if (categoryName.includes("工作")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else if (categoryName.includes("学习")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else if (categoryName.includes("娱乐")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    }
   }
 };
 
@@ -282,10 +284,21 @@ const handleTimerComplete = async () => {
       currentCycle.value++;
       startTimer();
     } else {
-      message(`所有番茄钟完成！`, { type: "success" });
-      remainingTime.value = 0;
-      isCompleted.value = true;
+    message(`所有番茄钟完成！`, { type: "success" });
+    remainingTime.value = 0;
+    isCompleted.value = true;
+    
+    const categoryName = todoCategoryName.value.toLowerCase();
+    if (categoryName.includes("工作")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else if (categoryName.includes("学习")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else if (categoryName.includes("娱乐")) {
+      (window as any).ipcRenderer.send("play-tea-animation");
+    } else {
+      (window as any).ipcRenderer.send("play-tea-animation");
     }
+  }
   } else if (valueType.value === "倒计时") {
     const countdownSeconds =
       timeValue1.value.getHours() * 3600 +
