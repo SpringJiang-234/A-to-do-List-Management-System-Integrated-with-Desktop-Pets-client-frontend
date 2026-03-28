@@ -130,6 +130,114 @@ ipcMain.on('play-upgrade-animation', () => {
   }
 });
 
+ipcMain.on('play-clap-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-clap-animation');
+  }
+});
+
+ipcMain.on('play-good-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-good-animation');
+  }
+});
+
+ipcMain.on('play-abandon-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-abandon-animation');
+  }
+});
+
+ipcMain.on('play-delete-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-delete-animation');
+  }
+});
+
+ipcMain.on('play-intimate-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-intimate-animation');
+  }
+});
+
+ipcMain.on('play-work-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-work-animation');
+  }
+});
+
+ipcMain.on('play-study-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-study-animation');
+  }
+});
+
+ipcMain.on('play-entertain-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-entertain-animation');
+  }
+});
+
+ipcMain.on('play-other-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-other-animation');
+  }
+});
+
 app.on("window-all-closed", () => {
   win = null;
   if (process.platform !== "darwin") app.quit();

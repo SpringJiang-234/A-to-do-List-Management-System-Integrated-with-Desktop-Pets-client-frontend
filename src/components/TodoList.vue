@@ -5,6 +5,7 @@ import { message } from "@/utils/message";
 import { completeTodo, cancelCompleteTodo, abandonTodo, deleteTodo } from "@/api/todo";
 import dayjs from "dayjs";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 interface Activity {
   id: number;
@@ -89,6 +90,15 @@ async function handleClick(activity: Activity) {
       const newGrowth = desktopPetStore.growthValue;
       console.log("旧成长值:", currentGrowth, "新成长值:", newGrowth, "是否升级:", newGrowth < currentGrowth);
       
+      const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf('day'));
+      if (isOverdue) {
+        (window as any).ipcRenderer.send('play-clap-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.complete);
+      } else {
+        (window as any).ipcRenderer.send('play-good-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTime);
+      }
+      
       if (newGrowth < currentGrowth) {
         console.log("发送升级动画事件");
         (window as any).ipcRenderer.send('play-upgrade-animation');
@@ -130,12 +140,16 @@ async function handleMenuAction(action: string) {
         await abandonTodo(activity.id);
         activity.status = 3;
         message("放弃待办", { type: "warning" });
+        (window as any).ipcRenderer.send('play-abandon-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.abandon);
         emit("click", activity);
         break;
       case "delete":
         console.log("========== TodoList 删除待办 ==========", activity.id);
         await deleteTodo(activity.id);
         message("删除待办成功", { type: "success" });
+        (window as any).ipcRenderer.send('play-delete-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.delete);
         console.log("========== TodoList emit refresh 事件 ==========");
         emit("refresh");
         break;

@@ -3,6 +3,16 @@ import { ref, onMounted, onUnmounted } from "vue";
 import summonGifPath from "@/assets/images/丰川祥子-召唤.gif";
 import teaGifPath from "@/assets/images/丰川祥子-喝茶.gif";
 import upgradeGifPath from "@/assets/images/丰川祥子-升级.gif";
+import clapGifPath from "@/assets/images/丰川祥子-鼓掌.gif";
+import goodGifPath from "@/assets/images/丰川祥子-棒棒.gif";
+import abandonGifPath from "@/assets/images/丰川祥子-放弃.gif";
+import deleteGifPath from "@/assets/images/丰川祥子-删除.gif";
+import intimateGifPath from "@/assets/images/丰川祥子-亲密.gif";
+import workGifPath from "@/assets/images/丰川祥子-工作.gif";
+import studyGifPath from "@/assets/images/丰川祥子-学习.gif";
+import entertainGifPath from "@/assets/images/丰川祥子-娱乐.gif";
+import otherGifPath from "@/assets/images/丰川祥子-其他循环.gif";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 defineOptions({
   name: "DesktopPetWindow"
@@ -11,32 +21,108 @@ defineOptions({
 const currentGif = ref(summonGifPath);
 const isFading = ref(false);
 
-const playUpgradeAnimation = () => {
-  console.log("========== 收到升级动画事件 ==========");
+const playAnimation = (gifPath: string, callback?: () => void) => {
   isFading.value = true;
   setTimeout(() => {
     currentGif.value = "";
     setTimeout(() => {
-      currentGif.value = upgradeGifPath;
+      currentGif.value = gifPath;
       setTimeout(() => {
         isFading.value = false;
-        setTimeout(() => {
-          isFading.value = true;
+        if (callback) {
+          setTimeout(callback, 2000);
+        } else {
           setTimeout(() => {
-            currentGif.value = teaGifPath;
+            isFading.value = true;
             setTimeout(() => {
-              isFading.value = false;
+              currentGif.value = teaGifPath;
+              setTimeout(() => {
+                isFading.value = false;
+              }, 400);
             }, 400);
-          }, 400);
-        }, 2000);
+          }, 2000);
+        }
       }, 400);
     }, 400);
   }, 400);
 };
 
+const playUpgradeAnimation = () => {
+  console.log("========== 收到升级动画事件 ==========");
+  playAnimation(upgradeGifPath);
+};
+
+const playClapAnimation = () => {
+  console.log("========== 收到鼓掌动画事件 ==========");
+  playAnimation(clapGifPath);
+};
+
+const playGoodAnimation = () => {
+  console.log("========== 收到棒棒动画事件 ==========");
+  playAnimation(goodGifPath);
+};
+
+const playAbandonAnimation = () => {
+  console.log("========== 收到放弃动画事件 ==========");
+  playAnimation(abandonGifPath);
+};
+
+const playDeleteAnimation = () => {
+  console.log("========== 收到删除动画事件 ==========");
+  playAnimation(deleteGifPath);
+};
+
+const playIntimateAnimation = () => {
+  console.log("========== 收到亲密动画事件 ==========");
+  playAnimation(intimateGifPath);
+};
+
+const playWorkAnimation = () => {
+  console.log("========== 收到工作动画事件 ==========");
+  playAnimation(workGifPath, () => {
+    currentGif.value = workGifPath;
+  });
+};
+
+const playStudyAnimation = () => {
+  console.log("========== 收到学习动画事件 ==========");
+  playAnimation(studyGifPath, () => {
+    currentGif.value = studyGifPath;
+  });
+};
+
+const playEntertainAnimation = () => {
+  console.log("========== 收到娱乐动画事件 ==========");
+  playAnimation(entertainGifPath, () => {
+    currentGif.value = entertainGifPath;
+  });
+};
+
+const playOtherAnimation = () => {
+  console.log("========== 收到其他动画事件 ==========");
+  playAnimation(otherGifPath, () => {
+    currentGif.value = otherGifPath;
+  });
+};
+
+const handleIntimateClick = () => {
+  console.log("========== 左键点击桌宠 ==========");
+  playAnimation(intimateGifPath);
+  (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.intimate);
+};
+
 onMounted(() => {
   console.log("========== 桌宠窗口已挂载，注册升级动画监听器 ==========");
   (window as any).ipcRenderer.on('play-upgrade-animation', playUpgradeAnimation);
+  (window as any).ipcRenderer.on('play-clap-animation', playClapAnimation);
+  (window as any).ipcRenderer.on('play-good-animation', playGoodAnimation);
+  (window as any).ipcRenderer.on('play-abandon-animation', playAbandonAnimation);
+  (window as any).ipcRenderer.on('play-delete-animation', playDeleteAnimation);
+  (window as any).ipcRenderer.on('play-intimate-animation', playIntimateAnimation);
+  (window as any).ipcRenderer.on('play-work-animation', playWorkAnimation);
+  (window as any).ipcRenderer.on('play-study-animation', playStudyAnimation);
+  (window as any).ipcRenderer.on('play-entertain-animation', playEntertainAnimation);
+  (window as any).ipcRenderer.on('play-other-animation', playOtherAnimation);
   
   setTimeout(() => {
     isFading.value = true;
@@ -51,12 +137,21 @@ onMounted(() => {
 
 onUnmounted(() => {
   (window as any).ipcRenderer.removeListener('play-upgrade-animation', playUpgradeAnimation);
+  (window as any).ipcRenderer.removeListener('play-clap-animation', playClapAnimation);
+  (window as any).ipcRenderer.removeListener('play-good-animation', playGoodAnimation);
+  (window as any).ipcRenderer.removeListener('play-abandon-animation', playAbandonAnimation);
+  (window as any).ipcRenderer.removeListener('play-delete-animation', playDeleteAnimation);
+  (window as any).ipcRenderer.removeListener('play-intimate-animation', playIntimateAnimation);
+  (window as any).ipcRenderer.removeListener('play-work-animation', playWorkAnimation);
+  (window as any).ipcRenderer.removeListener('play-study-animation', playStudyAnimation);
+  (window as any).ipcRenderer.removeListener('play-entertain-animation', playEntertainAnimation);
+  (window as any).ipcRenderer.removeListener('play-other-animation', playOtherAnimation);
 });
 </script>
 
 <template>
   <div class="pet-container">
-    <div class="gif-container">
+    <div class="gif-container" @click="handleIntimateClick">
       <img :class="{ fading: isFading }" :src="currentGif" alt="动画" draggable="false">
     </div>
   </div>
