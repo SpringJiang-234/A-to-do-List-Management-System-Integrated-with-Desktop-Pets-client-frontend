@@ -212,6 +212,8 @@ const resetTimer = () => {
       (window as any).ipcRenderer.send("play-tea-animation");
     }
   }
+  
+  window.close();
 };
 
 const completeTimer = async () => {
