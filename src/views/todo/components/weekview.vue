@@ -191,6 +191,7 @@ const handleMenuAction = async (action: string) => {
     switch (action) {
       case "toggleComplete":
         const previousLevel = desktopPetStore.levelValue;
+        const previousMood = desktopPetStore.moodValue;
         const previousVitality = desktopPetStore.vitalityValue;
 
         if (activity.status === 2) {
@@ -252,8 +253,10 @@ const handleMenuAction = async (action: string) => {
             }, 2500);
           }
 
-          const moodChange = desktopPetStore.checkMoodChange();
-          if (moodChange === "increased") {
+          const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
+          const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
+
+          if (moodChanged) {
             setTimeout(() => {
               (window as any).ipcRenderer.send("play-tea-animation");
               (window as any).ipcRenderer.invoke(
@@ -262,7 +265,7 @@ const handleMenuAction = async (action: string) => {
                 sakikoMessages.onTimeMore
               );
             }, 2500);
-          } else if (moodChange === "decreased") {
+          } else if (moodDecreased) {
             setTimeout(() => {
               (window as any).ipcRenderer.send("play-pointing-animation");
               (window as any).ipcRenderer.invoke(
