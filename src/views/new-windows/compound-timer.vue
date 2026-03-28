@@ -357,9 +357,6 @@ onUnmounted(() => {
     </div>
 
     <div v-if="!isCompleted" class="timer-controls">
-      <el-button v-if="isRunning" type="warning" @click="stopTimer">
-        暂停
-      </el-button>
       <el-button
         v-if="valueType === '正计时'"
         type="success"
@@ -372,7 +369,7 @@ onUnmounted(() => {
         type="danger"
         @click="resetTimer"
       >
-        重置
+        放弃
       </el-button>
     </div>
 
