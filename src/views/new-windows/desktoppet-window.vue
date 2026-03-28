@@ -17,11 +17,14 @@ import entertainGifPath from "@/assets/images/丰川祥子-娱乐.gif";
 import otherGifPath from "@/assets/images/丰川祥子-其他循环.gif";
 import sakikoMessages from "@/constants/sakiko-messages.json";
 import handIcon from "@/assets/svg/ooui--hand.svg?url";
+import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 
 defineOptions({
   name: "DesktopPetWindow"
 });
+
+const desktopPetStore = useDesktopPetStoreHook();
 
 enum AnimationState {
   SUMMON = 'summon',
@@ -38,18 +41,20 @@ enum LoopAnimationType {
   OTHER = 'other'
 }
 
-const currentGif = ref(summonGifPath);
+const currentGif = ref(desktopPetStore.intimacyValue >= 60 ? summonGifPath : summon2GifPath);
 const isFading = ref(false);
 const isUpgrading = ref(false);
 const animationState = ref(AnimationState.SUMMON);
 const currentLoopAnimation = ref(LoopAnimationType.TEA);
 const previousLoopAnimation = ref(LoopAnimationType.TEA);
 const isPlayingOneTimeAnimation = ref(false);
-const intimacyValue = ref(60);
+const intimacyValue = ref(desktopPetStore.intimacyValue);
 
 const setSummonAnimation = () => {
   const summonGif = intimacyValue.value >= 60 ? summonGifPath : summon2GifPath;
-  currentGif.value = summonGif;
+  if (currentGif.value !== summonGif) {
+    currentGif.value = summonGif;
+  }
 };
 
 const getLoopAnimationGif = (type: LoopAnimationType): string => {
@@ -291,7 +296,7 @@ onUnmounted(() => {
 <template>
   <div class="pet-container">
     <div class="gif-container">
-      <img :class="{ fading: isFading }" :src="currentGif" alt="动画" draggable="false">
+      <img v-if="currentGif" :class="{ fading: isFading }" :src="currentGif" alt="动画" draggable="false">
       <div class="hand-icon" @click="handleIntimateClick">
         <img :src="handIcon" alt="亲密互动" draggable="false">
       </div>
