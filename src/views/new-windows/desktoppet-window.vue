@@ -13,6 +13,8 @@ import studyGifPath from "@/assets/images/丰川祥子-学习.gif";
 import entertainGifPath from "@/assets/images/丰川祥子-娱乐.gif";
 import otherGifPath from "@/assets/images/丰川祥子-其他循环.gif";
 import sakikoMessages from "@/constants/sakiko-messages.json";
+import handIcon from "@/assets/svg/ooui--hand.svg?url";
+
 
 defineOptions({
   name: "DesktopPetWindow"
@@ -155,7 +157,13 @@ const playOtherAnimation = () => {
 
 const handleIntimateClick = () => {
   console.log("========== 左键点击桌宠 ==========");
-  playAnimation(intimateGifPath);
+  playAnimation(intimateGifPath, () => {
+    setTimeout(() => {
+      if (!isUpgrading.value) {
+        currentGif.value = teaGifPath;
+      }
+    }, 2000);
+  });
   (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.intimate);
 };
 
@@ -203,8 +211,11 @@ onUnmounted(() => {
 
 <template>
   <div class="pet-container">
-    <div class="gif-container" @click="handleIntimateClick">
+    <div class="gif-container">
       <img :class="{ fading: isFading }" :src="currentGif" alt="动画" draggable="false">
+      <div class="hand-icon" @click="handleIntimateClick">
+        <img :src="handIcon" alt="亲密互动" draggable="false">
+      </div>
     </div>
   </div>
 </template>
@@ -233,6 +244,33 @@ onUnmounted(() => {
 
 .gif-container img.fading {
   opacity: 0;
+}
+
+.hand-icon {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10;
+  -webkit-app-region: no-drag;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  padding: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hand-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: brightness(0.5);
+}
+
+.hand-icon:hover {
+  opacity: 0.9;
+  background-color: rgba(255, 255, 255, 1);
 }
 </style>
 
