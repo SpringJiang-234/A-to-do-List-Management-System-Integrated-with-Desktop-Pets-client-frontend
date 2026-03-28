@@ -135,31 +135,83 @@ async function handleClick(activity: Activity) {
       const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
 
       if (isOverdue) {
-        (window as any).ipcRenderer.send(
-          "play-complete-todo-overdue-animation",
-          isEnergetic,
-          isUpgrade,
-          moodDecreased,
-          {
-            complete: sakikoMessages.complete,
-            energetic: sakikoMessages.energetic,
-            upgrade: sakikoMessages.upgrade,
-            overdue: sakikoMessages.overdue
-          }
+        (window as any).ipcRenderer.send("play-clap-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.complete
         );
       } else {
-        (window as any).ipcRenderer.send(
-          "play-complete-todo-on-time-animation",
-          isEnergetic,
-          isUpgrade,
-          moodChanged,
-          {
-            complete: sakikoMessages.onTime,
-            energetic: sakikoMessages.energetic,
-            upgrade: sakikoMessages.upgrade,
-            onTimeMore: sakikoMessages.onTimeMore
-          }
+        (window as any).ipcRenderer.send("play-good-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.onTime
         );
+      }
+
+      let animationPromise = Promise.resolve();
+
+      if (isUpgrade) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-upgrade-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.upgrade
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      }
+
+      if (isEnergetic) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-energetic-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.energetic
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      }
+
+      if (moodChanged) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-tea-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.onTimeMore
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      } else if (moodDecreased) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-pointing-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.overdue
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
       }
     }
     const todo = props.originalTodoList.find(t => t.id === activity.id);
@@ -209,6 +261,11 @@ async function handleMenuAction(action: string) {
           "play-abandon-animation",
           sakikoMessages.abandon
         );
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.abandon
+        );
         break;
       case "delete":
         console.log("========== 删除待办 ==========", activity.id);
@@ -216,6 +273,11 @@ async function handleMenuAction(action: string) {
         message("删除待办成功", { type: "success" });
         (window as any).ipcRenderer.send(
           "play-delete-animation",
+          sakikoMessages.delete
+        );
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
           sakikoMessages.delete
         );
         console.log("========== emit refresh 事件 ==========");

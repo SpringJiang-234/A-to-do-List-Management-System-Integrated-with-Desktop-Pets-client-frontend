@@ -99,6 +99,11 @@ async function handleClick(activity: Activity) {
       message("完成待办", { type: "success" });
 
       const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf("day"));
+      const isEnergetic = desktopPetStore.vitalityValue === 100 && previousVitality < 100;
+      const isUpgrade = desktopPetStore.levelValue > previousLevel;
+      const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
+      const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
+      
       if (isOverdue) {
         (window as any).ipcRenderer.send("play-clap-animation");
         (window as any).ipcRenderer.invoke(
@@ -117,7 +122,7 @@ async function handleClick(activity: Activity) {
 
       let animationPromise = Promise.resolve();
 
-      if (desktopPetStore.levelValue > previousLevel) {
+      if (isUpgrade) {
         animationPromise = animationPromise.then(() => {
           return new Promise<void>(resolve => {
             setTimeout(() => {
@@ -133,7 +138,7 @@ async function handleClick(activity: Activity) {
         });
       }
 
-      if (desktopPetStore.vitalityValue === 100 && previousVitality < 100) {
+      if (isEnergetic) {
         animationPromise = animationPromise.then(() => {
           return new Promise<void>(resolve => {
             setTimeout(() => {
@@ -149,8 +154,35 @@ async function handleClick(activity: Activity) {
         });
       }
 
-      const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
-      const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
+      if (moodChanged) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-tea-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.onTimeMore
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      } else if (moodDecreased) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-pointing-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.overdue
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      }
 
       if (moodChanged) {
         animationPromise = animationPromise.then(() => {

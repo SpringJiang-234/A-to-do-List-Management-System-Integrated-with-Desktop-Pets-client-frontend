@@ -253,9 +253,104 @@ const handleSubmit = async () => {
     submitting.value = true;
     const oldStatus = todoForm.value.status;
     await updateTodo(todoForm.value);
+    
     if (todoForm.value.status === 2 && oldStatus !== 2) {
       await desktopPetStore.loadDesktopPetInfo();
+      
+      const isOverdue = todoForm.value.endDate && new Date(todoForm.value.endDate) < new Date();
+      const isEnergetic = desktopPetStore.vitalityValue === 100;
+      const isUpgrade = desktopPetStore.levelValue > (desktopPetStore.levelValue - 1);
+      const moodChanged = desktopPetStore.moodValue >= 60;
+      const moodDecreased = desktopPetStore.moodValue < 60;
+      
+      if (isOverdue) {
+        (window as any).ipcRenderer.send("play-clap-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.complete
+        );
+      } else {
+        (window as any).ipcRenderer.send("play-good-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.onTime
+        );
+      }
+      
+      let animationPromise = Promise.resolve();
+      
+      if (isUpgrade) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-upgrade-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.upgrade
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      }
+      
+      if (isEnergetic) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-energetic-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.energetic
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      }
+      
+      if (moodChanged) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-tea-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.onTimeMore
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      } else if (moodDecreased) {
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-pointing-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.overdue
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
+      }
+    } else if (todoForm.value.status === 3 && oldStatus !== 3) {
+      (window as any).ipcRenderer.send("play-abandon-animation");
+      (window as any).ipcRenderer.invoke(
+        "open-win",
+        "pop-up-window",
+        sakikoMessages.abandon
+      );
     }
+    
     message("修改成功", { type: "success" });
     router.back();
   } catch (error) {

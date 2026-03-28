@@ -222,31 +222,83 @@ const handleMenuAction = async (action: string) => {
           const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
 
           if (isOverdue) {
-            (window as any).ipcRenderer.send(
-              "play-complete-todo-overdue-animation",
-              isEnergetic,
-              isUpgrade,
-              moodDecreased,
-              {
-                complete: sakikoMessages.complete,
-                energetic: sakikoMessages.energetic,
-                upgrade: sakikoMessages.upgrade,
-                overdue: sakikoMessages.overdue
-              }
+            (window as any).ipcRenderer.send("play-clap-animation");
+            (window as any).ipcRenderer.invoke(
+              "open-win",
+              "pop-up-window",
+              sakikoMessages.complete
             );
           } else {
-            (window as any).ipcRenderer.send(
-              "play-complete-todo-on-time-animation",
-              isEnergetic,
-              isUpgrade,
-              moodChanged,
-              {
-                complete: sakikoMessages.onTime,
-                energetic: sakikoMessages.energetic,
-                upgrade: sakikoMessages.upgrade,
-                onTimeMore: sakikoMessages.onTimeMore
-              }
+            (window as any).ipcRenderer.send("play-good-animation");
+            (window as any).ipcRenderer.invoke(
+              "open-win",
+              "pop-up-window",
+              sakikoMessages.onTime
             );
+          }
+
+          let animationPromise = Promise.resolve();
+
+          if (isUpgrade) {
+            animationPromise = animationPromise.then(() => {
+              return new Promise<void>(resolve => {
+                setTimeout(() => {
+                  (window as any).ipcRenderer.send("play-upgrade-animation");
+                  (window as any).ipcRenderer.invoke(
+                    "open-win",
+                    "pop-up-window",
+                    sakikoMessages.upgrade
+                  );
+                  setTimeout(resolve, 3500);
+                }, 0);
+              });
+            });
+          }
+
+          if (isEnergetic) {
+            animationPromise = animationPromise.then(() => {
+              return new Promise<void>(resolve => {
+                setTimeout(() => {
+                  (window as any).ipcRenderer.send("play-energetic-animation");
+                  (window as any).ipcRenderer.invoke(
+                    "open-win",
+                    "pop-up-window",
+                    sakikoMessages.energetic
+                  );
+                  setTimeout(resolve, 3500);
+                }, 0);
+              });
+            });
+          }
+
+          if (moodChanged) {
+            animationPromise = animationPromise.then(() => {
+              return new Promise<void>(resolve => {
+                setTimeout(() => {
+                  (window as any).ipcRenderer.send("play-tea-animation");
+                  (window as any).ipcRenderer.invoke(
+                    "open-win",
+                    "pop-up-window",
+                    sakikoMessages.onTimeMore
+                  );
+                  setTimeout(resolve, 3500);
+                }, 0);
+              });
+            });
+          } else if (moodDecreased) {
+            animationPromise = animationPromise.then(() => {
+              return new Promise<void>(resolve => {
+                setTimeout(() => {
+                  (window as any).ipcRenderer.send("play-pointing-animation");
+                  (window as any).ipcRenderer.invoke(
+                    "open-win",
+                    "pop-up-window",
+                    sakikoMessages.overdue
+                  );
+                  setTimeout(resolve, 3500);
+                }, 0);
+              });
+            });
           }
         }
         break;
@@ -263,11 +315,23 @@ const handleMenuAction = async (action: string) => {
         }
         activity.status = 3;
         message("放弃待办", { type: "warning" });
+        (window as any).ipcRenderer.send("play-abandon-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.abandon
+        );
         break;
       case "delete":
         console.log("========== 周视图删除待办 ==========", activity.id);
         await deleteTodo(activity.id);
         message("删除待办成功", { type: "success" });
+        (window as any).ipcRenderer.send("play-delete-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.delete
+        );
         console.log("========== 周视图 emit refresh 事件 ==========");
         emit("refresh");
         break;
