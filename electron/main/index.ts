@@ -250,6 +250,20 @@ ipcMain.on('play-other-animation', () => {
   }
 });
 
+ipcMain.handle('close-desktop-pet', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.close();
+    return { success: true };
+  }
+  return { success: false, message: "桌宠窗口未运行" };
+});
+
 app.on("window-all-closed", () => {
   win = null;
   if (process.platform !== "darwin") app.quit();

@@ -43,6 +43,14 @@ const openDeskPetWindow = async () => {
   }
 };
 
+const closeDeskPetWindow = async () => {
+  try {
+    await (window as any).ipcRenderer.invoke("close-desktop-pet");
+  } catch (error) {
+    console.error("关闭桌宠窗口失败:", error);
+  }
+};
+
 const loadDesktopPetInfo = async () => {
   await desktopPetStore.loadDesktopPetInfo();
   nickname.value = desktopPetStore.nickname;
@@ -136,6 +144,7 @@ onMounted(() => {
         />
         <div class="form-item">
           <el-button type="primary" style="width: 115px" @click="openDeskPetWindow">召唤桌宠</el-button>
+          <el-button type="danger" style="width: 115px" @click="closeDeskPetWindow">回收桌宠</el-button>
         </div>
       </div>
     </el-card>
