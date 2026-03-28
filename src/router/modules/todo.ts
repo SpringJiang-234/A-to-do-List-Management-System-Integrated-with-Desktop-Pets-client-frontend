@@ -1,4 +1,4 @@
-import RiTodoFill from '~icons/ri/todo-fill';
+import RiTodoFill from "~icons/ri/todo-fill";
 
 export default {
   path: "/todo",

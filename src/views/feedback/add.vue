@@ -59,12 +59,12 @@ const handleSubmit = async () => {
       <template #header>
         <div class="header-content">
           <h3>提交反馈</h3>
-          <el-button 
-            type="primary" 
-            circle 
-            size="small" 
-            @click="handleClose"
+          <el-button
+            type="primary"
+            circle
+            size="small"
             class="close-button"
+            @click="handleClose"
           >
             <el-icon><Close /></el-icon>
           </el-button>
@@ -75,20 +75,18 @@ const handleSubmit = async () => {
           <el-input v-model="feedbackForm.title" placeholder="请输入反馈标题" />
         </el-form-item>
         <el-form-item label="内容" required>
-          <el-input 
-            v-model="feedbackForm.content" 
-            type="textarea" 
+          <el-input
+            v-model="feedbackForm.content"
+            type="textarea"
             placeholder="请输入反馈内容"
             :rows="8"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSubmit" :loading="submitting">
+          <el-button type="primary" :loading="submitting" @click="handleSubmit">
             确定
           </el-button>
-          <el-button @click="handleCancel">
-            取消
-          </el-button>
+          <el-button @click="handleCancel"> 取消 </el-button>
         </el-form-item>
       </el-form>
     </el-card>

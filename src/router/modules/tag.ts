@@ -1,5 +1,5 @@
-import TablerTagFilled from '~icons/tabler/tag-filled';
-import TablerTag from '~icons/tabler/tag?width=16px&height=16px';
+import TablerTagFilled from "~icons/tabler/tag-filled";
+import TablerTag from "~icons/tabler/tag?width=16px&height=16px";
 import type { RouteRecordRaw } from "vue-router";
 
 interface Tag {

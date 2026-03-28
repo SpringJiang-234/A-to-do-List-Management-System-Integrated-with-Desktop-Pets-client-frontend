@@ -2,7 +2,12 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
-import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
+import {
+  abandonTodo,
+  completeTodo,
+  cancelCompleteTodo,
+  deleteTodo
+} from "@/api/todo";
 import dayjs from "dayjs";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 import sakikoMessages from "@/constants/sakiko-messages.json";
@@ -44,27 +49,29 @@ const activities = computed(() => props.todoList);
 const currentDayTodos = computed(() => {
   const date = value.value ? new Date(value.value) : new Date();
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   const dateKey = `${year}-${month}-${day}`;
-  
+
   const todoIds = props.dateTodoMap.get(dateKey) || [];
-  return todoIds.map(id => {
-    const todo = props.originalTodoList.find(t => t.id === id);
-    if (todo) {
-      return {
-        id: todo.id,
-        title: todo.title,
-        content: todo.content,
-        timestamp: dateKey,
-        startDate: todo.startDate,
-        endDate: todo.endDate,
-        status: todo.status,
-        priority: todo.priority
-      };
-    }
-    return null;
-  }).filter(Boolean) as Activity[];
+  return todoIds
+    .map(id => {
+      const todo = props.originalTodoList.find(t => t.id === id);
+      if (todo) {
+        return {
+          id: todo.id,
+          title: todo.title,
+          content: todo.content,
+          timestamp: dateKey,
+          startDate: todo.startDate,
+          endDate: todo.endDate,
+          status: todo.status,
+          priority: todo.priority
+        };
+      }
+      return null;
+    })
+    .filter(Boolean) as Activity[];
 });
 
 const currentDate = computed(() => {
@@ -75,17 +82,21 @@ const currentDate = computed(() => {
   return `${year} 年 ${month} 月 ${day} 日`;
 });
 
-const formatTimestamp = (timestamp: string, startDate?: string, endDate?: string) => {
+const formatTimestamp = (
+  timestamp: string,
+  startDate?: string,
+  endDate?: string
+) => {
   if (!timestamp) return "";
-  
+
   const formatTime = (time: string) => {
     return dayjs(time).format("YYYY-MM-DD HH:mm");
   };
-  
+
   if (startDate && endDate && startDate !== endDate) {
     return `${formatTime(startDate)} - ${formatTime(endDate)}`;
   }
-  
+
   return formatTime(timestamp);
 };
 
@@ -112,7 +123,7 @@ async function handleClick(activity: Activity) {
   try {
     const currentGrowth = desktopPetStore.growthValue;
     const previousMood = desktopPetStore.moodValue;
-    
+
     if (activity.status === 2) {
       await cancelCompleteTodo(activity.id);
       activity.status = 1;
@@ -122,41 +133,66 @@ async function handleClick(activity: Activity) {
       activity.status = 2;
       await desktopPetStore.loadDesktopPetInfo();
       message("完成待办", { type: "success" });
-      
-      const isOverdue = activity.endDate && new Date(activity.endDate) < new Date();
-      
+
+      const isOverdue =
+        activity.endDate && new Date(activity.endDate) < new Date();
+
       if (isOverdue) {
-        (window as any).ipcRenderer.send('play-clap-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.complete);
+        (window as any).ipcRenderer.send("play-clap-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.complete
+        );
       } else {
-        (window as any).ipcRenderer.send('play-good-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTime);
+        (window as any).ipcRenderer.send("play-good-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.onTime
+        );
       }
-      
+
       if (desktopPetStore.checkUpgrade()) {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-upgrade-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.upgrade);
+          (window as any).ipcRenderer.send("play-upgrade-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.upgrade
+          );
         }, 2500);
       }
-      
+
       if (desktopPetStore.checkEnergetic()) {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-energetic-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
+          (window as any).ipcRenderer.send("play-energetic-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.energetic
+          );
         }, 2500);
       }
-      
+
       const moodChange = desktopPetStore.checkMoodChange();
-      if (moodChange === 'increased') {
+      if (moodChange === "increased") {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-tea-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTimeMore);
+          (window as any).ipcRenderer.send("play-tea-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.onTimeMore
+          );
         }, 2500);
-      } else if (moodChange === 'decreased') {
+      } else if (moodChange === "decreased") {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-pointing-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.overdue);
+          (window as any).ipcRenderer.send("play-pointing-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.overdue
+          );
         }, 2500);
       }
     }
@@ -203,15 +239,23 @@ async function handleMenuAction(action: string) {
         }
         activity.status = 3;
         message("放弃待办成功", { type: "success" });
-        (window as any).ipcRenderer.send('play-abandon-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.abandon);
+        (window as any).ipcRenderer.send("play-abandon-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.abandon
+        );
         break;
       case "delete":
         console.log("========== 删除待办 ==========", activity.id);
         await deleteTodo(activity.id);
         message("删除待办成功", { type: "success" });
-        (window as any).ipcRenderer.send('play-delete-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.delete);
+        (window as any).ipcRenderer.send("play-delete-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.delete
+        );
         console.log("========== emit refresh 事件 ==========");
         emit("refresh");
         break;
@@ -256,25 +300,41 @@ async function handleMenuAction(action: string) {
         <el-timeline-item
           v-for="(activity, index) in currentDayTodos"
           :key="index"
-          :timestamp="formatTimestamp(activity.timestamp, activity.startDate, activity.endDate)"
+          :timestamp="
+            formatTimestamp(
+              activity.timestamp,
+              activity.startDate,
+              activity.endDate
+            )
+          "
           :hollow="activity.status !== 2"
           :color="getPriorityColor(activity.priority)"
           @click="handleClick(activity)"
           @contextmenu.prevent="handleRightClick($event, activity)"
         >
           <!-- 使用 dot 插槽完全自定义节点，仅当 status 不为 2 时生效 -->
-          <template #dot v-if="activity.status !== 2">
+          <template v-if="activity.status !== 2" #dot>
             <div
               class="custom-node"
               :style="{
                 borderColor: getPriorityColor(activity.priority)
               }"
-            ></div>
+            />
           </template>
           <!-- 只有点击标题才跳到详细页 -->
-          <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
-            <span 
-              :class="['todo-text', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
+          <el-tooltip
+            :content="activity.title"
+            placement="top-start"
+            :show-after="1000"
+            :show-arrow="true"
+          >
+            <span
+              :class="[
+                'todo-text',
+                {
+                  'line-through': activity.status === 2 || activity.status === 3
+                }
+              ]"
               @click.stop="handleTextClick(activity)"
             >
               {{ activity.title }}
@@ -297,20 +357,20 @@ async function handleMenuAction(action: string) {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('edit')"
         >
           修改待办
         </div>
         <div
-          @click="handleMenuAction('abandon')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('abandon')"
         >
           放弃待办
         </div>
         <div
-          @click="handleMenuAction('delete')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('delete')"
         >
           删除待办
         </div>

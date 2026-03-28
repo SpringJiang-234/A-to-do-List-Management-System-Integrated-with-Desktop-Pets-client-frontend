@@ -52,15 +52,15 @@ const loadTodoList = async () => {
 
   try {
     loading.value = true;
-    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+    const valueCompleted = localStorage.getItem("valueCompleted") !== "false";
     const params: any = {
       tagIdList: [tagId.value]
     };
-    
+
     if (!valueCompleted) {
       params.statusList = [1];
     }
-    
+
     const response = await getTodoListByCategoryOrTag(params);
     originalTodoList.value = response.data || [];
   } catch (error) {
@@ -72,7 +72,7 @@ const loadTodoList = async () => {
 
 function handleTodoClick(activity: Activity) {
   console.log("待办项被点击:", activity);
-  
+
   const todo = originalTodoList.value.find(t => t.id === activity.id);
   if (todo) {
     todo.status = activity.status;
@@ -85,14 +85,14 @@ function handleTextClick(activity: Activity) {
 }
 
 const handleSearchSettingsChanged = (event: any) => {
-  if (event.detail?.type === 'status') {
+  if (event.detail?.type === "status") {
     loadTodoList();
   }
 };
 
 watch(
   () => route.meta?.tagId,
-  (newTagId) => {
+  newTagId => {
     const id = Number(newTagId);
     if (id && !isNaN(id)) {
       loadTodoList();
@@ -102,18 +102,21 @@ watch(
 );
 
 onMounted(() => {
-  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.addEventListener("searchSettingsChanged", handleSearchSettingsChanged);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.removeEventListener(
+    "searchSettingsChanged",
+    handleSearchSettingsChanged
+  );
 });
 </script>
 
 <template>
   <div v-loading="loading">
-    <TodoList 
-      :activities="activities" 
+    <TodoList
+      :activities="activities"
       :originalTodoList="originalTodoList"
       @click="handleTodoClick"
       @textClick="handleTextClick"

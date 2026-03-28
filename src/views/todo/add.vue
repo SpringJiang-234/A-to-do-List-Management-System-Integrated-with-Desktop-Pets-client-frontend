@@ -61,15 +61,16 @@ const loadCategories = async () => {
     if (userInfo?.id) {
       const systemResponse = await getCategoryList(0);
       const userResponse = await getCategoryList(userInfo.id);
-      
-      const systemCategories = systemResponse.code === 200 ? systemResponse.data : [];
+
+      const systemCategories =
+        systemResponse.code === 200 ? systemResponse.data : [];
       const userCategories = userResponse.code === 200 ? userResponse.data : [];
-      
+
       const allCategories = [
         ...systemCategories.map(cat => ({ value: cat.id, label: cat.name })),
         ...userCategories.map(cat => ({ value: cat.id, label: cat.name }))
       ];
-      
+
       categories.value = allCategories;
     }
   } catch (error) {
@@ -83,15 +84,23 @@ const loadTags = async () => {
     if (userInfo?.id) {
       const systemResponse = await getTagList(0);
       const userResponse = await getTagList(userInfo.id);
-      
+
       const systemTags = systemResponse.code === 200 ? systemResponse.data : [];
       const userTags = userResponse.code === 200 ? userResponse.data : [];
-      
+
       const allTags = [
-        ...systemTags.map(tag => ({ value: tag.id, label: tag.name, color: tag.color })),
-        ...userTags.map(tag => ({ value: tag.id, label: tag.name, color: tag.color }))
+        ...systemTags.map(tag => ({
+          value: tag.id,
+          label: tag.name,
+          color: tag.color
+        })),
+        ...userTags.map(tag => ({
+          value: tag.id,
+          label: tag.name,
+          color: tag.color
+        }))
       ];
-      
+
       tags.value = allTags;
     }
   } catch (error) {
@@ -99,16 +108,19 @@ const loadTags = async () => {
   }
 };
 
-const convertToRgbaWithOpacity = (hexColor: string, opacity: number = 0.3): string => {
-  if (!hexColor || !hexColor.startsWith('#')) {
+const convertToRgbaWithOpacity = (
+  hexColor: string,
+  opacity: number = 0.3
+): string => {
+  if (!hexColor || !hexColor.startsWith("#")) {
     return hexColor;
   }
-  
-  const hex = hexColor.replace('#', '');
+
+  const hex = hexColor.replace("#", "");
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
-  
+
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
@@ -128,6 +140,16 @@ const handleSubmit = async () => {
     return;
   }
 
+  if (todoForm.value.startDate && todoForm.value.endDate) {
+    if (todoForm.value.startDate > todoForm.value.endDate) {
+      todoForm.value.startDate = todoForm.value.endDate;
+    }
+  } else if (!todoForm.value.startDate && todoForm.value.endDate) {
+    todoForm.value.startDate = todoForm.value.endDate;
+  } else if (todoForm.value.startDate && !todoForm.value.endDate) {
+    todoForm.value.endDate = todoForm.value.startDate;
+  }
+
   try {
     submitting.value = true;
     const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
@@ -135,9 +157,9 @@ const handleSubmit = async () => {
       message("用户信息不存在，请重新登录", { type: "error" });
       return;
     }
-    
+
     const previousVitality = desktopPetStore.vitalityValue;
-    
+
     await insertTodo({
       userId: userInfo.id,
       title: todoForm.value.title,
@@ -150,17 +172,21 @@ const handleSubmit = async () => {
       tagIdList: todoForm.value.tagIdList
     });
     await desktopPetStore.loadDesktopPetInfo();
-    
-    (window as any).ipcRenderer.send('play-good-animation');
-    (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.newTodo);
-    
+
+    (window as any).ipcRenderer.send("play-good-animation");
+    (window as any).ipcRenderer.invoke(
+      "open-win",
+      "pop-up-window",
+      sakikoMessages.newTodo
+    );
+
     if (desktopPetStore.checkEnergetic()) {
       setTimeout(() => {
         (window as any).ipcRenderer.send('play-energetic-animation');
         (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
       }, 2500);
     }
-    
+
     message("添加成功", { type: "success" });
     router.back();
   } catch (error) {
@@ -181,12 +207,12 @@ loadTags();
       <template #header>
         <div class="header-content">
           <h3>添加待办</h3>
-          <el-button 
-            type="primary" 
-            circle 
-            size="small" 
-            @click="handleClose"
+          <el-button
+            type="primary"
+            circle
+            size="small"
             class="close-button"
+            @click="handleClose"
           >
             <el-icon><Close /></el-icon>
           </el-button>
@@ -210,15 +236,23 @@ loadTags();
             />
           </div>
         </div>
-        
+
         <el-collapse v-model="activeNames" class="options-collapse">
           <el-collapse-item title="其他选项" name="1">
             <el-form label-width="100px">
               <el-form-item label="是否置顶">
-                <el-switch v-model="todoForm.isTop" :active-value="2" :inactive-value="1" />
+                <el-switch
+                  v-model="todoForm.isTop"
+                  :active-value="2"
+                  :inactive-value="1"
+                />
               </el-form-item>
               <el-form-item label="类别">
-                <el-select v-model="todoForm.categoryId" placeholder="请选择类别" clearable>
+                <el-select
+                  v-model="todoForm.categoryId"
+                  placeholder="请选择类别"
+                  clearable
+                >
                   <el-option
                     v-for="item in categories"
                     :key="item.value"
@@ -228,25 +262,39 @@ loadTags();
                 </el-select>
               </el-form-item>
               <el-form-item label="标签">
-                <el-select v-model="todoForm.tagIdList" multiple placeholder="请选择标签">
+                <el-select
+                  v-model="todoForm.tagIdList"
+                  multiple
+                  placeholder="请选择标签"
+                >
                   <el-option
                     v-for="item in tags"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
                   >
-                    <el-tag :style="{ backgroundColor: convertToRgbaWithOpacity(item.color), borderColor: convertToRgbaWithOpacity(item.color), color: '#000000' }">{{ item.label }}</el-tag>
+                    <el-tag
+                      :style="{
+                        backgroundColor: convertToRgbaWithOpacity(item.color),
+                        borderColor: convertToRgbaWithOpacity(item.color),
+                        color: '#000000'
+                      }"
+                      >{{ item.label }}</el-tag
+                    >
                   </el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="优先级">
-                  <el-select v-model="todoForm.priority" placeholder="请选择优先级">
-                    <el-option label="不重要不紧急" :value="1" />
-                    <el-option label="不重要但紧急" :value="2" />
-                    <el-option label="重要不紧急" :value="3" />
-                    <el-option label="重要且紧急" :value="4" />
-                  </el-select>
-                </el-form-item>
+                <el-select
+                  v-model="todoForm.priority"
+                  placeholder="请选择优先级"
+                >
+                  <el-option label="不重要不紧急" :value="1" />
+                  <el-option label="不重要但紧急" :value="2" />
+                  <el-option label="重要不紧急" :value="3" />
+                  <el-option label="重要且紧急" :value="4" />
+                </el-select>
+              </el-form-item>
               <el-form-item label="开始日期">
                 <el-date-picker
                   v-model="todoForm.startDate"
@@ -268,14 +316,12 @@ loadTags();
             </el-form>
           </el-collapse-item>
         </el-collapse>
-        
+
         <div class="button-actions">
-          <el-button type="primary" @click="handleSubmit" :loading="submitting">
+          <el-button type="primary" :loading="submitting" @click="handleSubmit">
             确定
           </el-button>
-          <el-button @click="handleCancel">
-            取消
-          </el-button>
+          <el-button @click="handleCancel"> 取消 </el-button>
         </div>
       </div>
     </el-card>

@@ -27,15 +27,21 @@ type TagQuery = {
 };
 
 export const getTagList = (userId: number) => {
-  return http.request<Result<TagVO[]>>("post", "/api/tag/list", { data: { userId } });
+  return http.request<Result<TagVO[]>>("post", "/api/tag/list", {
+    data: { userId }
+  });
 };
 
 export const insertTag = (tagDTO: TagDTO) => {
-  return http.request<Result<void>>("post", "/api/tag/insert", { data: tagDTO });
+  return http.request<Result<void>>("post", "/api/tag/insert", {
+    data: tagDTO
+  });
 };
 
 export const updateTag = (tagDTO: TagDTO) => {
-  return http.request<Result<void>>("post", "/api/tag/update", { data: tagDTO });
+  return http.request<Result<void>>("post", "/api/tag/update", {
+    data: tagDTO
+  });
 };
 
 export const deleteTag = (id: number) => {

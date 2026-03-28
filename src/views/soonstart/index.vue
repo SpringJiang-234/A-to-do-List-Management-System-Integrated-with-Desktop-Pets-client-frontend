@@ -19,84 +19,122 @@ const todoId = ref<number | null>(null);
 const searchResults = ref<any[]>([]);
 
 const loadSearchResults = async () => {
-  console.log('loadSearchResults 被调用');
-  console.log('todoStore.filter:', todoStore.filter);
-  
+  console.log("loadSearchResults 被调用");
+  console.log("todoStore.filter:", todoStore.filter);
+
   const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
-  console.log('userInfo:', userInfo);
-  
+  console.log("userInfo:", userInfo);
+
   if (!userInfo?.id) {
-    console.error('用户信息不存在');
+    console.error("用户信息不存在");
     return;
   }
-  
+
   try {
-    const response = await fetch('http://localhost:8848/api/todo/list', {
-      method: 'POST',
+    const response = await fetch("http://localhost:8848/api/todo/list", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userInfo.token}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`
       },
       body: JSON.stringify({
         userId: userInfo.id,
         title: todoStore.filter.title,
         content: todoStore.filter.content,
-        categoryIdList: todoStore.filter.categories.map((cat: string) => parseInt(cat)),
+        categoryIdList: todoStore.filter.categories.map((cat: string) =>
+          parseInt(cat)
+        ),
         tagIdList: todoStore.filter.tags.map((tag: string) => parseInt(tag)),
-        priorityList: todoStore.filter.priorities.map((prio: string) => parseInt(prio)),
-        statusList: todoStore.filter.status.map((stat: string) => parseInt(stat)),
+        priorityList: todoStore.filter.priorities.map((prio: string) =>
+          parseInt(prio)
+        ),
+        statusList: todoStore.filter.status.map((stat: string) =>
+          parseInt(stat)
+        ),
         isTopList: todoStore.filter.isTop.map((top: string) => parseInt(top))
       })
     });
     const data = await response.json();
-    console.log('API 响应:', data);
+    console.log("API 响应:", data);
     if (data.code === 200) {
       searchResults.value = data.data || [];
-      
+
       // 过滤连续任务
-      if (todoStore.filter.isContinuous && todoStore.filter.isContinuous.length > 0 && todoStore.filter.isContinuous.length < 2) {
+      if (
+        todoStore.filter.isContinuous &&
+        todoStore.filter.isContinuous.length > 0 &&
+        todoStore.filter.isContinuous.length < 2
+      ) {
         const isContinuousTask = todoStore.filter.isContinuous.includes("1");
         searchResults.value = searchResults.value.filter(todo => {
-          const startTime = todo.startTime ? new Date(todo.startTime).getTime() : 0;
+          const startTime = todo.startTime
+            ? new Date(todo.startTime).getTime()
+            : 0;
           const endTime = todo.endTime ? new Date(todo.endTime).getTime() : 0;
           const isContinuous = startTime !== endTime;
           return isContinuousTask ? isContinuous : !isContinuous;
         });
       }
-      
-      console.log('搜索结果:', searchResults.value);
-      console.log('searchResults.value.length:', searchResults.value.length);
+
+      console.log("搜索结果:", searchResults.value);
+      console.log("searchResults.value.length:", searchResults.value.length);
     } else {
-      console.error('API 返回错误:', data.msg);
+      console.error("API 返回错误:", data.msg);
     }
   } catch (error) {
-    console.error('加载搜索结果失败:', error);
+    console.error("加载搜索结果失败:", error);
   }
 };
 
-watch(() => todoStore.filter, () => {
-  console.log('todoStore.filter 发生变化');
-  searchResults.value = [];
-  loadSearchResults();
-}, { deep: true });
+watch(
+  () => todoStore.filter,
+  () => {
+    console.log("todoStore.filter 发生变化");
+    searchResults.value = [];
+    loadSearchResults();
+  },
+  { deep: true }
+);
 
 onMounted(() => {
-  console.log('onMounted 被调用');
+  console.log("onMounted 被调用");
   todoStore.filter.status = ["1"];
   loadSearchResults();
 });
 
-const valueType = ref(localStorage.getItem('valueType') || "番茄钟"); //选择计时方式:番茄钟、正计时、倒计时
-const timeValue1 = ref(localStorage.getItem('timeValue1') ? new Date(localStorage.getItem('timeValue1')!) : new Date("1970-01-01T02:00:00")); //倒计时时长
-const timeValue2 = ref(localStorage.getItem('timeValue2') ? new Date(localStorage.getItem('timeValue2')!) : new Date("1970-01-01T00:25:00")); //专注时长
-const timeValue3 = ref(localStorage.getItem('timeValue3') ? new Date(localStorage.getItem('timeValue3')!) : new Date("1970-01-01T00:05:00")); //休息时长
-const timeValue4 = ref(localStorage.getItem('timeValue4') ? parseInt(localStorage.getItem('timeValue4')!) : 4); //循环次数
+const valueType = ref(localStorage.getItem("valueType") || "番茄钟"); //选择计时方式:番茄钟、正计时、倒计时
+const timeValue1 = ref(
+  localStorage.getItem("timeValue1")
+    ? new Date(localStorage.getItem("timeValue1")!)
+    : new Date("1970-01-01T02:00:00")
+); //倒计时时长
+const timeValue2 = ref(
+  localStorage.getItem("timeValue2")
+    ? new Date(localStorage.getItem("timeValue2")!)
+    : new Date("1970-01-01T00:25:00")
+); //专注时长
+const timeValue3 = ref(
+  localStorage.getItem("timeValue3")
+    ? new Date(localStorage.getItem("timeValue3")!)
+    : new Date("1970-01-01T00:05:00")
+); //休息时长
+const timeValue4 = ref(
+  localStorage.getItem("timeValue4")
+    ? parseInt(localStorage.getItem("timeValue4")!)
+    : 4
+); //循环次数
 
-watch(valueType, (newVal) => localStorage.setItem('valueType', newVal));
-watch(timeValue1, (newVal) => localStorage.setItem('timeValue1', newVal.toISOString()));
-watch(timeValue2, (newVal) => localStorage.setItem('timeValue2', newVal.toISOString()));
-watch(timeValue3, (newVal) => localStorage.setItem('timeValue3', newVal.toISOString()));
-watch(timeValue4, (newVal) => localStorage.setItem('timeValue4', String(newVal)));
+watch(valueType, newVal => localStorage.setItem("valueType", newVal));
+watch(timeValue1, newVal =>
+  localStorage.setItem("timeValue1", newVal.toISOString())
+);
+watch(timeValue2, newVal =>
+  localStorage.setItem("timeValue2", newVal.toISOString())
+);
+watch(timeValue3, newVal =>
+  localStorage.setItem("timeValue3", newVal.toISOString())
+);
+watch(timeValue4, newVal => localStorage.setItem("timeValue4", String(newVal)));
 
 const formatTime = (timeValue: string | Date): string => {
   if (!timeValue) return "0小时0分钟";
@@ -108,33 +146,33 @@ const formatTime = (timeValue: string | Date): string => {
 };
 
 const handleConfirm = async () => {
-    if (valueType.value === "倒计时") {
-      const hours = timeValue1.value.getHours();
-      const minutes = timeValue1.value.getMinutes();
-      const seconds = timeValue1.value.getSeconds();
-      if (hours === 0 && minutes === 0 && seconds === 0) {
-        message("倒计时时长不能为0", { type: "error" });
-        return;
-      }
-    } else if (valueType.value === "番茄钟") {
-      const focusHours = timeValue2.value.getHours();
-      const focusMinutes = timeValue2.value.getMinutes();
-      const focusSeconds = timeValue2.value.getSeconds();
-      if (focusHours === 0 && focusMinutes === 0 && focusSeconds === 0) {
-        message("专注时长不能为0", { type: "error" });
-        return;
-      }
-      
-      const breakHours = timeValue3.value.getHours();
-      const breakMinutes = timeValue3.value.getMinutes();
-      const breakSeconds = timeValue3.value.getSeconds();
-      if (breakHours === 0 && breakMinutes === 0 && breakSeconds === 0) {
-        message("休息时长不能为0", { type: "error" });
-        return;
-      }
+  if (valueType.value === "倒计时") {
+    const hours = timeValue1.value.getHours();
+    const minutes = timeValue1.value.getMinutes();
+    const seconds = timeValue1.value.getSeconds();
+    if (hours === 0 && minutes === 0 && seconds === 0) {
+      message("倒计时时长不能为0", { type: "error" });
+      return;
     }
-  
-    try {
+  } else if (valueType.value === "番茄钟") {
+    const focusHours = timeValue2.value.getHours();
+    const focusMinutes = timeValue2.value.getMinutes();
+    const focusSeconds = timeValue2.value.getSeconds();
+    if (focusHours === 0 && focusMinutes === 0 && focusSeconds === 0) {
+      message("专注时长不能为0", { type: "error" });
+      return;
+    }
+
+    const breakHours = timeValue3.value.getHours();
+    const breakMinutes = timeValue3.value.getMinutes();
+    const breakSeconds = timeValue3.value.getSeconds();
+    if (breakHours === 0 && breakMinutes === 0 && breakSeconds === 0) {
+      message("休息时长不能为0", { type: "error" });
+      return;
+    }
+  }
+
+  try {
     const params = new URLSearchParams();
     params.append("valueType", valueType.value);
 
@@ -147,14 +185,19 @@ const handleConfirm = async () => {
     }
 
     if (todoId.value) {
-      const selectedTodo = searchResults.value.find((todo: any) => todo.id === todoId.value);
+      const selectedTodo = searchResults.value.find(
+        (todo: any) => todo.id === todoId.value
+      );
       if (selectedTodo) {
         params.append("todoId", selectedTodo.id.toString());
         params.append("todoTitle", selectedTodo.title);
       }
     }
 
-    await (window as any).ipcRenderer.invoke("open-win", `compound-timer?${params.toString()}`);
+    await (window as any).ipcRenderer.invoke(
+      "open-win",
+      `compound-timer?${params.toString()}`
+    );
   } catch (error) {
     console.error("打开计时窗口失败:", error);
     message("打开计时窗口失败", { type: "error" });
@@ -189,23 +232,29 @@ const options = [
       <!-- 要实现可能需要todo加一个计时字段 -->
       <!-- 根据选择的计时类型弹出新的窗口用于计时 -->
       <div class="icon-container">
-        <GameIconsTomato width="64" height="64" @click="handleIconClick('番茄钟')" />
-        <StreamlineSharpResetClockSolid width="64" height="64" @click="handleIconClick('正计时')" />
-        <MeteorIconsClockRotate width="64" height="64" @click="handleIconClick('倒计时')" />
+        <GameIconsTomato
+          width="64"
+          height="64"
+          @click="handleIconClick('番茄钟')"
+        />
+        <StreamlineSharpResetClockSolid
+          width="64"
+          height="64"
+          @click="handleIconClick('正计时')"
+        />
+        <MeteorIconsClockRotate
+          width="64"
+          height="64"
+          @click="handleIconClick('倒计时')"
+        />
       </div>
     </el-card>
     <SearchCard :show-time-view-button="false" />
     <!-- 单选待办 -->
     <el-card shadow="never">
-      <template #header>
-        第一步：选择要计时的待办
-      </template>
+      <template #header> 第一步：选择要计时的待办 </template>
       <el-radio-group v-model="todoId">
-        <el-radio 
-          v-for="todo in searchResults" 
-          :key="todo.id" 
-          :value="todo.id"
-        >
+        <el-radio v-for="todo in searchResults" :key="todo.id" :value="todo.id">
           {{ todo.title }}
         </el-radio>
       </el-radio-group>
@@ -218,8 +267,17 @@ const options = [
           </div>
         </div>
       </template>
-      <el-select v-model="valueType" placeholder="选择计时方式" style="width: 220px">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      <el-select
+        v-model="valueType"
+        placeholder="选择计时方式"
+        style="width: 220px"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
       </el-select>
       <div class="time-pickers">
         <!-- 如果是正计时，只需要显示提示 -->
@@ -251,7 +309,9 @@ const options = [
         </div>
       </template>
       <div class="start-button-container">
-        <el-button type="primary" size="large" @click="handleConfirm">开始</el-button>
+        <el-button type="primary" size="large" @click="handleConfirm"
+          >开始</el-button
+        >
       </div>
     </el-card>
   </div>

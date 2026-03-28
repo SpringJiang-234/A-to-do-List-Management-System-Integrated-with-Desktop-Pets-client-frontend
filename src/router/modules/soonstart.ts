@@ -1,4 +1,4 @@
-import MdiClockOutline from '~icons/mdi/clock-outline';
+import MdiClockOutline from "~icons/mdi/clock-outline";
 
 export default {
   path: "/soonstart",

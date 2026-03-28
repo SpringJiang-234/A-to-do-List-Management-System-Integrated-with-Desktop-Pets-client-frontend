@@ -1,4 +1,4 @@
-import StreamlineFlexPetPawSolid from '~icons/streamline-flex/pet-paw-solid';
+import StreamlineFlexPetPawSolid from "~icons/streamline-flex/pet-paw-solid";
 
 export default {
   path: "/deskpet",

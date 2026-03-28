@@ -1,5 +1,4 @@
-import IconParkSolidFourKey from '~icons/icon-park-solid/four-key';
-
+import IconParkSolidFourKey from "~icons/icon-park-solid/four-key";
 
 export default {
   path: "/priority",

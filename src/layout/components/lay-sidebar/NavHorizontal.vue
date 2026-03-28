@@ -44,7 +44,7 @@ onMounted(() => {
   emitter.on("logoChange", key => {
     showLogo.value = key;
   });
-  
+
   emitter.on("menuChange", () => {
     // 强制刷新菜单
   });

@@ -26,25 +26,28 @@ const formatTimestamp = (timestamp: string) => {
 
 const parseMarkdown = (markdown: string): string => {
   if (!markdown) return "";
-  
+
   let html = markdown;
-  
+
   html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
   html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
   html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
-  
+
   html = html.replace(/\*\*(.*)\*\*/gim, "<strong>$1</strong>");
   html = html.replace(/\*(.*)\*/gim, "<em>$1</em>");
-  
+
   html = html.replace(/!\[(.*?)\]\((.*?)\)/gim, '<img src="$2" alt="$1" />');
-  html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>');
-  
+  html = html.replace(
+    /\[(.*?)\]\((.*?)\)/gim,
+    '<a href="$2" target="_blank">$1</a>'
+  );
+
   html = html.replace(/`(.*?)`/gim, "<code>$1</code>");
-  
+
   html = html.replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>");
-  
+
   html = html.replace(/\n$/gim, "");
-  
+
   return html;
 };
 
@@ -86,12 +89,12 @@ onMounted(() => {
       <template #header>
         <div class="header-content">
           <h3>公告详情</h3>
-          <el-button 
-            type="primary" 
-            circle 
-            size="small" 
-            @click="handleClose"
+          <el-button
+            type="primary"
+            circle
+            size="small"
             class="close-button"
+            @click="handleClose"
           >
             <el-icon><Close /></el-icon>
           </el-button>
@@ -100,7 +103,7 @@ onMounted(() => {
       <div v-loading="loading">
         <div class="detail-content">
           <div class="announcement-title">{{ title }}</div>
-          <div class="markdown-content" v-html="renderedContent"></div>
+          <div class="markdown-content" v-html="renderedContent" />
           <div class="update-time">
             <span class="time-label">最新修改时间：</span>
             <span class="time-value">{{ updateTime }}</span>
@@ -143,7 +146,7 @@ onMounted(() => {
 .markdown-content {
   line-height: 1.8;
   color: var(--el-text-color-primary);
-  
+
   :deep(h1) {
     font-size: 24px;
     font-weight: 600;
@@ -151,7 +154,7 @@ onMounted(() => {
     padding-bottom: 8px;
     border-bottom: 2px solid var(--el-border-color);
   }
-  
+
   :deep(h2) {
     font-size: 20px;
     font-weight: 600;
@@ -159,32 +162,32 @@ onMounted(() => {
     padding-bottom: 6px;
     border-bottom: 1px solid var(--el-border-color);
   }
-  
+
   :deep(h3) {
     font-size: 18px;
     font-weight: 600;
     margin: 16px 0 8px;
   }
-  
+
   :deep(p) {
     margin: 12px 0;
     text-align: justify;
   }
-  
+
   :deep(ul) {
     margin: 12px 0;
     padding-left: 24px;
   }
-  
+
   :deep(ol) {
     margin: 12px 0;
     padding-left: 24px;
   }
-  
+
   :deep(li) {
     margin: 6px 0;
   }
-  
+
   :deep(code) {
     padding: 2px 6px;
     background-color: var(--el-fill-color-light);
@@ -192,20 +195,20 @@ onMounted(() => {
     font-family: "Courier New", Courier, monospace;
     font-size: 14px;
   }
-  
+
   :deep(pre) {
     padding: 16px;
     background-color: var(--el-fill-color-light);
     border-radius: 8px;
     overflow-x: auto;
     margin: 12px 0;
-    
+
     code {
       padding: 0;
       background-color: transparent;
     }
   }
-  
+
   :deep(blockquote) {
     margin: 12px 0;
     padding: 12px 16px;
@@ -213,33 +216,34 @@ onMounted(() => {
     border-left: 4px solid var(--el-color-primary);
     color: var(--el-text-color-regular);
   }
-  
+
   :deep(table) {
     width: 100%;
     border-collapse: collapse;
     margin: 12px 0;
-    
-    th, td {
+
+    th,
+    td {
       padding: 8px 12px;
       border: 1px solid var(--el-border-color);
       text-align: left;
     }
-    
+
     th {
       background-color: var(--el-fill-color-light);
       font-weight: 600;
     }
   }
-  
+
   :deep(a) {
     color: var(--el-color-primary);
     text-decoration: none;
-    
+
     &:hover {
       text-decoration: underline;
     }
   }
-  
+
   :deep(img) {
     max-width: 100%;
     height: auto;

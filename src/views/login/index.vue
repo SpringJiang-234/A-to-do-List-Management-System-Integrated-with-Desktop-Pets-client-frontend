@@ -45,7 +45,12 @@ const onLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate(valid => {
     if (valid) {
-      console.log('开始登录，账号:', ruleForm.account, '密码:', ruleForm.password);
+      console.log(
+        "开始登录，账号:",
+        ruleForm.account,
+        "密码:",
+        ruleForm.password
+      );
       loading.value = true;
       useUserStoreHook()
         .loginByUsername({
@@ -53,7 +58,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           password: ruleForm.password
         })
         .then(res => {
-          console.log('登录响应:', res);
+          console.log("登录响应:", res);
           if (res.code === 200) {
             // 获取后端路由
             return initRouter().then(() => {
@@ -70,8 +75,8 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           }
         })
         .catch(error => {
-          console.error('登录错误:', error);
-          message('登录失败，请检查网络连接', { type: "error" });
+          console.error("登录错误:", error);
+          message("登录失败，请检查网络连接", { type: "error" });
         })
         .finally(() => (loading.value = false));
     }

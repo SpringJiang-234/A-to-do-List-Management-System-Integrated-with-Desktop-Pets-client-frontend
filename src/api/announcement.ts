@@ -32,5 +32,8 @@ export const getAnnouncementList = () => {
 
 /** 获取公告详情 */
 export const getAnnouncementDetail = (id: number) => {
-  return http.request<AnnouncementDetailResult>("get", `/api/announcement/details/${id}`);
+  return http.request<AnnouncementDetailResult>(
+    "get",
+    `/api/announcement/details/${id}`
+  );
 };

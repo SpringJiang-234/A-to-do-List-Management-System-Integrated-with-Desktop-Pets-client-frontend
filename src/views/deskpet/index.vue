@@ -35,15 +35,24 @@ const originalNickname = ref("");
 const openDeskPetWindow = async () => {
   try {
     await desktopPetStore.loadDesktopPetInfo();
-    
+
     await (window as any).ipcRenderer.invoke("open-win", "new-windows");
-    
+
     setTimeout(() => {
-      const message = desktopPetStore.intimacyValue >= 60 ? sakikoMessages.meet : sakikoMessages.meetUnhappy;
+      const message =
+        desktopPetStore.intimacyValue >= 60
+          ? sakikoMessages.meet
+          : sakikoMessages.meetUnhappy;
       (window as any).ipcRenderer.invoke("open-win", "pop-up-window", message);
-      
-      (window as any).ipcRenderer.send('set-intimacy-value', desktopPetStore.intimacyValue);
-      (window as any).ipcRenderer.send('set-initial-loop-animation', desktopPetStore.moodValue);
+
+      (window as any).ipcRenderer.send(
+        "set-intimacy-value",
+        desktopPetStore.intimacyValue
+      );
+      (window as any).ipcRenderer.send(
+        "set-initial-loop-animation",
+        desktopPetStore.moodValue
+      );
     }, 1000);
   } catch (error) {
     console.error("打开桌宠窗口失败:", error);
@@ -68,7 +77,7 @@ const handleNicknameBlur = async () => {
   if (nickname.value === originalNickname.value) {
     return;
   }
-  
+
   try {
     const result = await updateDesktopPet({
       nickname: nickname.value
@@ -107,13 +116,18 @@ onMounted(() => {
         <el-avatar size="large" :src="circleUrl" />
       </div>
       <div class="form-item">
-        <el-tooltip class="box-item" effect="dark" content="修改昵称后自动保存" placement="top">
-          <el-input 
-            v-model="nickname" 
-            class="nickname-input" 
-            style="width: 240px" 
-            placeholder="输入桌宠昵称" 
-            @blur="handleNicknameBlur" 
+        <el-tooltip
+          class="box-item"
+          effect="dark"
+          content="修改昵称后自动保存"
+          placement="top"
+        >
+          <el-input
+            v-model="nickname"
+            class="nickname-input"
+            style="width: 240px"
+            placeholder="输入桌宠昵称"
+            @blur="handleNicknameBlur"
           />
         </el-tooltip>
       </div>
@@ -150,8 +164,18 @@ onMounted(() => {
           :text-inside="true"
         />
         <div class="form-item">
-          <el-button type="primary" style="width: 115px" @click="openDeskPetWindow">召唤桌宠</el-button>
-          <el-button type="danger" style="width: 115px" @click="closeDeskPetWindow">回收桌宠</el-button>
+          <el-button
+            type="primary"
+            style="width: 115px"
+            @click="openDeskPetWindow"
+            >召唤桌宠</el-button
+          >
+          <el-button
+            type="danger"
+            style="width: 115px"
+            @click="closeDeskPetWindow"
+            >回收桌宠</el-button
+          >
         </div>
       </div>
     </el-card>

@@ -42,10 +42,15 @@ export const getMyFeedbacks = () => {
 
 /** 获取反馈详情 */
 export const getFeedbackDetail = (id: number) => {
-  return http.request<FeedbackDetailResult>("get", `/api/feedback/details/${id}`);
+  return http.request<FeedbackDetailResult>(
+    "get",
+    `/api/feedback/details/${id}`
+  );
 };
 
 /** 提交反馈 */
 export const submitFeedback = (data: { title: string; content: string }) => {
-  return http.request<SubmitFeedbackResult>("post", "/api/feedback/submit", { data });
+  return http.request<SubmitFeedbackResult>("post", "/api/feedback/submit", {
+    data
+  });
 };

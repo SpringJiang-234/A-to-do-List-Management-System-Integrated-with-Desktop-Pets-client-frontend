@@ -1,4 +1,4 @@
-import IxFeedback from '~icons/ix/feedback';
+import IxFeedback from "~icons/ix/feedback";
 
 export default {
   path: "/feedback",

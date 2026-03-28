@@ -2,7 +2,12 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
-import { completeTodo, cancelCompleteTodo, abandonTodo, deleteTodo } from "@/api/todo";
+import {
+  completeTodo,
+  cancelCompleteTodo,
+  abandonTodo,
+  deleteTodo
+} from "@/api/todo";
 import dayjs from "dayjs";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 import sakikoMessages from "@/constants/sakiko-messages.json";
@@ -59,24 +64,28 @@ const getPriorityColor = (priority?: number) => {
   }
 };
 
-const formatTimestamp = (timestamp: string, startDate?: string, endDate?: string) => {
+const formatTimestamp = (
+  timestamp: string,
+  startDate?: string,
+  endDate?: string
+) => {
   if (!timestamp) return "";
-  
+
   const formatDate = (date: string) => {
     return dayjs(date).format("YYYY-MM-DD");
   };
-  
+
   if (startDate && endDate && startDate !== endDate) {
     return `${formatDate(startDate)} - ${formatDate(endDate)}`;
   }
-  
+
   return formatDate(timestamp);
 };
 
 async function handleClick(activity: Activity) {
   try {
     const currentGrowth = desktopPetStore.growthValue;
-    
+
     if (activity.status === 2) {
       await cancelCompleteTodo(activity.id);
       activity.status = 1;
@@ -86,40 +95,64 @@ async function handleClick(activity: Activity) {
       activity.status = 2;
       await desktopPetStore.loadDesktopPetInfo();
       message("完成待办", { type: "success" });
-      
-      const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf('day'));
+
+      const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf("day"));
       if (isOverdue) {
-        (window as any).ipcRenderer.send('play-clap-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.complete);
+        (window as any).ipcRenderer.send("play-clap-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.complete
+        );
       } else {
-        (window as any).ipcRenderer.send('play-good-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTime);
+        (window as any).ipcRenderer.send("play-good-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.onTime
+        );
       }
-      
+
       if (desktopPetStore.checkUpgrade()) {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-upgrade-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.upgrade);
+          (window as any).ipcRenderer.send("play-upgrade-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.upgrade
+          );
         }, 2500);
       }
-      
+
       if (desktopPetStore.checkEnergetic()) {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-energetic-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
+          (window as any).ipcRenderer.send("play-energetic-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.energetic
+          );
         }, 2500);
       }
-      
+
       const moodChange = desktopPetStore.checkMoodChange();
-      if (moodChange === 'increased') {
+      if (moodChange === "increased") {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-tea-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTimeMore);
+          (window as any).ipcRenderer.send("play-tea-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.onTimeMore
+          );
         }, 2500);
-      } else if (moodChange === 'decreased') {
+      } else if (moodChange === "decreased") {
         setTimeout(() => {
-          (window as any).ipcRenderer.send('play-pointing-animation');
-          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.overdue);
+          (window as any).ipcRenderer.send("play-pointing-animation");
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.overdue
+          );
         }, 2500);
       }
     }
@@ -147,7 +180,7 @@ function handleRightClick(event: MouseEvent, index: number) {
 async function handleMenuAction(action: string) {
   contextMenuVisible.value = false;
   const activity = selectedActivity.value;
-  
+
   if (!activity) return;
 
   try {
@@ -159,16 +192,24 @@ async function handleMenuAction(action: string) {
         await abandonTodo(activity.id);
         activity.status = 3;
         message("放弃待办", { type: "warning" });
-        (window as any).ipcRenderer.send('play-abandon-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.abandon);
+        (window as any).ipcRenderer.send("play-abandon-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.abandon
+        );
         emit("click", activity);
         break;
       case "delete":
         console.log("========== TodoList 删除待办 ==========", activity.id);
         await deleteTodo(activity.id);
         message("删除待办成功", { type: "success" });
-        (window as any).ipcRenderer.send('play-delete-animation');
-        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.delete);
+        (window as any).ipcRenderer.send("play-delete-animation");
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.delete
+        );
         console.log("========== TodoList emit refresh 事件 ==========");
         emit("refresh");
         break;
@@ -177,7 +218,7 @@ async function handleMenuAction(action: string) {
     console.error("操作失败:", error);
     message("操作失败，请重试", { type: "error" });
   }
-  
+
   selectedActivity.value = null;
 }
 </script>
@@ -197,20 +238,20 @@ async function handleMenuAction(action: string) {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('edit')"
         >
           修改待办
         </div>
         <div
-          @click="handleMenuAction('abandon')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('abandon')"
         >
           放弃待办
         </div>
         <div
-          @click="handleMenuAction('delete')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('delete')"
         >
           删除待办
         </div>
@@ -233,28 +274,51 @@ async function handleMenuAction(action: string) {
             "
             :style="{
               borderColor: getPriorityColor(activity.priority),
-              backgroundColor: activity.status === 2
-                ? getPriorityColor(activity.priority)
-                : 'white'
+              backgroundColor:
+                activity.status === 2
+                  ? getPriorityColor(activity.priority)
+                  : 'white'
             }"
-          ></div>
+          />
           <div class="todo-info">
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
-              <span 
-                :class="['todo-title', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
+              <span
+                :class="[
+                  'todo-title',
+                  {
+                    'line-through':
+                      activity.status === 2 || activity.status === 3
+                  }
+                ]"
                 @click.stop="handleTextClick(activity)"
               >
                 {{ activity.title }}
               </span>
             </el-tooltip>
-            <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startDate, activity.endDate) }}</span>
+            <span class="todo-time">{{
+              formatTimestamp(
+                activity.timestamp,
+                activity.startDate,
+                activity.endDate
+              )
+            }}</span>
           </div>
         </div>
-        <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">
+        <div
+          :class="[
+            'todo-content',
+            { 'line-through': activity.status === 2 || activity.status === 3 }
+          ]"
+        >
           {{ activity.content }}
         </div>
       </div>
-      <div class="divider"></div>
+      <div class="divider" />
     </div>
 
     <div
@@ -271,24 +335,46 @@ async function handleMenuAction(action: string) {
           "
           :style="{
             borderColor: getPriorityColor(activity.priority),
-            backgroundColor: activity.status === 2
-              ? getPriorityColor(activity.priority)
-              : 'white'
+            backgroundColor:
+              activity.status === 2
+                ? getPriorityColor(activity.priority)
+                : 'white'
           }"
-        ></div>
+        />
         <div class="todo-info">
-          <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
-            <span 
-              :class="['todo-title', { 'line-through': activity.status === 2 || activity.status === 3 }]" 
+          <el-tooltip
+            :content="activity.title"
+            placement="top-start"
+            :show-after="1000"
+            :show-arrow="true"
+          >
+            <span
+              :class="[
+                'todo-title',
+                {
+                  'line-through': activity.status === 2 || activity.status === 3
+                }
+              ]"
               @click.stop="handleTextClick(activity)"
             >
               {{ activity.title }}
             </span>
           </el-tooltip>
-          <span class="todo-time">{{ formatTimestamp(activity.timestamp, activity.startDate, activity.endDate) }}</span>
+          <span class="todo-time">{{
+            formatTimestamp(
+              activity.timestamp,
+              activity.startDate,
+              activity.endDate
+            )
+          }}</span>
         </div>
       </div>
-      <div :class="['todo-content', { 'line-through': activity.status === 2 || activity.status === 3 }]">
+      <div
+        :class="[
+          'todo-content',
+          { 'line-through': activity.status === 2 || activity.status === 3 }
+        ]"
+      >
         {{ activity.content }}
       </div>
     </div>

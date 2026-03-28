@@ -1,4 +1,4 @@
-import IconParkOutlineAnnouncement from '~icons/icon-park-outline/announcement';
+import IconParkOutlineAnnouncement from "~icons/icon-park-outline/announcement";
 
 export default {
   path: "/announcement",

@@ -13,13 +13,29 @@ defineOptions({
 
 const route = useRoute();
 
-const valueType = ref(route.query.valueType as string || "番茄钟");
-const timeValue1 = ref(route.query.timeValue1 ? new Date(route.query.timeValue1 as string) : new Date("1970-01-01T02:00:00"));
-const timeValue2 = ref(route.query.timeValue2 ? new Date(route.query.timeValue2 as string) : new Date("1970-01-01T00:25:00"));
-const timeValue3 = ref(route.query.timeValue3 ? new Date(route.query.timeValue3 as string) : new Date("1970-01-01T00:05:00"));
-const timeValue4 = ref(route.query.timeValue4 ? parseInt(route.query.timeValue4 as string) : 4);
-const todoId = ref(route.query.todoId ? parseInt(route.query.todoId as string) : null);
-const todoTitle = ref(route.query.todoTitle as string || "");
+const valueType = ref((route.query.valueType as string) || "番茄钟");
+const timeValue1 = ref(
+  route.query.timeValue1
+    ? new Date(route.query.timeValue1 as string)
+    : new Date("1970-01-01T02:00:00")
+);
+const timeValue2 = ref(
+  route.query.timeValue2
+    ? new Date(route.query.timeValue2 as string)
+    : new Date("1970-01-01T00:25:00")
+);
+const timeValue3 = ref(
+  route.query.timeValue3
+    ? new Date(route.query.timeValue3 as string)
+    : new Date("1970-01-01T00:05:00")
+);
+const timeValue4 = ref(
+  route.query.timeValue4 ? parseInt(route.query.timeValue4 as string) : 4
+);
+const todoId = ref(
+  route.query.todoId ? parseInt(route.query.todoId as string) : null
+);
+const todoTitle = ref((route.query.todoTitle as string) || "");
 const todoCategoryName = ref("");
 
 const formatTime = (timeValue: string | Date): string => {
@@ -36,9 +52,9 @@ const formatTimeForDisplay = (timeValue: string | Date): string => {
   if (!timeValue) return "00:00:00";
 
   const date = typeof timeValue === "string" ? new Date(timeValue) : timeValue;
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
   return `${hours}:${minutes}:${seconds}`;
 };
 
@@ -55,26 +71,30 @@ const loadTodoDetail = async () => {
       const response = await getTodoDetails(todoId.value);
       if (response.code === 200 && response.data) {
         todoCategoryName.value = response.data.categoryName || "";
-        
+
         const categoryName = todoCategoryName.value.toLowerCase();
         let animationMessage = "";
-        
+
         if (categoryName.includes("工作")) {
-          (window as any).ipcRenderer.send('play-work-animation');
+          (window as any).ipcRenderer.send("play-work-animation");
           animationMessage = sakikoMessages.workStart;
         } else if (categoryName.includes("学习")) {
-          (window as any).ipcRenderer.send('play-study-animation');
+          (window as any).ipcRenderer.send("play-study-animation");
           animationMessage = sakikoMessages.studyStart;
         } else if (categoryName.includes("娱乐")) {
-          (window as any).ipcRenderer.send('play-entertain-animation');
+          (window as any).ipcRenderer.send("play-entertain-animation");
           animationMessage = sakikoMessages.entertainStart;
         } else {
-          (window as any).ipcRenderer.send('play-other-animation');
+          (window as any).ipcRenderer.send("play-other-animation");
         }
-        
+
         if (animationMessage) {
           setTimeout(() => {
-            (window as any).ipcRenderer.invoke("open-win", "pop-up-window", animationMessage);
+            (window as any).ipcRenderer.invoke(
+              "open-win",
+              "pop-up-window",
+              animationMessage
+            );
           }, 500);
         }
       }
@@ -86,7 +106,7 @@ const loadTodoDetail = async () => {
 
 onMounted(async () => {
   await loadTodoDetail();
-  
+
   if (valueType.value === "正计时") {
     isRunning.value = true;
     timer.value = setInterval(() => {
@@ -103,31 +123,42 @@ const formatRemainingTime = (seconds: number): string => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 };
 
 const startTimer = () => {
   if (isRunning.value) return;
-  
+
   isRunning.value = true;
-  
+
   let targetSeconds = 0;
-  
+
   if (valueType.value === "倒计时" && timeValue1.value) {
     const date = timeValue1.value;
-    targetSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-  } else if (valueType.value === "番茄钟" && !isBreak.value && timeValue2.value) {
+    targetSeconds =
+      date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+  } else if (
+    valueType.value === "番茄钟" &&
+    !isBreak.value &&
+    timeValue2.value
+  ) {
     const date = timeValue2.value;
-    targetSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-  } else if (valueType.value === "番茄钟" && isBreak.value && timeValue3.value) {
+    targetSeconds =
+      date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+  } else if (
+    valueType.value === "番茄钟" &&
+    isBreak.value &&
+    timeValue3.value
+  ) {
     const date = timeValue3.value;
-    targetSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+    targetSeconds =
+      date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
   }
-  
+
   if (targetSeconds > 0 && remainingTime.value === 0) {
     remainingTime.value = targetSeconds;
   }
-  
+
   if (valueType.value === "正计时" || remainingTime.value > 0) {
     timer.value = setInterval(() => {
       if (valueType.value === "正计时") {
@@ -148,16 +179,16 @@ const stopTimer = () => {
     timer.value = null;
   }
   isRunning.value = false;
-  
+
   const categoryName = todoCategoryName.value.toLowerCase();
   if (categoryName.includes("工作")) {
-    (window as any).ipcRenderer.send('play-tea-animation');
+    (window as any).ipcRenderer.send("play-tea-animation");
   } else if (categoryName.includes("学习")) {
-    (window as any).ipcRenderer.send('play-tea-animation');
+    (window as any).ipcRenderer.send("play-tea-animation");
   } else if (categoryName.includes("娱乐")) {
-    (window as any).ipcRenderer.send('play-tea-animation');
+    (window as any).ipcRenderer.send("play-tea-animation");
   } else {
-    (window as any).ipcRenderer.send('play-tea-animation');
+    (window as any).ipcRenderer.send("play-tea-animation");
   }
 };
 
@@ -170,35 +201,45 @@ const resetTimer = () => {
 
 const completeTimer = async () => {
   stopTimer();
-  
+
   const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
-  const todoId = route.query.todoId ? parseInt(route.query.todoId as string) : null;
-  
+  const todoId = route.query.todoId
+    ? parseInt(route.query.todoId as string)
+    : null;
+
   if (todoId && userInfo?.token) {
     try {
       await updateFocusTime({
         id: todoId,
         focusTime: remainingTime.value
       });
-      message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, { type: "success" });
+      message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, {
+        type: "success"
+      });
     } catch (error) {
       console.error("更新专注时间失败:", error);
-      message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, { type: "success" });
+      message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, {
+        type: "success"
+      });
     }
   } else {
-    message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, { type: "success" });
+    message(`计时完成！用时：${formatRemainingTime(remainingTime.value)}`, {
+      type: "success"
+    });
   }
-  
+
   remainingTime.value = 0;
   isCompleted.value = true;
 };
 
 const handleTimerComplete = async () => {
   stopTimer();
-  
+
   const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
-  const todoId = route.query.todoId ? parseInt(route.query.todoId as string) : null;
-  
+  const todoId = route.query.todoId
+    ? parseInt(route.query.todoId as string)
+    : null;
+
   const updateFocusTimeToBackend = async (focusTime: number) => {
     if (todoId && userInfo?.token) {
       try {
@@ -211,23 +252,32 @@ const handleTimerComplete = async () => {
       }
     }
   };
-  
+
   if (valueType.value === "番茄钟" && !isBreak.value) {
-    const focusTimeSeconds = timeValue2.value.getHours() * 3600 + timeValue2.value.getMinutes() * 60 + timeValue2.value.getSeconds();
+    const focusTimeSeconds =
+      timeValue2.value.getHours() * 3600 +
+      timeValue2.value.getMinutes() * 60 +
+      timeValue2.value.getSeconds();
     await updateFocusTimeToBackend(focusTimeSeconds);
-    
+
     if (currentCycle.value < timeValue4.value) {
-      message(`第${currentCycle.value}个番茄钟完成，开始休息`, { type: "success" });
+      message(`第${currentCycle.value}个番茄钟完成，开始休息`, {
+        type: "success"
+      });
       isBreak.value = true;
       startTimer();
     } else {
-      message(`第${currentCycle.value}个番茄钟完成，开始休息`, { type: "success" });
+      message(`第${currentCycle.value}个番茄钟完成，开始休息`, {
+        type: "success"
+      });
       isBreak.value = true;
       startTimer();
     }
   } else if (valueType.value === "番茄钟" && isBreak.value) {
     if (currentCycle.value < timeValue4.value) {
-      message(`休息完成，开始第${currentCycle.value + 1}个番茄钟`, { type: "success" });
+      message(`休息完成，开始第${currentCycle.value + 1}个番茄钟`, {
+        type: "success"
+      });
       isBreak.value = false;
       currentCycle.value++;
       startTimer();
@@ -237,7 +287,10 @@ const handleTimerComplete = async () => {
       isCompleted.value = true;
     }
   } else if (valueType.value === "倒计时") {
-    const countdownSeconds = timeValue1.value.getHours() * 3600 + timeValue1.value.getMinutes() * 60 + timeValue1.value.getSeconds();
+    const countdownSeconds =
+      timeValue1.value.getHours() * 3600 +
+      timeValue1.value.getMinutes() * 60 +
+      timeValue1.value.getSeconds();
     await updateFocusTimeToBackend(countdownSeconds);
     message(`计时完成！`, { type: "success" });
     remainingTime.value = 0;
@@ -260,9 +313,15 @@ onUnmounted(() => {
       <div class="time-text">{{ formatRemainingTime(remainingTime) }}</div>
       <div class="timer-info">
         <span v-if="isCompleted">此次计时已累计</span>
-        <span v-if="!isCompleted && valueType === '番茄钟'">第 {{ currentCycle }} 个番茄钟</span>
-        <span v-if="!isCompleted && valueType === '番茄钟' && isBreak">休息中</span>
-        <span v-if="!isCompleted && valueType === '番茄钟' && !isBreak">专注中</span>
+        <span v-if="!isCompleted && valueType === '番茄钟'"
+          >第 {{ currentCycle }} 个番茄钟</span
+        >
+        <span v-if="!isCompleted && valueType === '番茄钟' && isBreak"
+          >休息中</span
+        >
+        <span v-if="!isCompleted && valueType === '番茄钟' && !isBreak"
+          >专注中</span
+        >
         <span v-if="!isCompleted && valueType === '倒计时'">倒计时</span>
         <span v-if="!isCompleted && valueType === '正计时'">正计时</span>
       </div>
@@ -270,19 +329,27 @@ onUnmounted(() => {
         {{ todoTitle }}
       </div>
     </div>
-    
-    <div class="timer-controls" v-if="!isCompleted">
+
+    <div v-if="!isCompleted" class="timer-controls">
       <el-button v-if="isRunning" type="warning" @click="stopTimer">
         暂停
       </el-button>
-      <el-button v-if="valueType === '正计时'" type="success" @click="completeTimer">
+      <el-button
+        v-if="valueType === '正计时'"
+        type="success"
+        @click="completeTimer"
+      >
         完成
       </el-button>
-      <el-button v-if="isRunning || remainingTime > 0" type="danger" @click="resetTimer">
+      <el-button
+        v-if="isRunning || remainingTime > 0"
+        type="danger"
+        @click="resetTimer"
+      >
         重置
       </el-button>
     </div>
-    
+
     <div v-if="valueType === '番茄钟'" class="timer-details">
       <div class="detail-item">
         <span>专注时长：</span>
@@ -297,7 +364,7 @@ onUnmounted(() => {
         <span>{{ timeValue4 }}</span>
       </div>
     </div>
-    
+
     <div v-if="valueType === '倒计时'" class="timer-details">
       <div class="detail-item">
         <span>倒计时时长：</span>

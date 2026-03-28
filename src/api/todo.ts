@@ -79,15 +79,24 @@ type Result<T> = {
 };
 
 export const getTodoList = (params: ClientTodoQuery) => {
-  return http.request<Result<ClientTodoVO[]>>("post", "/api/todo/list", { data: params });
+  return http.request<Result<ClientTodoVO[]>>("post", "/api/todo/list", {
+    data: params
+  });
 };
 
 export const getTodoListByCategoryOrTag = (params: ClientTodoQuery) => {
-  return http.request<Result<ClientTodoVO[]>>("post", "/api/todo/list-by-category-or-tag", { data: params });
+  return http.request<Result<ClientTodoVO[]>>(
+    "post",
+    "/api/todo/list-by-category-or-tag",
+    { data: params }
+  );
 };
 
 export const getTodoDetails = (id: number) => {
-  return http.request<Result<ClientTodoDetails>>("get", `/api/todo/details/${id}`);
+  return http.request<Result<ClientTodoDetails>>(
+    "get",
+    `/api/todo/details/${id}`
+  );
 };
 
 export const insertTodo = (data: ClientTodoDTO) => {
@@ -120,5 +129,7 @@ type UpdateFocusTimeDTO = {
 };
 
 export const updateFocusTime = (data: UpdateFocusTimeDTO) => {
-  return http.request<Result<void>>("post", "/api/todo/updateFocusTime", { data });
+  return http.request<Result<void>>("post", "/api/todo/updateFocusTime", {
+    data
+  });
 };

@@ -15,17 +15,18 @@ export interface DesktopPetState {
 }
 
 export const useDesktopPetStore = defineStore("pure-desktop-pet", {
-  state: () => ({
-    growthValue: 0,
-    vitalityValue: 0,
-    moodValue: 0,
-    intimacyValue: 0,
-    levelValue: 1,
-    nickname: "",
-    previousGrowthValue: 0,
-    previousVitalityValue: 0,
-    previousMoodValue: 60
-  } as DesktopPetState),
+  state: () =>
+    ({
+      growthValue: 0,
+      vitalityValue: 0,
+      moodValue: 0,
+      intimacyValue: 0,
+      levelValue: 1,
+      nickname: "",
+      previousGrowthValue: 0,
+      previousVitalityValue: 0,
+      previousMoodValue: 60
+    }) as DesktopPetState,
   actions: {
     async loadDesktopPetInfo() {
       try {
@@ -59,21 +60,21 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
     checkMoodChange() {
       const moodChanged = this.moodValue >= 60 && this.previousMoodValue < 60;
       const moodDecreased = this.moodValue < 60 && this.previousMoodValue >= 60;
-      
+
       this.previousMoodValue = this.moodValue;
-      
+
       if (moodChanged) {
-        return 'increased';
+        return "increased";
       } else if (moodDecreased) {
-        return 'decreased';
+        return "decreased";
       }
-      return 'none';
+      return "none";
     },
     getSummonAnimation() {
-      return this.intimacyValue >= 60 ? 'summon' : 'summon2';
+      return this.intimacyValue >= 60 ? "summon" : "summon2";
     },
     getLoopAnimation() {
-      return this.moodValue >= 60 ? 'tea' : 'pointing';
+      return this.moodValue >= 60 ? "tea" : "pointing";
     },
     updatePreviousValues() {
       this.previousGrowthValue = this.growthValue;
@@ -82,16 +83,16 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
     }
   },
   getters: {
-    shouldPlayUpgradeAnimation: (state) => {
+    shouldPlayUpgradeAnimation: state => {
       return state.growthValue >= 100 && state.previousGrowthValue < 100;
     },
-    shouldPlayEnergeticAnimation: (state) => {
+    shouldPlayEnergeticAnimation: state => {
       return state.vitalityValue === 100 && state.previousVitalityValue < 100;
     },
-    isHighMood: (state) => {
+    isHighMood: state => {
       return state.moodValue >= 60;
     },
-    isHighIntimacy: (state) => {
+    isHighIntimacy: state => {
       return state.intimacyValue >= 60;
     }
   }

@@ -19,7 +19,6 @@ import sakikoMessages from "@/constants/sakiko-messages.json";
 import handIcon from "@/assets/svg/ooui--hand.svg?url";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
-
 defineOptions({
   name: "DesktopPetWindow"
 });
@@ -27,18 +26,18 @@ defineOptions({
 const desktopPetStore = useDesktopPetStoreHook();
 
 enum AnimationState {
-  SUMMON = 'summon',
-  LOOP = 'loop',
-  ONE_TIME = 'one_time'
+  SUMMON = "summon",
+  LOOP = "loop",
+  ONE_TIME = "one_time"
 }
 
 enum LoopAnimationType {
-  TEA = 'tea',
-  POINTING = 'pointing',
-  WORK = 'work',
-  STUDY = 'study',
-  ENTERTAIN = 'entertain',
-  OTHER = 'other'
+  TEA = "tea",
+  POINTING = "pointing",
+  WORK = "work",
+  STUDY = "study",
+  ENTERTAIN = "entertain",
+  OTHER = "other"
 }
 
 const currentGif = ref("");
@@ -104,10 +103,10 @@ const playOneTimeAnimation = (gifPath: string, callback?: () => void) => {
   if (isPlayingOneTimeAnimation.value) {
     return;
   }
-  
+
   isPlayingOneTimeAnimation.value = true;
   animationState.value = AnimationState.ONE_TIME;
-  
+
   playAnimation(gifPath, () => {
     setTimeout(() => {
       isPlayingOneTimeAnimation.value = false;
@@ -131,10 +130,10 @@ const switchLoopAnimation = (newType: LoopAnimationType) => {
   if (currentLoopAnimation.value === newType) {
     return;
   }
-  
+
   previousLoopAnimation.value = currentLoopAnimation.value;
   currentLoopAnimation.value = newType;
-  
+
   if (!isPlayingOneTimeAnimation.value && !isUpgrading.value) {
     const loopGif = getLoopAnimationGif(newType);
     playAnimation(loopGif);
@@ -230,7 +229,11 @@ const playPointingAnimation = () => {
 const handleIntimateClick = () => {
   console.log("========== 左键点击桌宠 ==========");
   playOneTimeAnimation(intimateGifPath);
-  (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.intimate);
+  (window as any).ipcRenderer.invoke(
+    "open-win",
+    "pop-up-window",
+    sakikoMessages.intimate
+  );
 };
 
 const setIntimacyValue = (value: number) => {
@@ -238,38 +241,66 @@ const setIntimacyValue = (value: number) => {
 };
 
 const setInitialLoopAnimation = (moodValue: number) => {
-  currentLoopAnimation.value = moodValue >= 60 ? LoopAnimationType.TEA : LoopAnimationType.POINTING;
+  currentLoopAnimation.value =
+    moodValue >= 60 ? LoopAnimationType.TEA : LoopAnimationType.POINTING;
 };
 
 onMounted(() => {
   console.log("========== 桌宠窗口已挂载，注册动画监听器 ==========");
-  (window as any).ipcRenderer.on('play-upgrade-animation', playUpgradeAnimation);
-  (window as any).ipcRenderer.on('play-clap-animation', playClapAnimation);
-  (window as any).ipcRenderer.on('play-good-animation', playGoodAnimation);
-  (window as any).ipcRenderer.on('play-abandon-animation', playAbandonAnimation);
-  (window as any).ipcRenderer.on('play-delete-animation', playDeleteAnimation);
-  (window as any).ipcRenderer.on('play-intimate-animation', playIntimateAnimation);
-  (window as any).ipcRenderer.on('play-energetic-animation', playEnergeticAnimation);
-  (window as any).ipcRenderer.on('play-work-animation', playWorkAnimation);
-  (window as any).ipcRenderer.on('play-study-animation', playStudyAnimation);
-  (window as any).ipcRenderer.on('play-entertain-animation', playEntertainAnimation);
-  (window as any).ipcRenderer.on('play-other-animation', playOtherAnimation);
-  (window as any).ipcRenderer.on('play-tea-animation', playTeaAnimation);
-  (window as any).ipcRenderer.on('play-pointing-animation', playPointingAnimation);
-  (window as any).ipcRenderer.on('set-upgrading', (event, upgrading: boolean) => {
-    console.log("========== 设置升级状态 ==========", upgrading);
-    isUpgrading.value = upgrading;
-  });
-  (window as any).ipcRenderer.on('set-intimacy-value', (event, value: number) => {
-    console.log("========== 设置亲密度值 ==========", value);
-    setIntimacyValue(value);
-    setSummonAnimation();
-  });
-  (window as any).ipcRenderer.on('set-initial-loop-animation', (event, moodValue: number) => {
-    console.log("========== 设置初始循环动画 ==========", moodValue);
-    setInitialLoopAnimation(moodValue);
-  });
-  
+  (window as any).ipcRenderer.on(
+    "play-upgrade-animation",
+    playUpgradeAnimation
+  );
+  (window as any).ipcRenderer.on("play-clap-animation", playClapAnimation);
+  (window as any).ipcRenderer.on("play-good-animation", playGoodAnimation);
+  (window as any).ipcRenderer.on(
+    "play-abandon-animation",
+    playAbandonAnimation
+  );
+  (window as any).ipcRenderer.on("play-delete-animation", playDeleteAnimation);
+  (window as any).ipcRenderer.on(
+    "play-intimate-animation",
+    playIntimateAnimation
+  );
+  (window as any).ipcRenderer.on(
+    "play-energetic-animation",
+    playEnergeticAnimation
+  );
+  (window as any).ipcRenderer.on("play-work-animation", playWorkAnimation);
+  (window as any).ipcRenderer.on("play-study-animation", playStudyAnimation);
+  (window as any).ipcRenderer.on(
+    "play-entertain-animation",
+    playEntertainAnimation
+  );
+  (window as any).ipcRenderer.on("play-other-animation", playOtherAnimation);
+  (window as any).ipcRenderer.on("play-tea-animation", playTeaAnimation);
+  (window as any).ipcRenderer.on(
+    "play-pointing-animation",
+    playPointingAnimation
+  );
+  (window as any).ipcRenderer.on(
+    "set-upgrading",
+    (event, upgrading: boolean) => {
+      console.log("========== 设置升级状态 ==========", upgrading);
+      isUpgrading.value = upgrading;
+    }
+  );
+  (window as any).ipcRenderer.on(
+    "set-intimacy-value",
+    (event, value: number) => {
+      console.log("========== 设置亲密度值 ==========", value);
+      setIntimacyValue(value);
+      setSummonAnimation();
+    }
+  );
+  (window as any).ipcRenderer.on(
+    "set-initial-loop-animation",
+    (event, moodValue: number) => {
+      console.log("========== 设置初始循环动画 ==========", moodValue);
+      setInitialLoopAnimation(moodValue);
+    }
+  );
+
   setTimeout(() => {
     animationState.value = AnimationState.LOOP;
     const loopGif = getLoopAnimationGif(currentLoopAnimation.value);
@@ -278,28 +309,73 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  (window as any).ipcRenderer.removeListener('play-upgrade-animation', playUpgradeAnimation);
-  (window as any).ipcRenderer.removeListener('play-clap-animation', playClapAnimation);
-  (window as any).ipcRenderer.removeListener('play-good-animation', playGoodAnimation);
-  (window as any).ipcRenderer.removeListener('play-abandon-animation', playAbandonAnimation);
-  (window as any).ipcRenderer.removeListener('play-delete-animation', playDeleteAnimation);
-  (window as any).ipcRenderer.removeListener('play-intimate-animation', playIntimateAnimation);
-  (window as any).ipcRenderer.removeListener('play-energetic-animation', playEnergeticAnimation);
-  (window as any).ipcRenderer.removeListener('play-work-animation', playWorkAnimation);
-  (window as any).ipcRenderer.removeListener('play-study-animation', playStudyAnimation);
-  (window as any).ipcRenderer.removeListener('play-entertain-animation', playEntertainAnimation);
-  (window as any).ipcRenderer.removeListener('play-other-animation', playOtherAnimation);
-  (window as any).ipcRenderer.removeListener('play-tea-animation', playTeaAnimation);
-  (window as any).ipcRenderer.removeListener('play-pointing-animation', playPointingAnimation);
+  (window as any).ipcRenderer.removeListener(
+    "play-upgrade-animation",
+    playUpgradeAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-clap-animation",
+    playClapAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-good-animation",
+    playGoodAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-abandon-animation",
+    playAbandonAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-delete-animation",
+    playDeleteAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-intimate-animation",
+    playIntimateAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-energetic-animation",
+    playEnergeticAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-work-animation",
+    playWorkAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-study-animation",
+    playStudyAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-entertain-animation",
+    playEntertainAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-other-animation",
+    playOtherAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-tea-animation",
+    playTeaAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-pointing-animation",
+    playPointingAnimation
+  );
 });
 </script>
 
 <template>
   <div class="pet-container">
     <div class="gif-container">
-      <img v-if="currentGif" :class="{ fading: isFading }" :src="currentGif" alt="动画" draggable="false">
+      <img
+        v-if="currentGif"
+        :class="{ fading: isFading }"
+        :src="currentGif"
+        alt="动画"
+        draggable="false"
+      />
       <div class="hand-icon" @click="handleIntimateClick">
-        <img :src="handIcon" alt="亲密互动" draggable="false">
+        <img :src="handIcon" alt="亲密互动" draggable="false" />
       </div>
     </div>
   </div>
@@ -367,7 +443,8 @@ onUnmounted(() => {
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   border: 0;

@@ -43,7 +43,7 @@ export function getToken(): DataInfo<number> {
 export function setToken(data: DataInfo<number>) {
   const { token, username, account, roles } = data;
   const { isRemembered, loginDay } = useUserStoreHook();
-  
+
   // 设置token到cookie，过期时间为1天（86400秒）
   Cookies.set(TokenKey, JSON.stringify(data), {
     expires: 1
@@ -74,16 +74,16 @@ export function setToken(data: DataInfo<number>) {
 export function setTokenFromLogin(data: any) {
   const { token, username, account, role } = data;
   const { isRemembered, loginDay } = useUserStoreHook();
-  
+
   // 先清除旧的 localStorage 和 cookie
   removeToken();
-  
+
   const dataWithRoles = {
     ...data,
     roles: [role],
-    avatar: data.avatar ? data.avatar.split('?')[0] : ''
+    avatar: data.avatar ? data.avatar.split("?")[0] : ""
   };
-  
+
   // 设置token到cookie，过期时间为1天（86400秒）
   Cookies.set(TokenKey, JSON.stringify(dataWithRoles), {
     expires: 1

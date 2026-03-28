@@ -2,7 +2,11 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { message } from "@/utils/message";
 import TodoList from "@/components/TodoList.vue";
-import { getTodoListByCategoryOrTag, completeTodo, cancelCompleteTodo } from "@/api/todo";
+import {
+  getTodoListByCategoryOrTag,
+  completeTodo,
+  cancelCompleteTodo
+} from "@/api/todo";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import FluentAlertUrgent16Filled from "~icons/fluent/alert-urgent-16-filled?width=16px&height=16px";
@@ -38,12 +42,12 @@ const loadTodoListByPriority = async (priority: number) => {
       return [];
     }
 
-    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+    const valueCompleted = localStorage.getItem("valueCompleted") !== "false";
     const params: any = {
       userId: userInfo.id,
       priorityList: [priority]
     };
-    
+
     if (!valueCompleted) {
       params.statusList = [1];
     }
@@ -95,22 +99,24 @@ async function handleClick(activity: Activity) {
   await loadAllPriorityTodos();
 }
 
-function handleTextClick(activity: Activity) {
-}
+function handleTextClick(activity: Activity) {}
 
 const handleSearchSettingsChanged = (event: any) => {
-  if (event.detail?.type === 'status') {
+  if (event.detail?.type === "status") {
     loadAllPriorityTodos();
   }
 };
 
 onMounted(() => {
   loadAllPriorityTodos();
-  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.addEventListener("searchSettingsChanged", handleSearchSettingsChanged);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.removeEventListener(
+    "searchSettingsChanged",
+    handleSearchSettingsChanged
+  );
 });
 </script>
 

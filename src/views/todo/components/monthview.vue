@@ -4,7 +4,12 @@ import { useRouter } from "vue-router";
 
 import type { CalendarDateType, CalendarInstance } from "element-plus";
 import { message } from "@/utils/message";
-import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
+import {
+  abandonTodo,
+  completeTodo,
+  cancelCompleteTodo,
+  deleteTodo
+} from "@/api/todo";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 interface Activity {
@@ -66,10 +71,12 @@ const handleMenuAction = async (action: string) => {
     switch (action) {
       case "toggleComplete":
         const currentGrowth = desktopPetStore.growthValue;
-        
+
         if (todo.status === 2) {
           await cancelCompleteTodo(todo.id);
-          const cancelTodoItem = props.originalTodoList.find(t => t.id === todo.id);
+          const cancelTodoItem = props.originalTodoList.find(
+            t => t.id === todo.id
+          );
           if (cancelTodoItem) {
             cancelTodoItem.status = 1;
           }
@@ -77,17 +84,19 @@ const handleMenuAction = async (action: string) => {
           message("取消完成待办", { type: "success" });
         } else {
           await completeTodo(todo.id);
-          const completeTodoItem = props.originalTodoList.find(t => t.id === todo.id);
+          const completeTodoItem = props.originalTodoList.find(
+            t => t.id === todo.id
+          );
           if (completeTodoItem) {
             completeTodoItem.status = 2;
           }
           todo.status = 2;
           await desktopPetStore.loadDesktopPetInfo();
           message("完成待办", { type: "success" });
-          
+
           const newGrowth = desktopPetStore.growthValue;
           if (newGrowth < currentGrowth) {
-            (window as any).ipcRenderer.send('play-upgrade-animation');
+            (window as any).ipcRenderer.send("play-upgrade-animation");
           }
         }
         break;
@@ -164,13 +173,21 @@ const handleMenuAction = async (action: string) => {
         </p>
         <!-- 待办事项 -->
         <div
-          v-for="todo in (props.monthData[data.day] || [])"
+          v-for="todo in props.monthData[data.day] || []"
           :key="todo.id"
-          :class="['todo-item', { 'line-through': todo.status === 2 || todo.status === 3 }]"
+          :class="[
+            'todo-item',
+            { 'line-through': todo.status === 2 || todo.status === 3 }
+          ]"
           @click="() => handleClickTodo(todo)"
           @contextmenu.prevent="handleRightClick($event, todo)"
         >
-          <el-tooltip :content="todo.title" placement="top-start" :show-after="1000" :show-arrow="true">
+          <el-tooltip
+            :content="todo.title"
+            placement="top-start"
+            :show-after="1000"
+            :show-arrow="true"
+          >
             <span>{{ todo.title }}</span>
           </el-tooltip>
         </div>
@@ -190,26 +207,26 @@ const handleMenuAction = async (action: string) => {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('toggleComplete')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('toggleComplete')"
         >
-          {{ selectedTodo?.status === 2 ? '取消完成待办' : '完成待办' }}
+          {{ selectedTodo?.status === 2 ? "取消完成待办" : "完成待办" }}
         </div>
         <div
-          @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('edit')"
         >
           修改待办
         </div>
         <div
-          @click="handleMenuAction('abandon')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('abandon')"
         >
           放弃待办
         </div>
         <div
-          @click="handleMenuAction('delete')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('delete')"
         >
           删除待办
         </div>

@@ -1,4 +1,4 @@
-import FamiconsPerson from '~icons/famicons/person';
+import FamiconsPerson from "~icons/famicons/person";
 
 export default {
   path: "/usercenter",

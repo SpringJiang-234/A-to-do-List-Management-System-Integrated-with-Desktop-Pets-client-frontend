@@ -57,23 +57,27 @@ const loadCategories = async () => {
     const systemResponse = await getCategoryList(0);
     const userResponse = await getCategoryList(userInfo.id);
 
-    const systemCategories = systemResponse.code === 200 ? systemResponse.data : [];
+    const systemCategories =
+      systemResponse.code === 200 ? systemResponse.data : [];
     const userCategories = userResponse.code === 200 ? userResponse.data : [];
 
-    const showWork = localStorage.getItem('showWork') !== 'false';
-    const showStudy = localStorage.getItem('showStudy') !== 'false';
-    const showEntertainment = localStorage.getItem('showEntertainment') !== 'false';
+    const showWork = localStorage.getItem("showWork") !== "false";
+    const showStudy = localStorage.getItem("showStudy") !== "false";
+    const showEntertainment =
+      localStorage.getItem("showEntertainment") !== "false";
 
-    const allCategories = [...systemCategories, ...userCategories].filter(cat => {
-      if (cat.name === '工作') {
-        return showWork;
-      } else if (cat.name === '学习') {
-        return showStudy;
-      } else if (cat.name === '娱乐') {
-        return showEntertainment;
+    const allCategories = [...systemCategories, ...userCategories].filter(
+      cat => {
+        if (cat.name === "工作") {
+          return showWork;
+        } else if (cat.name === "学习") {
+          return showStudy;
+        } else if (cat.name === "娱乐") {
+          return showEntertainment;
+        }
+        return true;
       }
-      return true;
-    });
+    );
 
     categories.value = allCategories;
 
@@ -89,19 +93,23 @@ const loadCategories = async () => {
 
 const loadCategoryTodos = async (categoryId: number, categoryName: string) => {
   try {
-    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
-    console.log(`========== 加载分类 ${categoryName} 的待办，valueCompleted: ${valueCompleted} ==========`);
+    const valueCompleted = localStorage.getItem("valueCompleted") !== "false";
+    console.log(
+      `========== 加载分类 ${categoryName} 的待办，valueCompleted: ${valueCompleted} ==========`
+    );
     const params: any = {
       categoryIdList: [categoryId]
     };
-    
+
     if (!valueCompleted) {
       params.statusList = [1];
-      console.log("========== 添加 statusList: [1] 只查询未完成待办 ==========");
+      console.log(
+        "========== 添加 statusList: [1] 只查询未完成待办 =========="
+      );
     } else {
       console.log("========== 不添加 statusList，查询所有待办 ==========");
     }
-    
+
     const response = await getTodoListByCategoryOrTag(params);
     const originalTodoList = response.data || [];
 
@@ -130,7 +138,7 @@ const loadCategoryTodos = async (categoryId: number, categoryName: string) => {
 
 function handleTodoClick(categoryId: number, activity: Activity) {
   console.log("待办项被点击:", activity);
-  
+
   const categoryTodos = categoryTodosMap.value.get(categoryId);
   if (categoryTodos) {
     const todo = categoryTodos.originalTodoList.find(t => t.id === activity.id);
@@ -146,8 +154,11 @@ function handleTextClick(activity: Activity) {
 }
 
 const handleSearchSettingsChanged = (event: any) => {
-  console.log("========== Collapse 收到 searchSettingsChanged 事件 ==========", event);
-  if (event.detail?.type === 'status') {
+  console.log(
+    "========== Collapse 收到 searchSettingsChanged 事件 ==========",
+    event
+  );
+  if (event.detail?.type === "status") {
     console.log("========== 重新加载分类待办 ==========");
     loadCategories();
   }
@@ -156,12 +167,15 @@ const handleSearchSettingsChanged = (event: any) => {
 onMounted(() => {
   console.log("========== Collapse 组件已挂载，添加事件监听 ==========");
   loadCategories();
-  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.addEventListener("searchSettingsChanged", handleSearchSettingsChanged);
 });
 
 onUnmounted(() => {
   console.log("========== Collapse 组件卸载，移除事件监听 ==========");
-  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.removeEventListener(
+    "searchSettingsChanged",
+    handleSearchSettingsChanged
+  );
 });
 </script>
 
@@ -177,9 +191,18 @@ onUnmounted(() => {
         <TodoList
           :activities="categoryTodos.activities"
           :originalTodoList="categoryTodos.originalTodoList"
-          @click="(activity: Activity) => handleTodoClick(categoryTodos.categoryId, activity)"
+          @click="
+            (activity: Activity) =>
+              handleTodoClick(categoryTodos.categoryId, activity)
+          "
           @textClick="handleTextClick"
-          @refresh="() => loadCategoryTodos(categoryTodos.categoryId, categoryTodos.categoryName)"
+          @refresh="
+            () =>
+              loadCategoryTodos(
+                categoryTodos.categoryId,
+                categoryTodos.categoryName
+              )
+          "
         />
       </el-collapse-item>
     </el-collapse>

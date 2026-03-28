@@ -1,5 +1,5 @@
-import DashiconsCategory from '~icons/dashicons/category';
-import MaterialSymbolsLightDocsOutlineRounded from '~icons/material-symbols-light/docs-outline-rounded?width=16px&height=16px';
+import DashiconsCategory from "~icons/dashicons/category";
+import MaterialSymbolsLightDocsOutlineRounded from "~icons/material-symbols-light/docs-outline-rounded?width=16px&height=16px";
 import type { RouteRecordRaw } from "vue-router";
 
 interface Category {
@@ -31,7 +31,9 @@ export default {
   ]
 };
 
-export function generateCategoryRoutes(categories: Category[]): RouteRecordRaw[] {
+export function generateCategoryRoutes(
+  categories: Category[]
+): RouteRecordRaw[] {
   return categories.map(category => ({
     path: `/category/${category.id}/index`,
     name: category.name.charAt(0).toUpperCase() + category.name.slice(1),

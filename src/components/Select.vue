@@ -9,7 +9,7 @@
     :max-collapse-tags="maxCollapseTags"
     :style="{ width: width }"
   >
-    <template #header v-if="multiple">
+    <template v-if="multiple" #header>
       <el-checkbox
         v-model="checkAll"
         :indeterminate="indeterminate"

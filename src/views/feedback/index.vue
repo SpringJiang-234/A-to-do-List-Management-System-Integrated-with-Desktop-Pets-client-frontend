@@ -31,9 +31,9 @@ interface FeedbackItem {
 const activities = ref<Activity[]>([]);
 
 const statusMap: Record<string, 1 | 2 | 3> = {
-  "未受理": 1,
-  "已受理": 2,
-  "已解决": 3
+  未受理: 1,
+  已受理: 2,
+  已解决: 3
 };
 
 const formatTimestamp = (timestamp: string) => {
@@ -79,7 +79,12 @@ onMounted(() => {
 
 <template>
   <div class="feedback-container">
-    <el-button type="primary" circle class="add-button" @click="handleAddClick" />
+    <el-button
+      type="primary"
+      circle
+      class="add-button"
+      @click="handleAddClick"
+    />
     <el-card shadow="never">
       <template #header>
         <h3>反馈</h3>
@@ -111,7 +116,7 @@ onMounted(() => {
   opacity: 1;
   width: 40px;
   height: 40px;
-  
+
   &::before,
   &::after {
     content: "";
@@ -121,12 +126,12 @@ onMounted(() => {
     top: 50%;
     transform: translate(-50%, -50%);
   }
-  
+
   &::before {
     width: 16px;
     height: 2px;
   }
-  
+
   &::after {
     width: 2px;
     height: 16px;

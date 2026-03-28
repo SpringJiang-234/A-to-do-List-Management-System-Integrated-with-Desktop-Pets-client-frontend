@@ -169,9 +169,9 @@ onMounted(() => {
       <div class="mobile_wrap">
         <div class="calander_view_g_wrap">
           <div
-            class="views_wrap"
             v-for="month in ansRes"
             v-show="month.remainDay > 0"
+            class="views_wrap"
           >
             <!-- 一排 7个 加边距(20px) -->
             <div
@@ -180,14 +180,14 @@ onMounted(() => {
             >
               <!-- 伪装的格子 -->
               <div
+                v-for="_offset in month.week"
                 class="views_day"
                 :style="{
                   width: props.size + 'px',
                   height: props.size + 'px'
                 }"
-                v-for="_offset in month.week"
                 style="background: transparent; cursor: auto"
-              ></div>
+              />
               <!-- 真正显示的格子 -->
               <div v-for="(_day, index) in month.remainDay">
                 <el-tooltip
@@ -200,14 +200,6 @@ onMounted(() => {
                 >
                   <div
                     class="views_day"
-                    @mouseenter="
-                      visibleList[formatDate(month.year, month.month, index)] =
-                        true
-                    "
-                    @mouseleave="
-                      visibleList[formatDate(month.year, month.month, index)] =
-                        false
-                    "
                     :style="{
                       background:
                         viewsList?.colors[
@@ -216,7 +208,15 @@ onMounted(() => {
                       width: props.size + 'px',
                       height: props.size + 'px'
                     }"
-                  ></div>
+                    @mouseenter="
+                      visibleList[formatDate(month.year, month.month, index)] =
+                        true
+                    "
+                    @mouseleave="
+                      visibleList[formatDate(month.year, month.month, index)] =
+                        false
+                    "
+                  />
                 </el-tooltip>
               </div>
             </div>

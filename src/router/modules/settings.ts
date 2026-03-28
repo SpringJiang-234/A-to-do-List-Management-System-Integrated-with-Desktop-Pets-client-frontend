@@ -1,4 +1,4 @@
-import LetsIconsSettingFill from '~icons/lets-icons/setting-fill';
+import LetsIconsSettingFill from "~icons/lets-icons/setting-fill";
 
 export default {
   path: "/settings",

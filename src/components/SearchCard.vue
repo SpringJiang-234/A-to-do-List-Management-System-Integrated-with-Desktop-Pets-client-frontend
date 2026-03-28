@@ -37,18 +37,23 @@ const loadCategoriesAndTags = async () => {
     const systemCategoryResponse = await getCategoryList(0);
     const userCategoryResponse = await getCategoryList(userInfo.id);
 
-    const systemCategories = systemCategoryResponse.code === 200 ? systemCategoryResponse.data : [];
-    const userCategories = userCategoryResponse.code === 200 ? userCategoryResponse.data : [];
+    const systemCategories =
+      systemCategoryResponse.code === 200 ? systemCategoryResponse.data : [];
+    const userCategories =
+      userCategoryResponse.code === 200 ? userCategoryResponse.data : [];
 
-    categories.value = [...systemCategories, ...userCategories].map((item: any) => ({
-      value: item.id.toString(),
-      label: item.name
-    }));
+    categories.value = [...systemCategories, ...userCategories].map(
+      (item: any) => ({
+        value: item.id.toString(),
+        label: item.name
+      })
+    );
 
     const systemTagResponse = await getTagList(0);
     const userTagResponse = await getTagList(userInfo.id);
 
-    const systemTags = systemTagResponse.code === 200 ? systemTagResponse.data : [];
+    const systemTags =
+      systemTagResponse.code === 200 ? systemTagResponse.data : [];
     const userTags = userTagResponse.code === 200 ? userTagResponse.data : [];
 
     tags.value = [...systemTags, ...userTags].map((item: any) => ({
@@ -64,59 +69,59 @@ const loadCategoriesAndTags = async () => {
 
 onMounted(() => {
   loadCategoriesAndTags();
-  
-  const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
-  const savedTime = localStorage.getItem('searchTime');
-  const savedStatus = localStorage.getItem('searchStatus');
-  
-  console.log('savedTime:', savedTime);
-  console.log('savedStatus:', savedStatus);
-  
+
+  const valueCompleted = localStorage.getItem("valueCompleted") !== "false";
+  const savedTime = localStorage.getItem("searchTime");
+  const savedStatus = localStorage.getItem("searchStatus");
+
+  console.log("savedTime:", savedTime);
+  console.log("savedStatus:", savedStatus);
+
   if (savedTime) {
     formInline.time = savedTime;
     todoStore.filter.timeRule = savedTime;
   } else {
-    const defaultView = localStorage.getItem('defaultView');
-    const time = defaultView || '0';
+    const defaultView = localStorage.getItem("defaultView");
+    const time = defaultView || "0";
     formInline.time = time;
     todoStore.filter.timeRule = time;
-    console.log('使用默认视图:', time);
+    console.log("使用默认视图:", time);
   }
-  
-  console.log('最终 todoStore.filter.timeRule:', todoStore.filter.timeRule);
-  
+
+  console.log("最终 todoStore.filter.timeRule:", todoStore.filter.timeRule);
+
   if (savedStatus) {
     try {
       formInline.status = JSON.parse(savedStatus);
     } catch (e) {
-      console.error('解析 savedStatus 失败:', e);
+      console.error("解析 savedStatus 失败:", e);
     }
   } else if (!valueCompleted) {
     formInline.status = ["1"];
   }
-  
-  window.addEventListener('searchSettingsChanged', (e: any) => {
-    if (e.detail.type === 'time') {
+
+  window.addEventListener("searchSettingsChanged", (e: any) => {
+    if (e.detail.type === "time") {
       formInline.time = e.detail.value;
       todoStore.filter.timeRule = e.detail.value;
-      console.log('检测到视图设置变化:', e.detail.value);
+      console.log("检测到视图设置变化:", e.detail.value);
       onSubmit();
     }
-    if (e.detail.type === 'status') {
+    if (e.detail.type === "status") {
       try {
         formInline.status = JSON.parse(e.detail.value);
-        console.log('检测到状态设置变化:', e.detail.value);
+        console.log("检测到状态设置变化:", e.detail.value);
         onSubmit();
       } catch (err) {
-        console.error('解析 searchStatus 失败:', err);
+        console.error("解析 searchStatus 失败:", err);
       }
     }
   });
 });
 
 const handleTimeRuleChange = (value: string) => {
-  localStorage.setItem('searchTime', value);
-  
+  localStorage.setItem("searchTime", value);
+
   todoStore.setFilter({
     title: todoStore.filter.title,
     content: todoStore.filter.content,
@@ -260,16 +265,32 @@ const onSubmit = async () => {
       params.content = formInline.content;
     }
 
-    if (formInline.categories && formInline.categories.length > 0 && formInline.categories.length < categories.value.length) {
-      params.categoryIdList = formInline.categories.map((cat: string) => parseInt(cat));
+    if (
+      formInline.categories &&
+      formInline.categories.length > 0 &&
+      formInline.categories.length < categories.value.length
+    ) {
+      params.categoryIdList = formInline.categories.map((cat: string) =>
+        parseInt(cat)
+      );
     }
 
-    if (formInline.tags && formInline.tags.length > 0 && formInline.tags.length < tags.value.length) {
+    if (
+      formInline.tags &&
+      formInline.tags.length > 0 &&
+      formInline.tags.length < tags.value.length
+    ) {
       params.tagIdList = formInline.tags.map((tag: string) => parseInt(tag));
     }
 
-    if (formInline.priorities && formInline.priorities.length > 0 && formInline.priorities.length < priorities.length) {
-      params.priorityList = formInline.priorities.map((prio: string) => parseInt(prio));
+    if (
+      formInline.priorities &&
+      formInline.priorities.length > 0 &&
+      formInline.priorities.length < priorities.length
+    ) {
+      params.priorityList = formInline.priorities.map((prio: string) =>
+        parseInt(prio)
+      );
     }
 
     if (formInline.time) {
@@ -284,18 +305,28 @@ const onSubmit = async () => {
       params.endDate = formInline.endDate;
     }
 
-    if (formInline.status && formInline.status.length > 0 && formInline.status.length < statusOptions.length) {
-      params.statusList = formInline.status.map((stat: string) => parseInt(stat));
+    if (
+      formInline.status &&
+      formInline.status.length > 0 &&
+      formInline.status.length < statusOptions.length
+    ) {
+      params.statusList = formInline.status.map((stat: string) =>
+        parseInt(stat)
+      );
     }
 
-    if (formInline.isTop && formInline.isTop.length > 0 && formInline.isTop.length < topOptions.length) {
+    if (
+      formInline.isTop &&
+      formInline.isTop.length > 0 &&
+      formInline.isTop.length < topOptions.length
+    ) {
       params.isTopList = formInline.isTop.map((top: string) => parseInt(top));
     }
 
     console.log("搜索参数:", params);
 
-    localStorage.setItem('searchTime', formInline.time || '');
-    localStorage.setItem('searchStatus', JSON.stringify(formInline.status));
+    localStorage.setItem("searchTime", formInline.time || "");
+    localStorage.setItem("searchStatus", JSON.stringify(formInline.status));
 
     const response = await getTodoList(params);
 

@@ -140,7 +140,7 @@ const weekData = computed(() => {
   todoList.value.forEach(todo => {
     const date = new Date(todo.timestamp);
     const dayOfWeek = date.getDay();
-    
+
     switch (dayOfWeek) {
       case 0:
         data.sunday.push(todo);
@@ -180,7 +180,7 @@ const monthData = computed(() => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    const dateKey = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    const dateKey = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 
     if (!data[dateKey]) {
       data[dateKey] = [];
@@ -196,9 +196,9 @@ const loadTodoList = async () => {
   console.log("========== loadTodoList 被调用 ==========");
   try {
     loading.value = true;
-    
+
     dateTodoMap.value.clear();
-    
+
     const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
     if (userInfo?.id) {
       const params: any = {
@@ -213,16 +213,34 @@ const loadTodoList = async () => {
         params.content = todoStore.filter.content;
       }
 
-      if (todoStore.filter.categories && todoStore.filter.categories.length > 0 && todoStore.filter.categories.length < categories.value.length) {
-        params.categoryIdList = todoStore.filter.categories.map((cat: string) => parseInt(cat));
+      if (
+        todoStore.filter.categories &&
+        todoStore.filter.categories.length > 0 &&
+        todoStore.filter.categories.length < categories.value.length
+      ) {
+        params.categoryIdList = todoStore.filter.categories.map((cat: string) =>
+          parseInt(cat)
+        );
       }
 
-      if (todoStore.filter.tags && todoStore.filter.tags.length > 0 && todoStore.filter.tags.length < tags.value.length) {
-        params.tagIdList = todoStore.filter.tags.map((tag: string) => parseInt(tag));
+      if (
+        todoStore.filter.tags &&
+        todoStore.filter.tags.length > 0 &&
+        todoStore.filter.tags.length < tags.value.length
+      ) {
+        params.tagIdList = todoStore.filter.tags.map((tag: string) =>
+          parseInt(tag)
+        );
       }
 
-      if (todoStore.filter.priorities && todoStore.filter.priorities.length > 0 && todoStore.filter.priorities.length < priorities.length) {
-        params.priorityList = todoStore.filter.priorities.map((prio: string) => parseInt(prio));
+      if (
+        todoStore.filter.priorities &&
+        todoStore.filter.priorities.length > 0 &&
+        todoStore.filter.priorities.length < priorities.length
+      ) {
+        params.priorityList = todoStore.filter.priorities.map((prio: string) =>
+          parseInt(prio)
+        );
       }
 
       if (todoStore.filter.time) {
@@ -237,12 +255,24 @@ const loadTodoList = async () => {
         params.endDate = todoStore.filter.endDate;
       }
 
-      if (todoStore.filter.status && todoStore.filter.status.length > 0 && todoStore.filter.status.length < statusOptions.length) {
-        params.statusList = todoStore.filter.status.map((stat: string) => parseInt(stat));
+      if (
+        todoStore.filter.status &&
+        todoStore.filter.status.length > 0 &&
+        todoStore.filter.status.length < statusOptions.length
+      ) {
+        params.statusList = todoStore.filter.status.map((stat: string) =>
+          parseInt(stat)
+        );
       }
 
-      if (todoStore.filter.isTop && todoStore.filter.isTop.length > 0 && todoStore.filter.isTop.length < topOptions.length) {
-        params.isTopList = todoStore.filter.isTop.map((top: string) => parseInt(top));
+      if (
+        todoStore.filter.isTop &&
+        todoStore.filter.isTop.length > 0 &&
+        todoStore.filter.isTop.length < topOptions.length
+      ) {
+        params.isTopList = todoStore.filter.isTop.map((top: string) =>
+          parseInt(top)
+        );
       }
 
       console.log("loadTodoList 搜索参数:", params);
@@ -250,65 +280,75 @@ const loadTodoList = async () => {
       const response = await getTodoList(params);
       if (response.code === 200) {
         originalTodoList.value = response.data;
-        
+
         // 过滤连续任务
-        if (todoStore.filter.isContinuous && todoStore.filter.isContinuous.length > 0 && todoStore.filter.isContinuous.length < 2) {
+        if (
+          todoStore.filter.isContinuous &&
+          todoStore.filter.isContinuous.length > 0 &&
+          todoStore.filter.isContinuous.length < 2
+        ) {
           const isContinuousTask = todoStore.filter.isContinuous.includes("1");
           originalTodoList.value = originalTodoList.value.filter(todo => {
-            const startDate = todo.startDate ? new Date(todo.startDate).getTime() : 0;
+            const startDate = todo.startDate
+              ? new Date(todo.startDate).getTime()
+              : 0;
             const endDate = todo.endDate ? new Date(todo.endDate).getTime() : 0;
             const isContinuous = startDate !== endDate;
             return isContinuousTask ? isContinuous : !isContinuous;
           });
         }
-        
+
         console.log("========== 待办映射开始 ==========");
         console.log("原始待办列表:", originalTodoList.value);
-        
+
         const newDateTodoMap = new Map<string, number[]>();
-        
+
         response.data.forEach(record => {
-          const startDate = record.startDate ? new Date(record.startDate) : new Date();
-          const endDate = record.endDate ? new Date(record.endDate) : new Date();
-          
+          const startDate = record.startDate
+            ? new Date(record.startDate)
+            : new Date();
+          const endDate = record.endDate
+            ? new Date(record.endDate)
+            : new Date();
+
           const start = new Date(startDate);
           start.setHours(0, 0, 0, 0);
-          
+
           const end = new Date(endDate);
           end.setHours(0, 0, 0, 0);
-          
+
           const currentDate = new Date(start);
           const assignedDates: string[] = [];
-          
+
           console.log(`\n待办ID: ${record.id}, 标题: "${record.title}"`);
           console.log(`  开始时间: ${record.startDate}`);
           console.log(`  结束时间: ${record.endDate}`);
-          
+
           while (currentDate <= endDate) {
             const year = currentDate.getFullYear();
-            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-            const day = String(currentDate.getDate()).padStart(2, '0');
+            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+            const day = String(currentDate.getDate()).padStart(2, "0");
             const dateKey = `${year}-${month}-${day}`;
-            
+
             if (!newDateTodoMap.has(dateKey)) {
               newDateTodoMap.set(dateKey, []);
             }
             newDateTodoMap.get(dateKey)!.push(record.id);
             assignedDates.push(dateKey);
-            
+
             currentDate.setDate(currentDate.getDate() + 1);
           }
-          
+
           console.log(`  分配到日期: ${assignedDates.join(", ")}`);
         });
-        
+
         dateTodoMap.value = newDateTodoMap;
         console.log("\n========== 日期映射表 ==========");
         dateTodoMap.value.forEach((todoIds, dateKey) => {
           console.log(`${dateKey}: 待办ID [${todoIds.join(", ")}]`);
         });
         console.log("========== 待办映射结束 ==========\n");
-        
+
         const expandedActivities: Activity[] = [];
         newDateTodoMap.forEach((todoIds, dateKey) => {
           todoIds.forEach(todoId => {
@@ -328,7 +368,7 @@ const loadTodoList = async () => {
             }
           });
         });
-        
+
         todoList.value = expandedActivities;
         console.log("展开后的待办列表:", todoList.value);
       }
@@ -351,18 +391,23 @@ const loadCategoriesAndTags = async () => {
     const systemCategoryResponse = await getCategoryList(0);
     const userCategoryResponse = await getCategoryList(userInfo.id);
 
-    const systemCategories = systemCategoryResponse.code === 200 ? systemCategoryResponse.data : [];
-    const userCategories = userCategoryResponse.code === 200 ? userCategoryResponse.data : [];
+    const systemCategories =
+      systemCategoryResponse.code === 200 ? systemCategoryResponse.data : [];
+    const userCategories =
+      userCategoryResponse.code === 200 ? userCategoryResponse.data : [];
 
-    categories.value = [...systemCategories, ...userCategories].map((item: any) => ({
-      value: item.id.toString(),
-      label: item.name
-    }));
+    categories.value = [...systemCategories, ...userCategories].map(
+      (item: any) => ({
+        value: item.id.toString(),
+        label: item.name
+      })
+    );
 
     const systemTagResponse = await getTagList(0);
     const userTagResponse = await getTagList(userInfo.id);
 
-    const systemTags = systemTagResponse.code === 200 ? systemTagResponse.data : [];
+    const systemTags =
+      systemTagResponse.code === 200 ? systemTagResponse.data : [];
     const userTags = userTagResponse.code === 200 ? userTagResponse.data : [];
 
     tags.value = [...systemTags, ...userTags].map((item: any) => ({
@@ -384,9 +429,9 @@ onMounted(() => {
 });
 
 onActivated(() => {
-  const savedTime = localStorage.getItem('searchTime');
-  const savedStatus = localStorage.getItem('searchStatus');
-  
+  const savedTime = localStorage.getItem("searchTime");
+  const savedStatus = localStorage.getItem("searchStatus");
+
   todoStore.setFilter({
     title: "",
     content: "",
@@ -404,17 +449,25 @@ onActivated(() => {
   loadTodoList();
 });
 
-watch(() => todoStore.filter, () => {
-  console.log("========== filter 变化，重新加载待办列表 ==========");
-  loadTodoList();
-}, { deep: true });
+watch(
+  () => todoStore.filter,
+  () => {
+    console.log("========== filter 变化，重新加载待办列表 ==========");
+    loadTodoList();
+  },
+  { deep: true }
+);
 </script>
 
 <template>
   <div class="todo-container">
-
-    <el-button type="primary" circle class="add-button" @click="handleAddClick" />
-<!-- TODO 还没测试搜索栏，其中是否为连续任务需要注意：查询不带这个条件，最后显示的时候过滤一部分就行 -->
+    <el-button
+      type="primary"
+      circle
+      class="add-button"
+      @click="handleAddClick"
+    />
+    <!-- TODO 还没测试搜索栏，其中是否为连续任务需要注意：查询不带这个条件，最后显示的时候过滤一部分就行 -->
     <div class="header-wrapper">
       <SearchCard />
     </div>
@@ -431,7 +484,15 @@ watch(() => todoStore.filter, () => {
     4、不重要不紧急（1）：无图标
     -->
     <div class="main-wrapper">
-      <component :is="currentView" :todo-list="todoList" :week-data="weekData" :month-data="monthData" :date-todo-map="dateTodoMap" :original-todo-list="originalTodoList" @refresh="loadTodoList" />
+      <component
+        :is="currentView"
+        :todo-list="todoList"
+        :week-data="weekData"
+        :month-data="monthData"
+        :date-todo-map="dateTodoMap"
+        :original-todo-list="originalTodoList"
+        @refresh="loadTodoList"
+      />
     </div>
     <div class="footer-wrapper">
       <!-- 这里需要一个回到顶部的按钮 -->
@@ -471,7 +532,7 @@ watch(() => todoStore.filter, () => {
   opacity: 1;
   width: 40px;
   height: 40px;
-  
+
   &::before,
   &::after {
     content: "";
@@ -481,12 +542,12 @@ watch(() => todoStore.filter, () => {
     top: 50%;
     transform: translate(-50%, -50%);
   }
-  
+
   &::before {
     width: 16px;
     height: 2px;
   }
-  
+
   &::after {
     width: 2px;
     height: 16px;

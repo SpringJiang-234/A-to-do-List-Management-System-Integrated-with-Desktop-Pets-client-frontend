@@ -2,7 +2,12 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
-import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
+import {
+  abandonTodo,
+  completeTodo,
+  cancelCompleteTodo,
+  deleteTodo
+} from "@/api/todo";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 defineOptions({
@@ -68,7 +73,7 @@ const weekDates = computed(() => {
   sunday.setDate(diff);
 
   const dates = [];
-  for(let i = 0; i < 7; i++) {
+  for (let i = 0; i < 7; i++) {
     const date = new Date(sunday);
     date.setDate(sunday.getDate() + i);
     const month = date.getMonth() + 1;
@@ -110,7 +115,15 @@ const currentWeekData = computed(() => {
   const sunday = new Date(current);
   sunday.setDate(diff);
 
-  const weekDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const weekDays = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday"
+  ];
   const result: WeekData = {
     sunday: [],
     monday: [],
@@ -125,25 +138,27 @@ const currentWeekData = computed(() => {
     const date = new Date(sunday);
     date.setDate(sunday.getDate() + i);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     const dateKey = `${year}-${month}-${day}`;
 
     const todoIds = props.dateTodoMap.get(dateKey) || [];
     const dayName = weekDays[i];
-    result[dayName as keyof WeekData] = todoIds.map(id => {
-      const todo = props.originalTodoList.find(t => t.id === id);
-      if (todo) {
-        return {
-          id: todo.id,
-          title: todo.title,
-          content: todo.content,
-          timestamp: dateKey,
-          status: todo.status
-        };
-      }
-      return null;
-    }).filter(Boolean) as Activity[];
+    result[dayName as keyof WeekData] = todoIds
+      .map(id => {
+        const todo = props.originalTodoList.find(t => t.id === id);
+        if (todo) {
+          return {
+            id: todo.id,
+            title: todo.title,
+            content: todo.content,
+            timestamp: dateKey,
+            status: todo.status
+          };
+        }
+        return null;
+      })
+      .filter(Boolean) as Activity[];
   }
 
   return result;
@@ -174,7 +189,7 @@ const handleMenuAction = async (action: string) => {
     switch (action) {
       case "toggleComplete":
         const currentGrowth = desktopPetStore.growthValue;
-        
+
         if (activity.status === 2) {
           await cancelCompleteTodo(activity.id);
           const todo = props.originalTodoList.find(t => t.id === activity.id);
@@ -192,10 +207,10 @@ const handleMenuAction = async (action: string) => {
           activity.status = 2;
           await desktopPetStore.loadDesktopPetInfo();
           message("完成待办", { type: "success" });
-          
+
           const newGrowth = desktopPetStore.growthValue;
           if (newGrowth < currentGrowth) {
-            (window as any).ipcRenderer.send('play-upgrade-animation');
+            (window as any).ipcRenderer.send("play-upgrade-animation");
           }
         }
         break;
@@ -204,7 +219,9 @@ const handleMenuAction = async (action: string) => {
         break;
       case "abandon":
         await abandonTodo(activity.id);
-        const abandonTodoItem = props.originalTodoList.find(t => t.id === activity.id);
+        const abandonTodoItem = props.originalTodoList.find(
+          t => t.id === activity.id
+        );
         if (abandonTodoItem) {
           abandonTodoItem.status = 3;
         }
@@ -262,11 +279,19 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.sunday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
+            :class="[
+              'todo-item',
+              { 'line-through': activity.status === 2 || activity.status === 3 }
+            ]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
               <span>{{ activity.title }}</span>
             </el-tooltip>
           </div>
@@ -278,11 +303,19 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.monday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
+            :class="[
+              'todo-item',
+              { 'line-through': activity.status === 2 || activity.status === 3 }
+            ]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
               <span>{{ activity.title }}</span>
             </el-tooltip>
           </div>
@@ -294,11 +327,19 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.tuesday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
+            :class="[
+              'todo-item',
+              { 'line-through': activity.status === 2 || activity.status === 3 }
+            ]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
               <span>{{ activity.title }}</span>
             </el-tooltip>
           </div>
@@ -310,11 +351,19 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.wednesday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
+            :class="[
+              'todo-item',
+              { 'line-through': activity.status === 2 || activity.status === 3 }
+            ]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
               <span>{{ activity.title }}</span>
             </el-tooltip>
           </div>
@@ -326,11 +375,19 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.thursday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
+            :class="[
+              'todo-item',
+              { 'line-through': activity.status === 2 || activity.status === 3 }
+            ]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
               <span>{{ activity.title }}</span>
             </el-tooltip>
           </div>
@@ -342,11 +399,19 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.friday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
+            :class="[
+              'todo-item',
+              { 'line-through': activity.status === 2 || activity.status === 3 }
+            ]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
               <span>{{ activity.title }}</span>
             </el-tooltip>
           </div>
@@ -358,11 +423,19 @@ const handleMenuAction = async (action: string) => {
           <div
             v-for="(activity, index) in row.saturday"
             :key="index"
-            :class="['todo-item', { 'line-through': activity.status === 2 || activity.status === 3 }]"
+            :class="[
+              'todo-item',
+              { 'line-through': activity.status === 2 || activity.status === 3 }
+            ]"
             @click="() => handleClickTodo(activity)"
             @contextmenu.prevent="handleRightClick($event, activity)"
           >
-            <el-tooltip :content="activity.title" placement="top-start" :show-after="1000" :show-arrow="true">
+            <el-tooltip
+              :content="activity.title"
+              placement="top-start"
+              :show-after="1000"
+              :show-arrow="true"
+            >
               <span>{{ activity.title }}</span>
             </el-tooltip>
           </div>
@@ -383,26 +456,26 @@ const handleMenuAction = async (action: string) => {
     >
       <div class="flex flex-col items-center">
         <div
-          @click="handleMenuAction('toggleComplete')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('toggleComplete')"
         >
-          {{ selectedActivity?.status === 2 ? '取消完成待办' : '完成待办' }}
+          {{ selectedActivity?.status === 2 ? "取消完成待办" : "完成待办" }}
         </div>
         <div
-          @click="handleMenuAction('edit')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('edit')"
         >
           修改待办
         </div>
         <div
-          @click="handleMenuAction('abandon')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('abandon')"
         >
           放弃待办
         </div>
         <div
-          @click="handleMenuAction('delete')"
           class="py-2.5 border-b w-full cursor-pointer text-center"
+          @click="handleMenuAction('delete')"
         >
           删除待办
         </div>

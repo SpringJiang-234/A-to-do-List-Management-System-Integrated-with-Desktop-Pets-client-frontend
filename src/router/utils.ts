@@ -245,7 +245,8 @@ async function loadCategoryRoutes() {
     const systemResponse = await getCategoryList(0);
     const userResponse = await getCategoryList(userInfo.id);
 
-    const systemCategories = systemResponse.code === 200 ? systemResponse.data : [];
+    const systemCategories =
+      systemResponse.code === 200 ? systemResponse.data : [];
     const userCategories = userResponse.code === 200 ? userResponse.data : [];
 
     const allCategories = [...systemCategories, ...userCategories];
@@ -264,7 +265,9 @@ async function loadCategoryRoutes() {
 
       const rootRoute = router.getRoutes().find(r => r.path === "/");
       if (rootRoute && rootRoute.children) {
-        const categoryParent = rootRoute.children.find(r => r.name === "CategoryParent");
+        const categoryParent = rootRoute.children.find(
+          r => r.name === "CategoryParent"
+        );
 
         if (categoryParent && categoryParent.children) {
           categoryRoutes.forEach(route => {
@@ -282,22 +285,26 @@ async function loadCategoryRoutes() {
           }
 
           const allRoutes = router.getRoutes();
-          const categoryChildren = allRoutes.filter(r =>
-            r.path.startsWith("/category") && r.path !== "/category" && r.path !== "/category/index"
+          const categoryChildren = allRoutes.filter(
+            r =>
+              r.path.startsWith("/category") &&
+              r.path !== "/category" &&
+              r.path !== "/category/index"
           );
 
-          const showWork = localStorage.getItem('showWork') !== 'false';
-          const showStudy = localStorage.getItem('showStudy') !== 'false';
-          const showEntertainment = localStorage.getItem('showEntertainment') !== 'false';
+          const showWork = localStorage.getItem("showWork") !== "false";
+          const showStudy = localStorage.getItem("showStudy") !== "false";
+          const showEntertainment =
+            localStorage.getItem("showEntertainment") !== "false";
 
           categoryChildren.forEach((route: any) => {
             if (route.meta && route.meta.title) {
               const title = route.meta.title;
-              if (title === '工作') {
+              if (title === "工作") {
                 route.meta.showLink = showWork;
-              } else if (title === '学习') {
+              } else if (title === "学习") {
                 route.meta.showLink = showStudy;
-              } else if (title === '娱乐') {
+              } else if (title === "娱乐") {
                 route.meta.showLink = showEntertainment;
               }
             }
@@ -362,8 +369,11 @@ async function loadTagRoutes() {
           }
 
           const allRoutes = router.getRoutes();
-          const tagChildren = allRoutes.filter(r =>
-            r.path.startsWith("/tag") && r.path !== "/tag" && r.path !== "/tag/index"
+          const tagChildren = allRoutes.filter(
+            r =>
+              r.path.startsWith("/tag") &&
+              r.path !== "/tag" &&
+              r.path !== "/tag/index"
           );
 
           usePermissionStoreHook().handleWholeMenus(tagChildren);

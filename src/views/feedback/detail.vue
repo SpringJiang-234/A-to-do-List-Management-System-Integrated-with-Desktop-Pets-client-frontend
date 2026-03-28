@@ -89,12 +89,12 @@ onMounted(() => {
       <template #header>
         <div class="header-content">
           <h3>反馈详情</h3>
-          <el-button 
-            type="primary" 
-            circle 
-            size="small" 
-            @click="handleClose"
+          <el-button
+            type="primary"
+            circle
+            size="small"
             class="close-button"
+            @click="handleClose"
           >
             <el-icon><Close /></el-icon>
           </el-button>
@@ -107,7 +107,7 @@ onMounted(() => {
             <div class="feedback-title">{{ title }}</div>
             <div class="feedback-content">{{ content }}</div>
           </div>
-          
+
           <div class="feedback-meta">
             <span class="meta-item">
               <span class="meta-label">创建时间：</span>
@@ -120,13 +120,13 @@ onMounted(() => {
               </el-tag>
             </span>
           </div>
-          
-          <div class="feedback-section" v-if="replyContent">
+
+          <div v-if="replyContent" class="feedback-section">
             <div class="section-title">回复内容</div>
             <div class="reply-content">{{ replyContent }}</div>
           </div>
-          
-          <div class="feedback-meta" v-if="replyContent">
+
+          <div v-if="replyContent" class="feedback-meta">
             <span class="meta-item">
               <span class="meta-label">回复时间：</span>
               <span class="meta-value">{{ updateTime }}</span>

@@ -1,4 +1,4 @@
-import TablerReportAnalytics from '~icons/tabler/report-analytics';
+import TablerReportAnalytics from "~icons/tabler/report-analytics";
 
 export default {
   path: "/report",

@@ -27,15 +27,21 @@ type CategoryQuery = {
 };
 
 export const getCategoryList = (userId: number) => {
-  return http.request<Result<CategoryVO[]>>("post", "/api/category/list", { data: { userId } });
+  return http.request<Result<CategoryVO[]>>("post", "/api/category/list", {
+    data: { userId }
+  });
 };
 
 export const insertCategory = (categoryDTO: CategoryDTO) => {
-  return http.request<Result<void>>("post", "/api/category/insert", { data: categoryDTO });
+  return http.request<Result<void>>("post", "/api/category/insert", {
+    data: categoryDTO
+  });
 };
 
 export const updateCategory = (categoryDTO: CategoryDTO) => {
-  return http.request<Result<void>>("post", "/api/category/update", { data: categoryDTO });
+  return http.request<Result<void>>("post", "/api/category/update", {
+    data: categoryDTO
+  });
 };
 
 export const deleteCategory = (id: number) => {

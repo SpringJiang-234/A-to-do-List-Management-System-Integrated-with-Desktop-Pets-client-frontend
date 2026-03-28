@@ -78,7 +78,7 @@ onMounted(() => {
   emitter.on("logoChange", key => {
     showLogo.value = key;
   });
-  
+
   emitter.on("menuChange", () => {
     getSubMenuData();
   });

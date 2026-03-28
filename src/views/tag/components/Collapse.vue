@@ -74,15 +74,15 @@ const loadTags = async () => {
 
 const loadTagTodos = async (tagId: number, tagName: string) => {
   try {
-    const valueCompleted = localStorage.getItem('valueCompleted') !== 'false';
+    const valueCompleted = localStorage.getItem("valueCompleted") !== "false";
     const params: any = {
       tagIdList: [tagId]
     };
-    
+
     if (!valueCompleted) {
       params.statusList = [1];
     }
-    
+
     const response = await getTodoListByCategoryOrTag(params);
     const originalTodoList = response.data || [];
 
@@ -111,7 +111,7 @@ const loadTagTodos = async (tagId: number, tagName: string) => {
 
 function handleTodoClick(tagId: number, activity: Activity) {
   console.log("待办项被点击:", activity);
-  
+
   const tagTodos = tagTodosMap.value.get(tagId);
   if (tagTodos) {
     const todo = tagTodos.originalTodoList.find(t => t.id === activity.id);
@@ -127,18 +127,21 @@ function handleTextClick(activity: Activity) {
 }
 
 const handleSearchSettingsChanged = (event: any) => {
-  if (event.detail?.type === 'status') {
+  if (event.detail?.type === "status") {
     loadTags();
   }
 };
 
 onMounted(() => {
   loadTags();
-  window.addEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.addEventListener("searchSettingsChanged", handleSearchSettingsChanged);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('searchSettingsChanged', handleSearchSettingsChanged);
+  window.removeEventListener(
+    "searchSettingsChanged",
+    handleSearchSettingsChanged
+  );
 });
 </script>
 
@@ -154,7 +157,9 @@ onUnmounted(() => {
         <TodoList
           :activities="tagTodos.activities"
           :originalTodoList="tagTodos.originalTodoList"
-          @click="(activity: Activity) => handleTodoClick(tagTodos.tagId, activity)"
+          @click="
+            (activity: Activity) => handleTodoClick(tagTodos.tagId, activity)
+          "
           @textClick="handleTextClick"
           @refresh="() => loadTagTodos(tagTodos.tagId, tagTodos.tagName)"
         />

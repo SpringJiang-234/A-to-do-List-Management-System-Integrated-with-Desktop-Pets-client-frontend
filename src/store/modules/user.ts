@@ -7,13 +7,14 @@ import {
   routerArrays,
   storageLocal
 } from "../utils";
-import {
-  type UserResult,
-  getLogin,
-  getLogout
-} from "@/api/user";
+import { type UserResult, getLogin, getLogout } from "@/api/user";
 import { useMultiTagsStoreHook } from "./multiTags";
-import { type DataInfo, setTokenFromLogin, removeToken, userKey } from "@/utils/auth";
+import {
+  type DataInfo,
+  setTokenFromLogin,
+  removeToken,
+  userKey
+} from "@/utils/auth";
 
 export const useUserStore = defineStore("pure-user", {
   state: (): userType => ({
@@ -57,26 +58,28 @@ export const useUserStore = defineStore("pure-user", {
     },
     /** 登入 */
     async loginByUsername(data) {
-      console.log('调用登录API，参数:', data);
+      console.log("调用登录API，参数:", data);
       return new Promise((resolve, reject) => {
         getLogin(data)
           .then(data => {
-            console.log('登录API返回:', data);
+            console.log("登录API返回:", data);
             if (data?.code === 200) {
-              console.log('登录成功，用户信息:', data.data);
+              console.log("登录成功，用户信息:", data.data);
               setTokenFromLogin(data.data);
               this.SET_USERNAME(data.data.username);
               this.SET_ACCOUNT(data.data.account);
-              const avatarUrl = data.data.avatar ? data.data.avatar.split('?')[0] : '';
+              const avatarUrl = data.data.avatar
+                ? data.data.avatar.split("?")[0]
+                : "";
               this.SET_AVATAR(avatarUrl);
               this.SET_ROLES([data.data.role]);
             } else {
-              console.log('登录失败:', data?.msg);
+              console.log("登录失败:", data?.msg);
             }
             resolve(data);
           })
           .catch(error => {
-            console.error('登录API错误:', error);
+            console.error("登录API错误:", error);
             reject(error);
           });
       });
