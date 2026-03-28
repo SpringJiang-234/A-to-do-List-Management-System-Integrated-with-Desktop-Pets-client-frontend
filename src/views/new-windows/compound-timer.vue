@@ -247,6 +247,10 @@ const completeTimer = async () => {
 
   remainingTime.value = 0;
   isCompleted.value = true;
+  
+  setTimeout(() => {
+    window.close();
+  }, 2000);
 };
 
 const handleTimerComplete = async () => {
