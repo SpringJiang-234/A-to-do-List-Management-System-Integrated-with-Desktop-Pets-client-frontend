@@ -10,6 +10,8 @@ export interface DesktopPetState {
   levelValue: number;
   nickname: string;
   previousGrowthValue: number;
+  previousVitalityValue: number;
+  previousMoodValue: number;
 }
 
 export const useDesktopPetStore = defineStore("pure-desktop-pet", {
@@ -20,7 +22,9 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
     intimacyValue: 0,
     levelValue: 1,
     nickname: "",
-    previousGrowthValue: 0
+    previousGrowthValue: 0,
+    previousVitalityValue: 0,
+    previousMoodValue: 60
   } as DesktopPetState),
   actions: {
     async loadDesktopPetInfo() {
@@ -44,11 +48,51 @@ export const useDesktopPetStore = defineStore("pure-desktop-pet", {
         return true;
       }
       return false;
+    },
+    checkEnergetic() {
+      if (this.vitalityValue === 100 && this.previousVitalityValue < 100) {
+        this.previousVitalityValue = this.vitalityValue;
+        return true;
+      }
+      return false;
+    },
+    checkMoodChange() {
+      const moodChanged = this.moodValue >= 60 && this.previousMoodValue < 60;
+      const moodDecreased = this.moodValue < 60 && this.previousMoodValue >= 60;
+      
+      this.previousMoodValue = this.moodValue;
+      
+      if (moodChanged) {
+        return 'increased';
+      } else if (moodDecreased) {
+        return 'decreased';
+      }
+      return 'none';
+    },
+    getSummonAnimation() {
+      return this.intimacyValue >= 60 ? 'summon' : 'summon2';
+    },
+    getLoopAnimation() {
+      return this.moodValue >= 60 ? 'tea' : 'pointing';
+    },
+    updatePreviousValues() {
+      this.previousGrowthValue = this.growthValue;
+      this.previousVitalityValue = this.vitalityValue;
+      this.previousMoodValue = this.moodValue;
     }
   },
   getters: {
     shouldPlayUpgradeAnimation: (state) => {
       return state.growthValue >= 100 && state.previousGrowthValue < 100;
+    },
+    shouldPlayEnergeticAnimation: (state) => {
+      return state.vitalityValue === 100 && state.previousVitalityValue < 100;
+    },
+    isHighMood: (state) => {
+      return state.moodValue >= 60;
+    },
+    isHighIntimacy: (state) => {
+      return state.intimacyValue >= 60;
     }
   }
 });

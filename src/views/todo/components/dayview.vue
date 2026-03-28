@@ -5,6 +5,7 @@ import { message } from "@/utils/message";
 import { abandonTodo, completeTodo, cancelCompleteTodo, deleteTodo } from "@/api/todo";
 import dayjs from "dayjs";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 defineOptions({
   name: "DayView"
@@ -110,6 +111,7 @@ const getPriorityColor = (priority?: number) => {
 async function handleClick(activity: Activity) {
   try {
     const currentGrowth = desktopPetStore.growthValue;
+    const previousMood = desktopPetStore.moodValue;
     
     if (activity.status === 2) {
       await cancelCompleteTodo(activity.id);
@@ -121,9 +123,41 @@ async function handleClick(activity: Activity) {
       await desktopPetStore.loadDesktopPetInfo();
       message("完成待办", { type: "success" });
       
-      const newGrowth = desktopPetStore.growthValue;
-      if (newGrowth < currentGrowth) {
-        (window as any).ipcRenderer.send('play-upgrade-animation');
+      const isOverdue = activity.endDate && new Date(activity.endDate) < new Date();
+      
+      if (isOverdue) {
+        (window as any).ipcRenderer.send('play-clap-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.complete);
+      } else {
+        (window as any).ipcRenderer.send('play-good-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTime);
+      }
+      
+      if (desktopPetStore.checkUpgrade()) {
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-upgrade-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.upgrade);
+        }, 2500);
+      }
+      
+      if (desktopPetStore.checkEnergetic()) {
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-energetic-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
+        }, 2500);
+      }
+      
+      const moodChange = desktopPetStore.checkMoodChange();
+      if (moodChange === 'increased') {
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-tea-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTimeMore);
+        }, 2500);
+      } else if (moodChange === 'decreased') {
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-pointing-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.overdue);
+        }, 2500);
       }
     }
     const todo = props.originalTodoList.find(t => t.id === activity.id);
@@ -169,11 +203,15 @@ async function handleMenuAction(action: string) {
         }
         activity.status = 3;
         message("放弃待办成功", { type: "success" });
+        (window as any).ipcRenderer.send('play-abandon-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.abandon);
         break;
       case "delete":
         console.log("========== 删除待办 ==========", activity.id);
         await deleteTodo(activity.id);
         message("删除待办成功", { type: "success" });
+        (window as any).ipcRenderer.send('play-delete-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.delete);
         console.log("========== emit refresh 事件 ==========");
         emit("refresh");
         break;

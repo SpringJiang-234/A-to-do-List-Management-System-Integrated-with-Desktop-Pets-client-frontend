@@ -250,6 +250,66 @@ ipcMain.on('play-other-animation', () => {
   }
 });
 
+ipcMain.on('play-energetic-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-energetic-animation');
+  }
+});
+
+ipcMain.on('play-tea-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-tea-animation');
+  }
+});
+
+ipcMain.on('play-pointing-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-pointing-animation');
+  }
+});
+
+ipcMain.on('set-intimacy-value', (event, value: number) => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('set-intimacy-value', value);
+  }
+});
+
+ipcMain.on('set-initial-loop-animation', (event, moodValue: number) => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('set-initial-loop-animation', moodValue);
+  }
+});
+
 ipcMain.handle('close-desktop-pet', () => {
   const windows = BrowserWindow.getAllWindows();
   const desktopPetWindow = windows.find(w => {

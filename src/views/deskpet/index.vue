@@ -35,8 +35,15 @@ const originalNickname = ref("");
 const openDeskPetWindow = async () => {
   try {
     await (window as any).ipcRenderer.invoke("open-win", "new-windows");
+    
     setTimeout(() => {
-      (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.meet);
+      const message = desktopPetStore.intimacyValue >= 60 ? sakikoMessages.meet : sakikoMessages.meetUnhappy;
+      (window as any).ipcRenderer.invoke("open-win", "pop-up-window", message);
+      
+      setTimeout(() => {
+        (window as any).ipcRenderer.send('set-intimacy-value', desktopPetStore.intimacyValue);
+        (window as any).ipcRenderer.send('set-initial-loop-animation', desktopPetStore.moodValue);
+      }, 500);
     }, 1000);
   } catch (error) {
     console.error("打开桌宠窗口失败:", error);

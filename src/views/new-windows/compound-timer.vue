@@ -2,9 +2,10 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { message } from "@/utils/message";
-import { updateFocusTime } from "@/api/todo";
+import { updateFocusTime, getTodoDetails } from "@/api/todo";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 defineOptions({
   name: "CompoundTimer"
@@ -17,7 +18,9 @@ const timeValue1 = ref(route.query.timeValue1 ? new Date(route.query.timeValue1 
 const timeValue2 = ref(route.query.timeValue2 ? new Date(route.query.timeValue2 as string) : new Date("1970-01-01T00:25:00"));
 const timeValue3 = ref(route.query.timeValue3 ? new Date(route.query.timeValue3 as string) : new Date("1970-01-01T00:05:00"));
 const timeValue4 = ref(route.query.timeValue4 ? parseInt(route.query.timeValue4 as string) : 4);
+const todoId = ref(route.query.todoId ? parseInt(route.query.todoId as string) : null);
 const todoTitle = ref(route.query.todoTitle as string || "");
+const todoCategoryName = ref("");
 
 const formatTime = (timeValue: string | Date): string => {
   if (!timeValue) return "0小时0分钟0秒";
@@ -46,7 +49,44 @@ const currentCycle = ref(1);
 const isBreak = ref(false);
 const isCompleted = ref(false);
 
-onMounted(() => {
+const loadTodoDetail = async () => {
+  if (todoId.value) {
+    try {
+      const response = await getTodoDetails(todoId.value);
+      if (response.code === 200 && response.data) {
+        todoCategoryName.value = response.data.categoryName || "";
+        
+        const categoryName = todoCategoryName.value.toLowerCase();
+        let animationMessage = "";
+        
+        if (categoryName.includes("工作")) {
+          (window as any).ipcRenderer.send('play-work-animation');
+          animationMessage = sakikoMessages.workStart;
+        } else if (categoryName.includes("学习")) {
+          (window as any).ipcRenderer.send('play-study-animation');
+          animationMessage = sakikoMessages.studyStart;
+        } else if (categoryName.includes("娱乐")) {
+          (window as any).ipcRenderer.send('play-entertain-animation');
+          animationMessage = sakikoMessages.entertainStart;
+        } else {
+          (window as any).ipcRenderer.send('play-other-animation');
+        }
+        
+        if (animationMessage) {
+          setTimeout(() => {
+            (window as any).ipcRenderer.invoke("open-win", "pop-up-window", animationMessage);
+          }, 500);
+        }
+      }
+    } catch (error) {
+      console.error("获取待办详情失败:", error);
+    }
+  }
+};
+
+onMounted(async () => {
+  await loadTodoDetail();
+  
   if (valueType.value === "正计时") {
     isRunning.value = true;
     timer.value = setInterval(() => {
@@ -108,6 +148,17 @@ const stopTimer = () => {
     timer.value = null;
   }
   isRunning.value = false;
+  
+  const categoryName = todoCategoryName.value.toLowerCase();
+  if (categoryName.includes("工作")) {
+    (window as any).ipcRenderer.send('play-tea-animation');
+  } else if (categoryName.includes("学习")) {
+    (window as any).ipcRenderer.send('play-tea-animation');
+  } else if (categoryName.includes("娱乐")) {
+    (window as any).ipcRenderer.send('play-tea-animation');
+  } else {
+    (window as any).ipcRenderer.send('play-tea-animation');
+  }
 };
 
 const resetTimer = () => {

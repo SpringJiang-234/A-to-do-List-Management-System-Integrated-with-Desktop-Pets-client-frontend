@@ -87,9 +87,6 @@ async function handleClick(activity: Activity) {
       await desktopPetStore.loadDesktopPetInfo();
       message("完成待办", { type: "success" });
       
-      const newGrowth = desktopPetStore.growthValue;
-      console.log("旧成长值:", currentGrowth, "新成长值:", newGrowth, "是否升级:", newGrowth < currentGrowth);
-      
       const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf('day'));
       if (isOverdue) {
         (window as any).ipcRenderer.send('play-clap-animation');
@@ -99,13 +96,31 @@ async function handleClick(activity: Activity) {
         (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTime);
       }
       
-      if (newGrowth < currentGrowth) {
-        console.log("发送升级动画事件");
-        (window as any).ipcRenderer.send('set-upgrading', true);
+      if (desktopPetStore.checkUpgrade()) {
         setTimeout(() => {
           (window as any).ipcRenderer.send('play-upgrade-animation');
           (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.upgrade);
-        }, 3000);
+        }, 2500);
+      }
+      
+      if (desktopPetStore.checkEnergetic()) {
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-energetic-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
+        }, 2500);
+      }
+      
+      const moodChange = desktopPetStore.checkMoodChange();
+      if (moodChange === 'increased') {
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-tea-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.onTimeMore);
+        }, 2500);
+      } else if (moodChange === 'decreased') {
+        setTimeout(() => {
+          (window as any).ipcRenderer.send('play-pointing-animation');
+          (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.overdue);
+        }, 2500);
       }
     }
     emit("click", activity);

@@ -135,6 +135,9 @@ const handleSubmit = async () => {
       message("用户信息不存在，请重新登录", { type: "error" });
       return;
     }
+    
+    const previousVitality = desktopPetStore.vitalityValue;
+    
     await insertTodo({
       userId: userInfo.id,
       title: todoForm.value.title,
@@ -150,6 +153,13 @@ const handleSubmit = async () => {
     
     (window as any).ipcRenderer.send('play-good-animation');
     (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.newTodo);
+    
+    if (desktopPetStore.checkEnergetic()) {
+      setTimeout(() => {
+        (window as any).ipcRenderer.send('play-energetic-animation');
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
+      }, 2500);
+    }
     
     message("添加成功", { type: "success" });
     router.back();
