@@ -154,49 +154,71 @@ async function handleClick(activity: Activity) {
         );
       }
 
+      let animationPromise = Promise.resolve();
+
       if (desktopPetStore.levelValue > previousLevel) {
-        setTimeout(() => {
-          (window as any).ipcRenderer.send("play-upgrade-animation");
-          (window as any).ipcRenderer.invoke(
-            "open-win",
-            "pop-up-window",
-            sakikoMessages.upgrade
-          );
-        }, 2500);
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-upgrade-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.upgrade
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
       }
 
       if (desktopPetStore.vitalityValue === 100 && previousVitality < 100) {
-        setTimeout(() => {
-          (window as any).ipcRenderer.send("play-energetic-animation");
-          (window as any).ipcRenderer.invoke(
-            "open-win",
-            "pop-up-window",
-            sakikoMessages.energetic
-          );
-        }, 2500);
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-energetic-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.energetic
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
       }
 
       const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
       const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
 
       if (moodChanged) {
-        setTimeout(() => {
-          (window as any).ipcRenderer.send("play-tea-animation");
-          (window as any).ipcRenderer.invoke(
-            "open-win",
-            "pop-up-window",
-            sakikoMessages.onTimeMore
-          );
-        }, 2500);
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-tea-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.onTimeMore
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
       } else if (moodDecreased) {
-        setTimeout(() => {
-          (window as any).ipcRenderer.send("play-pointing-animation");
-          (window as any).ipcRenderer.invoke(
-            "open-win",
-            "pop-up-window",
-            sakikoMessages.overdue
-          );
-        }, 2500);
+        animationPromise = animationPromise.then(() => {
+          return new Promise<void>(resolve => {
+            setTimeout(() => {
+              (window as any).ipcRenderer.send("play-pointing-animation");
+              (window as any).ipcRenderer.invoke(
+                "open-win",
+                "pop-up-window",
+                sakikoMessages.overdue
+              );
+              setTimeout(resolve, 3500);
+            }, 0);
+          });
+        });
       }
     }
     const todo = props.originalTodoList.find(t => t.id === activity.id);

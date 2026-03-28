@@ -188,18 +188,20 @@ const handleSubmit = async () => {
     });
     await desktopPetStore.loadDesktopPetInfo();
 
-    (window as any).ipcRenderer.send("play-good-animation");
-    (window as any).ipcRenderer.invoke(
-      "open-win",
-      "pop-up-window",
-      sakikoMessages.newTodo
-    );
+    setTimeout(() => {
+      (window as any).ipcRenderer.send("play-good-animation");
+      (window as any).ipcRenderer.invoke(
+        "open-win",
+        "pop-up-window",
+        sakikoMessages.newTodo
+      );
+    }, 500);
 
     if (desktopPetStore.vitalityValue === 100 && previousVitality < 100) {
       setTimeout(() => {
-        (window as any).ipcRenderer.send('play-energetic-animation');
+        (window as any).ipcRenderer.send("play-energetic-animation");
         (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.energetic);
-      }, 2500);
+      }, 3000);
     }
 
     message("添加成功", { type: "success" });
