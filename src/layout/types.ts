@@ -5,11 +5,11 @@ export const routerArrays: Array<RouteConfigs> =
   VITE_HIDE_HOME === "false"
     ? [
         {
-          path: "/welcome",
-          name: "Welcome",
+          path: "/todo/index",
+          name: "Todo",
           meta: {
-            title: "首页",
-            icon: "ep/home-filled"
+            title: "待办",
+            icon: "ri:todo-fill"
           }
         }
       ]
