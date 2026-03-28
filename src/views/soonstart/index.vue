@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { message } from "@/utils/message";
-import { ref, onMounted } from "vue";
-import SearchCard from "@/components/SearchCard.vue";
+import { ref, onMounted, watch } from "vue";
 import GameIconsTomato from "~icons/game-icons/tomato?width=16px&height=16px";
 import StreamlineSharpResetClockSolid from "~icons/streamline-sharp/reset-clock-solid?width=16px&height=16px";
 import MeteorIconsClockRotate from "~icons/meteor-icons/clock-rotate?width=16px&height=16px";
-import { useTodoStore } from "@/store/modules/todo";
-import { watch } from "vue";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 
@@ -14,16 +11,11 @@ defineOptions({
   name: "Soonstart"
 });
 
-const todoStore = useTodoStore();
 const todoId = ref<number | null>(null);
 const searchResults = ref<any[]>([]);
 
 const loadSearchResults = async () => {
-  console.log("loadSearchResults 被调用");
-  console.log("todoStore.filter:", todoStore.filter);
-
   const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
-  console.log("userInfo:", userInfo);
 
   if (!userInfo?.id) {
     console.error("用户信息不存在");
@@ -39,45 +31,12 @@ const loadSearchResults = async () => {
       },
       body: JSON.stringify({
         userId: userInfo.id,
-        title: todoStore.filter.title,
-        content: todoStore.filter.content,
-        categoryIdList: todoStore.filter.categories.map((cat: string) =>
-          parseInt(cat)
-        ),
-        tagIdList: todoStore.filter.tags.map((tag: string) => parseInt(tag)),
-        priorityList: todoStore.filter.priorities.map((prio: string) =>
-          parseInt(prio)
-        ),
-        statusList: todoStore.filter.status.map((stat: string) =>
-          parseInt(stat)
-        ),
-        isTopList: todoStore.filter.isTop.map((top: string) => parseInt(top))
+        statusList: [1]
       })
     });
     const data = await response.json();
-    console.log("API 响应:", data);
     if (data.code === 200) {
       searchResults.value = data.data || [];
-
-      // 过滤连续任务
-      if (
-        todoStore.filter.isContinuous &&
-        todoStore.filter.isContinuous.length > 0 &&
-        todoStore.filter.isContinuous.length < 2
-      ) {
-        const isContinuousTask = todoStore.filter.isContinuous.includes("1");
-        searchResults.value = searchResults.value.filter(todo => {
-          const startTime = todo.startTime
-            ? new Date(todo.startTime).getTime()
-            : 0;
-          const endTime = todo.endTime ? new Date(todo.endTime).getTime() : 0;
-          const isContinuous = startTime !== endTime;
-          return isContinuousTask ? isContinuous : !isContinuous;
-        });
-      }
-
-      console.log("搜索结果:", searchResults.value);
-      console.log("searchResults.value.length:", searchResults.value.length);
     } else {
       console.error("API 返回错误:", data.msg);
     }
@@ -86,19 +45,7 @@ const loadSearchResults = async () => {
   }
 };
 
-watch(
-  () => todoStore.filter,
-  () => {
-    console.log("todoStore.filter 发生变化");
-    searchResults.value = [];
-    loadSearchResults();
-  },
-  { deep: true }
-);
-
 onMounted(() => {
-  console.log("onMounted 被调用");
-  todoStore.filter.status = ["1"];
   loadSearchResults();
 });
 
@@ -249,7 +196,6 @@ const options = [
         />
       </div>
     </el-card>
-    <SearchCard :show-time-view-button="false" />
     <!-- 单选待办 -->
     <el-card shadow="never">
       <template #header> 第一步：选择要计时的待办 </template>
