@@ -18,6 +18,12 @@ import otherGifPath from "@/assets/images/丰川祥子-其他循环.gif";
 import sakikoMessages from "@/constants/sakiko-messages.json";
 import handIcon from "@/assets/svg/ooui--hand.svg?url";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
+import { AnimationType, LoopAnimationType, AnimationTask } from "@/types/animation";
+import {
+  createCompleteTodoOnTimeAnimationSequence,
+  createCompleteTodoOverdueAnimationSequence,
+  createNewTodoAnimationSequence
+} from "@/utils/animationSequences";
 
 defineOptions({
   name: "DesktopPetWindow"
@@ -31,15 +37,6 @@ enum AnimationState {
   ONE_TIME = "one_time"
 }
 
-enum LoopAnimationType {
-  TEA = "tea",
-  POINTING = "pointing",
-  WORK = "work",
-  STUDY = "study",
-  ENTERTAIN = "entertain",
-  OTHER = "other"
-}
-
 const currentGif = ref("");
 const isFading = ref(false);
 const isUpgrading = ref(false);
@@ -49,6 +46,9 @@ const previousLoopAnimation = ref(LoopAnimationType.TEA);
 const isPlayingOneTimeAnimation = ref(false);
 const intimacyValue = ref(60);
 const hasInitializedSummon = ref(false);
+
+const animationQueue = ref<AnimationTask[]>([]);
+const isQueueProcessing = ref(false);
 
 const setSummonAnimation = () => {
   const summonGif = intimacyValue.value >= 60 ? summonGifPath : summon2GifPath;
@@ -76,6 +76,98 @@ const getLoopAnimationGif = (type: LoopAnimationType): string => {
   }
 };
 
+const addToQueue = (task: AnimationTask) => {
+  animationQueue.value.push(task);
+  if (!isQueueProcessing.value) {
+    processQueue();
+  }
+};
+
+const processQueue = async () => {
+  if (isQueueProcessing.value || animationQueue.value.length === 0) {
+    return;
+  }
+
+  isQueueProcessing.value = true;
+
+  while (animationQueue.value.length > 0) {
+    const task = animationQueue.value.shift();
+    if (!task) break;
+
+    await playAnimationTask(task);
+  }
+
+  isQueueProcessing.value = false;
+};
+
+const playAnimationTask = (task: AnimationTask): Promise<void> => {
+  return new Promise(resolve => {
+    const duration = task.duration || 2000;
+
+    if (task.type === AnimationType.UPGRADE) {
+      playUpgradeAnimationInternal(resolve);
+    } else if (task.type === AnimationType.LOOP) {
+      if (task.loopType) {
+        currentLoopAnimation.value = task.loopType;
+      }
+      const loopGif = getLoopAnimationGif(currentLoopAnimation.value);
+      playAnimation(loopGif, () => {
+        if (task.callback) task.callback();
+        resolve();
+      });
+    } else {
+      playOneTimeAnimationInternal(task.gifPath, duration, () => {
+        if (task.callback) task.callback();
+        resolve();
+      });
+    }
+  });
+};
+
+const playOneTimeAnimationInternal = (
+  gifPath: string,
+  duration: number,
+  callback: () => void
+) => {
+  isPlayingOneTimeAnimation.value = true;
+  animationState.value = AnimationState.ONE_TIME;
+
+  playAnimation(gifPath, () => {
+    setTimeout(() => {
+      isPlayingOneTimeAnimation.value = false;
+      animationState.value = AnimationState.LOOP;
+      returnToLoopAnimation();
+      callback();
+    }, duration);
+  });
+};
+
+const playUpgradeAnimationInternal = (callback: () => void) => {
+  isUpgrading.value = true;
+  isFading.value = true;
+  setTimeout(() => {
+    currentGif.value = "";
+    setTimeout(() => {
+      currentGif.value = upgradeGifPath;
+      setTimeout(() => {
+        isFading.value = false;
+        setTimeout(() => {
+          isFading.value = true;
+          setTimeout(() => {
+            const loopGif = getLoopAnimationGif(currentLoopAnimation.value);
+            currentGif.value = loopGif;
+            setTimeout(() => {
+              isFading.value = false;
+              isUpgrading.value = false;
+              callback();
+            }, 400);
+          }, 400);
+        }, 2000);
+      }, 400);
+    }, 400);
+  }, 400);
+};
+
 const playAnimation = (gifPath: string, callback?: () => void) => {
   if (isUpgrading.value) {
     isFading.value = true;
@@ -99,23 +191,11 @@ const playAnimation = (gifPath: string, callback?: () => void) => {
   }
 };
 
-const playOneTimeAnimation = (gifPath: string, callback?: () => void) => {
-  if (isPlayingOneTimeAnimation.value) {
-    return;
-  }
-
-  isPlayingOneTimeAnimation.value = true;
-  animationState.value = AnimationState.ONE_TIME;
-
-  playAnimation(gifPath, () => {
-    setTimeout(() => {
-      isPlayingOneTimeAnimation.value = false;
-      animationState.value = AnimationState.LOOP;
-      returnToLoopAnimation();
-      if (callback) {
-        callback();
-      }
-    }, 2000);
+const playOneTimeAnimation = (gifPath: string, duration?: number) => {
+  addToQueue({
+    gifPath,
+    type: AnimationType.ONE_TIME,
+    duration
   });
 };
 
@@ -134,36 +214,19 @@ const switchLoopAnimation = (newType: LoopAnimationType) => {
   previousLoopAnimation.value = currentLoopAnimation.value;
   currentLoopAnimation.value = newType;
 
-  if (!isPlayingOneTimeAnimation.value && !isUpgrading.value) {
-    const loopGif = getLoopAnimationGif(newType);
-    playAnimation(loopGif);
-  }
+  addToQueue({
+    gifPath: "",
+    type: AnimationType.LOOP,
+    loopType: newType
+  });
 };
 
 const playUpgradeAnimation = () => {
   console.log("========== 收到升级动画事件 ==========");
-  isUpgrading.value = true;
-  isFading.value = true;
-  setTimeout(() => {
-    currentGif.value = "";
-    setTimeout(() => {
-      currentGif.value = upgradeGifPath;
-      setTimeout(() => {
-        isFading.value = false;
-        setTimeout(() => {
-          isFading.value = true;
-          setTimeout(() => {
-            const loopGif = getLoopAnimationGif(currentLoopAnimation.value);
-            currentGif.value = loopGif;
-            setTimeout(() => {
-              isFading.value = false;
-              isUpgrading.value = false;
-            }, 400);
-          }, 400);
-        }, 2000);
-      }, 400);
-    }, 400);
-  }, 400);
+  addToQueue({
+    gifPath: upgradeGifPath,
+    type: AnimationType.UPGRADE
+  });
 };
 
 const playClapAnimation = () => {
@@ -226,14 +289,65 @@ const playPointingAnimation = () => {
   switchLoopAnimation(LoopAnimationType.POINTING);
 };
 
+const playCompleteTodoOnTimeAnimation = (
+  isEnergetic: boolean,
+  isUpgrade: boolean,
+  isMoodIncreased: boolean
+) => {
+  console.log("========== 收到完成待办按时动画事件 ==========");
+  const sequence = createCompleteTodoOnTimeAnimationSequence(
+    goodGifPath,
+    energeticGifPath,
+    upgradeGifPath,
+    teaGifPath,
+    isEnergetic,
+    isUpgrade,
+    isMoodIncreased
+  );
+  sequence.forEach(task => addToQueue(task));
+};
+
+const playCompleteTodoOverdueAnimation = (
+  isEnergetic: boolean,
+  isUpgrade: boolean,
+  isMoodDecreased: boolean
+) => {
+  console.log("========== 收到完成待办逾期动画事件 ==========");
+  const sequence = createCompleteTodoOverdueAnimationSequence(
+    clapGifPath,
+    energeticGifPath,
+    upgradeGifPath,
+    pointingGifPath,
+    isEnergetic,
+    isUpgrade,
+    isMoodDecreased
+  );
+  sequence.forEach(task => addToQueue(task));
+};
+
+const playNewTodoAnimation = (isEnergetic: boolean) => {
+  console.log("========== 收到新建待办动画事件 ==========");
+  const sequence = createNewTodoAnimationSequence(
+    goodGifPath,
+    energeticGifPath,
+    isEnergetic
+  );
+  sequence.forEach(task => addToQueue(task));
+};
+
 const handleIntimateClick = () => {
   console.log("========== 左键点击桌宠 ==========");
-  playOneTimeAnimation(intimateGifPath);
-  (window as any).ipcRenderer.invoke(
-    "open-win",
-    "pop-up-window",
-    sakikoMessages.intimate
-  );
+  addToQueue({
+    gifPath: intimateGifPath,
+    type: AnimationType.ONE_TIME,
+    callback: () => {
+      (window as any).ipcRenderer.invoke(
+        "open-win",
+        "pop-up-window",
+        sakikoMessages.intimate
+      );
+    }
+  });
 };
 
 const setIntimacyValue = (value: number) => {
@@ -277,6 +391,38 @@ onMounted(() => {
   (window as any).ipcRenderer.on(
     "play-pointing-animation",
     playPointingAnimation
+  );
+  (window as any).ipcRenderer.on(
+    "play-complete-todo-on-time-animation",
+    (
+      event,
+      isEnergetic: boolean,
+      isUpgrade: boolean,
+      isMoodIncreased: boolean
+    ) => {
+      playCompleteTodoOnTimeAnimation(isEnergetic, isUpgrade, isMoodIncreased);
+    }
+  );
+  (window as any).ipcRenderer.on(
+    "play-complete-todo-overdue-animation",
+    (
+      event,
+      isEnergetic: boolean,
+      isUpgrade: boolean,
+      isMoodDecreased: boolean
+    ) => {
+      playCompleteTodoOverdueAnimation(
+        isEnergetic,
+        isUpgrade,
+        isMoodDecreased
+      );
+    }
+  );
+  (window as any).ipcRenderer.on(
+    "play-new-todo-animation",
+    (event, isEnergetic: boolean) => {
+      playNewTodoAnimation(isEnergetic);
+    }
   );
   (window as any).ipcRenderer.on(
     "set-upgrading",
@@ -360,6 +506,18 @@ onUnmounted(() => {
   (window as any).ipcRenderer.removeListener(
     "play-pointing-animation",
     playPointingAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-complete-todo-on-time-animation",
+    playCompleteTodoOnTimeAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-complete-todo-overdue-animation",
+    playCompleteTodoOverdueAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-new-todo-animation",
+    playNewTodoAnimation
   );
 });
 </script>
