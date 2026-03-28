@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getTodoDetails, updateTodo } from "@/api/todo";
+import { getTodoDetails, updateTodo, deleteTodo } from "@/api/todo";
 import { getCategoryList } from "@/api/category";
 import { getTagList } from "@/api/tag";
 import { message } from "@/utils/message";
@@ -10,6 +10,7 @@ import { storageLocal } from "@pureadmin/utils";
 import { Close } from "@element-plus/icons-vue";
 import Vditor from "./components/Vditor.vue";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
+import sakikoMessages from "@/constants/sakiko-messages.json";
 
 defineOptions({
   name: "TodoDetail"
@@ -197,6 +198,19 @@ const handleCancel = () => {
   fetchTodoDetails();
 };
 
+const handleDelete = async () => {
+  try {
+    await deleteTodo(todoForm.value.id);
+    (window as any).ipcRenderer.send('play-delete-animation');
+    (window as any).ipcRenderer.invoke("open-win", "pop-up-window", sakikoMessages.delete);
+    message("删除成功", { type: "success" });
+    router.back();
+  } catch (error) {
+    console.error("删除待办失败:", error);
+    message("删除失败，请重试", { type: "error" });
+  }
+};
+
 const handleClose = () => {
   router.back();
 };
@@ -380,6 +394,9 @@ watch(
             </el-button>
             <el-button @click="handleCancel">
               取消
+            </el-button>
+            <el-button type="danger" @click="handleDelete">
+              删除
             </el-button>
           </div>
         </div>
