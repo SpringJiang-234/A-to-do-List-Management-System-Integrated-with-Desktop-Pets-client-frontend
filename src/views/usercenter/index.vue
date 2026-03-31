@@ -21,11 +21,19 @@ const avatar = ref("");
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const newPassword = ref("");
 const confirmPassword = ref("");
+const userId = ref("");
 
 const genderText = computed(() => {
   if (gender.value === "1") return "男";
   if (gender.value === "2") return "女";
   return "未知";
+});
+
+const formattedUserId = computed(() => {
+  if (!userId.value) return "";
+  const idNum = parseInt(userId.value);
+  if (isNaN(idNum)) return "";
+  return idNum.toString().padStart(6, "0");
 });
 
 const handleEdit = () => {
@@ -153,6 +161,7 @@ const loadUserInfo = async () => {
       avatar.value = result.data.avatar
         ? result.data.avatar.split("?")[0]
         : circleUrl;
+      userId.value = result.data.id ? result.data.id.toString() : "";
     }
   } catch (error) {
     console.error("获取用户信息失败:", error);
@@ -208,6 +217,7 @@ onMounted(() => {
         >
           <el-avatar size="large" :src="avatar" @click="handleAvatarClick" />
         </el-tooltip>
+        <div v-if="formattedUserId" class="user-id">ID：{{ formattedUserId }}</div>
       </div>
       <div class="form-item">
         <el-tooltip
@@ -324,8 +334,15 @@ onMounted(() => {
 <style scoped>
 .avatar-wrapper {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.user-id {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #909399;
 }
 
 .form-item {
