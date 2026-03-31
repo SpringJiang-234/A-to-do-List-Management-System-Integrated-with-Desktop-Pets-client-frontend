@@ -190,11 +190,13 @@ const handleSubmit = async () => {
 
     const isEnergetic =
       desktopPetStore.vitalityValue === 100 && previousVitality < 100;
+    const isHighMood = desktopPetStore.moodValue >= 60;
 
     setTimeout(() => {
       (window as any).ipcRenderer.send(
         "play-new-todo-animation",
         isEnergetic,
+        isHighMood,
         {
           newTodo: sakikoMessages.newTodo,
           energetic: sakikoMessages.energetic

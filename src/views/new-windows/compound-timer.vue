@@ -73,30 +73,16 @@ const loadTodoDetail = async () => {
         todoCategoryName.value = response.data.categoryName || "";
 
         const categoryName = todoCategoryName.value.toLowerCase();
-        let animationMessage = "";
 
-        if (categoryName.includes("工作")) {
-          (window as any).ipcRenderer.send("play-work-animation");
-          animationMessage = sakikoMessages.workStart;
-        } else if (categoryName.includes("学习")) {
-          (window as any).ipcRenderer.send("play-study-animation");
-          animationMessage = sakikoMessages.studyStart;
-        } else if (categoryName.includes("娱乐")) {
-          (window as any).ipcRenderer.send("play-entertain-animation");
-          animationMessage = sakikoMessages.entertainStart;
-        } else {
-          (window as any).ipcRenderer.send("play-other-animation");
-        }
-
-        if (animationMessage) {
-          setTimeout(() => {
-            (window as any).ipcRenderer.invoke(
-              "open-win",
-              "pop-up-window",
-              animationMessage
-            );
-          }, 500);
-        }
+      if (categoryName.includes("工作")) {
+        (window as any).ipcRenderer.send("play-work-animation");
+      } else if (categoryName.includes("学习")) {
+        (window as any).ipcRenderer.send("play-study-animation");
+      } else if (categoryName.includes("娱乐")) {
+        (window as any).ipcRenderer.send("play-entertain-animation");
+      } else {
+        (window as any).ipcRenderer.send("play-other-animation");
+      }
       }
     } catch (error) {
       console.error("获取待办详情失败:", error);

@@ -20,6 +20,7 @@ export const createCompleteTodoOnTimeAnimationSequence = (
   sequence.push({
     gifPath: goodGifPath,
     type: AnimationType.ONE_TIME,
+    duration: 2000,
     message: messages.complete
   });
 
@@ -27,6 +28,7 @@ export const createCompleteTodoOnTimeAnimationSequence = (
     sequence.push({
       gifPath: energeticGifPath,
       type: AnimationType.ONE_TIME,
+      duration: 2500,
       message: messages.energetic
     });
   }
@@ -39,14 +41,12 @@ export const createCompleteTodoOnTimeAnimationSequence = (
     });
   }
 
-  if (isMoodIncreased) {
-    sequence.push({
-      gifPath: "",
-      type: AnimationType.LOOP,
-      loopType: LoopAnimationType.TEA,
-      message: messages.onTimeMore
-    });
-  }
+  sequence.push({
+    gifPath: "",
+    type: AnimationType.LOOP,
+    loopType: LoopAnimationType.TEA,
+    message: isMoodIncreased ? messages.onTimeMore : undefined
+  });
 
   return sequence;
 };
@@ -71,6 +71,7 @@ export const createCompleteTodoOverdueAnimationSequence = (
   sequence.push({
     gifPath: clapGifPath,
     type: AnimationType.ONE_TIME,
+    duration: 2000,
     message: messages.complete
   });
 
@@ -78,6 +79,7 @@ export const createCompleteTodoOverdueAnimationSequence = (
     sequence.push({
       gifPath: energeticGifPath,
       type: AnimationType.ONE_TIME,
+      duration: 2500,
       message: messages.energetic
     });
   }
@@ -90,14 +92,12 @@ export const createCompleteTodoOverdueAnimationSequence = (
     });
   }
 
-  if (isMoodDecreased) {
-    sequence.push({
-      gifPath: "",
-      type: AnimationType.LOOP,
-      loopType: LoopAnimationType.POINTING,
-      message: messages.overdue
-    });
-  }
+  sequence.push({
+    gifPath: "",
+    type: AnimationType.LOOP,
+    loopType: LoopAnimationType.POINTING,
+    message: isMoodDecreased ? messages.overdue : undefined
+  });
 
   return sequence;
 };
@@ -106,6 +106,7 @@ export const createNewTodoAnimationSequence = (
   goodGifPath: string,
   energeticGifPath: string,
   isEnergetic: boolean,
+  isHighMood: boolean,
   messages: {
     newTodo: string;
     energetic: string;
@@ -116,6 +117,7 @@ export const createNewTodoAnimationSequence = (
   sequence.push({
     gifPath: goodGifPath,
     type: AnimationType.ONE_TIME,
+    duration: 2000,
     message: messages.newTodo
   });
 
@@ -123,9 +125,17 @@ export const createNewTodoAnimationSequence = (
     sequence.push({
       gifPath: energeticGifPath,
       type: AnimationType.ONE_TIME,
+      duration: 2500,
       message: messages.energetic
     });
   }
+
+  sequence.push({
+    gifPath: "",
+    type: AnimationType.LOOP,
+    loopType: isHighMood ? LoopAnimationType.TEA : LoopAnimationType.POINTING,
+    message: undefined
+  });
 
   return sequence;
 };

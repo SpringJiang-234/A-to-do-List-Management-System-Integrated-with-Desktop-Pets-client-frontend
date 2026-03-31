@@ -214,7 +214,7 @@ ipcMain.on('play-work-animation', () => {
   }
 });
 
-ipcMain.on('play-study-animation', () => {
+ipcMain.on('play-new-todo-animation', (event, isEnergetic: boolean, isHighMood: boolean, messages: any) => {
   const windows = BrowserWindow.getAllWindows();
   const desktopPetWindow = windows.find(w => {
     const url = w.webContents.getURL();
@@ -222,7 +222,7 @@ ipcMain.on('play-study-animation', () => {
   });
   
   if (desktopPetWindow) {
-    desktopPetWindow.webContents.send('play-study-animation');
+    desktopPetWindow.webContents.send('play-new-todo-animation', isEnergetic, isHighMood, messages);
   }
 });
 
@@ -235,6 +235,18 @@ ipcMain.on('play-entertain-animation', () => {
   
   if (desktopPetWindow) {
     desktopPetWindow.webContents.send('play-entertain-animation');
+  }
+});
+
+ipcMain.on('play-study-animation', () => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-study-animation');
   }
 });
 
@@ -280,6 +292,35 @@ ipcMain.on('play-pointing-animation', () => {
     const url = w.webContents.getURL();
     return url && (url.includes('new-windows') || url.includes('#/new-windows'));
   });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-pointing-animation');
+  }
+});
+
+ipcMain.on('play-complete-todo-on-time-animation', (event, isEnergetic: boolean, isUpgrade: boolean, isMoodIncreased: boolean, messages: any) => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-complete-todo-on-time-animation', isEnergetic, isUpgrade, isMoodIncreased, messages);
+  }
+});
+
+ipcMain.on('play-complete-todo-overdue-animation', (event, isEnergetic: boolean, isUpgrade: boolean, isMoodDecreased: boolean, messages: any) => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-complete-todo-overdue-animation', isEnergetic, isUpgrade, isMoodDecreased, messages);
+  }
+});
   
   if (desktopPetWindow) {
     desktopPetWindow.webContents.send('play-pointing-animation');
@@ -398,7 +439,7 @@ const appMenu = (fullscreenLabel: string) => {
 };
 
 // 创建弹窗窗口
-function createPopUpWindow(message?: string) {
+function createPopUpWindow(message?: string, duration: number = 3000) {
   const windows = BrowserWindow.getAllWindows();
   console.log("所有窗口信息:", windows.map(w => ({
     title: w.getTitle(),
@@ -442,9 +483,9 @@ function createPopUpWindow(message?: string) {
   childWindow.setIgnoreMouseEvents(true);
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#/pop-up-window?message=${encodeURIComponent(message || '')}`);
+    childWindow.loadURL(`${url}#/pop-up-window?message=${encodeURIComponent(message || '')}&duration=${duration}`);
   } else {
-    childWindow.loadFile(indexHtml, { hash: `pop-up-window?message=${encodeURIComponent(message || '')}` });
+    childWindow.loadFile(indexHtml, { hash: `pop-up-window?message=${encodeURIComponent(message || '')}&duration=${duration}` });
   }
   
   childWindow.once('ready-to-show', () => {
@@ -497,13 +538,13 @@ function createPopUpWindow(message?: string) {
 }
 
 // New window example arg: new windows url
-ipcMain.handle("open-win", (_, arg, message?: string) => {
+ipcMain.handle("open-win", (_, arg, message?: string, duration?: number) => {
   const isTransparent = arg === "new-windows";
   const isPopUpWindow = arg === "pop-up-window";
   const isCompoundTimer = arg.startsWith("compound-timer");
   
   if (isPopUpWindow) {
-    return createPopUpWindow(message);
+    return createPopUpWindow(message, duration);
   }
   
   const childWindow = new BrowserWindow({
