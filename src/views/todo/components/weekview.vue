@@ -212,8 +212,7 @@ const handleMenuAction = async (action: string) => {
           await desktopPetStore.loadDesktopPetInfo();
           message("完成待办", { type: "success" });
 
-          const isOverdue =
-            activity.endDate && new Date(activity.endDate) < new Date();
+          const isOverdue = activity.endDate && new Date(activity.endDate) < new Date();
 
           const isEnergetic =
             desktopPetStore.vitalityValue === 100 && previousVitality < 100;
@@ -224,83 +223,41 @@ const handleMenuAction = async (action: string) => {
             desktopPetStore.moodValue < 60 && previousMood >= 60;
 
           if (isOverdue) {
-            (window as any).ipcRenderer.send("play-clap-animation");
             (window as any).ipcRenderer.invoke(
               "open-win",
               "pop-up-window",
               sakikoMessages.complete
             );
+            (window as any).ipcRenderer.send(
+              "play-complete-todo-overdue-animation",
+              isEnergetic,
+              isUpgrade,
+              moodDecreased,
+              {
+                complete: sakikoMessages.complete,
+                energetic: sakikoMessages.energetic,
+                upgrade: sakikoMessages.upgrade,
+                overdue: sakikoMessages.overdue
+              }
+            );
           } else {
-            (window as any).ipcRenderer.send("play-good-animation");
             (window as any).ipcRenderer.invoke(
               "open-win",
               "pop-up-window",
               sakikoMessages.onTime
             );
-          }
-
-          let animationPromise = Promise.resolve();
-
-          if (isUpgrade) {
-            animationPromise = animationPromise.then(() => {
-              return new Promise<void>(resolve => {
-                setTimeout(() => {
-                  (window as any).ipcRenderer.send("play-upgrade-animation");
-                  (window as any).ipcRenderer.invoke(
-                    "open-win",
-                    "pop-up-window",
-                    sakikoMessages.upgrade
-                  );
-                  setTimeout(resolve, 3500);
-                }, 0);
-              });
-            });
-          }
-
-          if (isEnergetic) {
-            animationPromise = animationPromise.then(() => {
-              return new Promise<void>(resolve => {
-                setTimeout(() => {
-                  (window as any).ipcRenderer.send("play-energetic-animation");
-                  (window as any).ipcRenderer.invoke(
-                    "open-win",
-                    "pop-up-window",
-                    sakikoMessages.energetic
-                  );
-                  setTimeout(resolve, 3500);
-                }, 0);
-              });
-            });
-          }
-
-          if (moodChanged) {
-            animationPromise = animationPromise.then(() => {
-              return new Promise<void>(resolve => {
-                setTimeout(() => {
-                  (window as any).ipcRenderer.send("play-tea-animation");
-                  (window as any).ipcRenderer.invoke(
-                    "open-win",
-                    "pop-up-window",
-                    sakikoMessages.onTimeMore
-                  );
-                  setTimeout(resolve, 3500);
-                }, 0);
-              });
-            });
-          } else if (moodDecreased) {
-            animationPromise = animationPromise.then(() => {
-              return new Promise<void>(resolve => {
-                setTimeout(() => {
-                  (window as any).ipcRenderer.send("play-pointing-animation");
-                  (window as any).ipcRenderer.invoke(
-                    "open-win",
-                    "pop-up-window",
-                    sakikoMessages.overdue
-                  );
-                  setTimeout(resolve, 3500);
-                }, 0);
-              });
-            });
+            (window as any).ipcRenderer.send(
+              "play-complete-todo-on-time-animation",
+              isEnergetic,
+              isUpgrade,
+              moodChanged,
+              {
+                complete: sakikoMessages.onTime,
+                energetic: sakikoMessages.energetic,
+                upgrade: sakikoMessages.upgrade,
+                onTimeMore: sakikoMessages.onTimeMore
+              }
+            );
           }
         }
         break;

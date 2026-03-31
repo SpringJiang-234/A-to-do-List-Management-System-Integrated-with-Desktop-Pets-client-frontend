@@ -461,7 +461,7 @@ const playCompleteTodoOnTimeAnimation = (
     messages
   );
 
-  sequence.forEach(task => addToQueue(task));
+  sequence.forEach(task => addToQueue(task, false));
 };
 
 const playCompleteTodoOverdueAnimation = (
@@ -498,7 +498,7 @@ const playCompleteTodoOverdueAnimation = (
     messages
   );
 
-  sequence.forEach(task => addToQueue(task));
+  sequence.forEach(task => addToQueue(task, false));
 };
 
 const playNewTodoAnimation = (
@@ -526,7 +526,7 @@ const playNewTodoAnimation = (
     messages
   );
 
-  sequence.forEach(task => addToQueue(task));
+  sequence.forEach(task => addToQueue(task, false));
 };
 
 const playTimerEndAnimation = (isHighMood: boolean) => {
@@ -535,7 +535,7 @@ const playTimerEndAnimation = (isHighMood: boolean) => {
   });
 
   const sequence = createTimerEndAnimationSequence(isHighMood);
-  sequence.forEach(task => addToQueue(task));
+  sequence.forEach(task => addToQueue(task, false));
 };
 
 const handleIntimateClick = () => {

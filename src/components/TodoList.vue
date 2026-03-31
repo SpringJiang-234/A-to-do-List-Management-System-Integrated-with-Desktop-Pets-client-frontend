@@ -111,84 +111,56 @@ async function handleClick(activity: Activity) {
       const moodDecreased =
         desktopPetStore.moodValue < 60 && previousMood >= 60;
 
+      console.log("========== TodoList 完成待办动画参数 ==========", {
+        previousVitality,
+        currentVitality: desktopPetStore.vitalityValue,
+        isEnergetic,
+        previousLevel,
+        currentLevel: desktopPetStore.levelValue,
+        isUpgrade,
+        previousMood,
+        currentMood: desktopPetStore.moodValue,
+        moodChanged,
+        moodDecreased,
+        isOverdue
+      });
+
       if (isOverdue) {
-        (window as any).ipcRenderer.send("play-clap-animation");
         (window as any).ipcRenderer.invoke(
           "open-win",
           "pop-up-window",
           sakikoMessages.complete
         );
+        (window as any).ipcRenderer.send(
+          "play-complete-todo-overdue-animation",
+          isEnergetic,
+          isUpgrade,
+          moodDecreased,
+          {
+            complete: sakikoMessages.complete,
+            energetic: sakikoMessages.energetic,
+            upgrade: sakikoMessages.upgrade,
+            overdue: sakikoMessages.overdue
+          }
+        );
       } else {
-        (window as any).ipcRenderer.send("play-good-animation");
         (window as any).ipcRenderer.invoke(
           "open-win",
           "pop-up-window",
           sakikoMessages.onTime
         );
-      }
-
-      let animationPromise = Promise.resolve();
-
-      if (isEnergetic) {
-        animationPromise = animationPromise.then(() => {
-          return new Promise<void>(resolve => {
-            setTimeout(() => {
-              (window as any).ipcRenderer.send("play-energetic-animation");
-              (window as any).ipcRenderer.invoke(
-                "open-win",
-                "pop-up-window",
-                sakikoMessages.energetic
-              );
-              setTimeout(resolve, 3500);
-            }, 0);
-          });
-        });
-      }
-
-      if (isUpgrade) {
-        animationPromise = animationPromise.then(() => {
-          return new Promise<void>(resolve => {
-            setTimeout(() => {
-              (window as any).ipcRenderer.send("play-upgrade-animation");
-              (window as any).ipcRenderer.invoke(
-                "open-win",
-                "pop-up-window",
-                sakikoMessages.upgrade
-              );
-              setTimeout(resolve, 3500);
-            }, 0);
-          });
-        });
-      }
-
-      if (moodChanged) {
-        animationPromise = animationPromise.then(() => {
-          return new Promise<void>(resolve => {
-            setTimeout(() => {
-              (window as any).ipcRenderer.send("play-tea-animation");
-              (window as any).ipcRenderer.invoke(
-                "open-win",
-                "pop-up-window",
-                sakikoMessages.onTimeMore
-              );
-              setTimeout(resolve, 3500);
-            }, 0);
-          });
-        });
-      } else if (moodDecreased) {
-        animationPromise = animationPromise.then(() => {
-          return new Promise<void>(resolve => {
-            setTimeout(() => {
-              (window as any).ipcRenderer.send("play-pointing-animation");
-              (window as any).ipcRenderer.invoke(
-                "open-win",
-                "pop-up-window",
-                sakikoMessages.overdue
-              );
-              setTimeout(resolve, 3500);
-            }, 0);
-          });
-        });
+        (window as any).ipcRenderer.send(
+          "play-complete-todo-on-time-animation",
+          isEnergetic,
+          isUpgrade,
+          moodChanged,
+          {
+            complete: sakikoMessages.onTime,
+            energetic: sakikoMessages.energetic,
+            upgrade: sakikoMessages.upgrade,
+            onTimeMore: sakikoMessages.onTimeMore
+          }
+        );
       }
     }
     emit("click", activity);
