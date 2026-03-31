@@ -64,6 +64,7 @@ const formatTimeForDisplay = (timeValue: string | Date): string => {
 const remainingTime = ref(0);
 const isRunning = ref(false);
 const timer = ref<NodeJS.Timeout | null>(null);
+const closeTimer = ref<NodeJS.Timeout | null>(null);
 const currentCycle = ref(1);
 const isBreak = ref(false);
 const isCompleted = ref(false);
@@ -227,7 +228,7 @@ const completeTimer = async () => {
   remainingTime.value = 0;
   isCompleted.value = true;
 
-  setTimeout(() => {
+  closeTimer.value = setTimeout(() => {
     window.close();
   }, 2000);
 };
@@ -307,6 +308,10 @@ const handleTimerComplete = async () => {
 
 onUnmounted(() => {
   stopTimer();
+  if (closeTimer.value) {
+    clearTimeout(closeTimer.value);
+    closeTimer.value = null;
+  }
 });
 </script>
 

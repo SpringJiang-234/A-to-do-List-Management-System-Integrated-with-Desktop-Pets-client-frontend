@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 
 defineOptions({
@@ -8,6 +8,7 @@ defineOptions({
 
 const route = useRoute();
 const message = ref("这是一个弹窗提示");
+let timerId: number | null = null;
 
 onMounted(() => {
   const messageParam = route.query.message as string;
@@ -19,9 +20,16 @@ onMounted(() => {
 
   const duration = durationParam ? parseInt(durationParam) : 3000;
 
-  setTimeout(() => {
+  timerId = window.setTimeout(() => {
     window.close();
   }, duration);
+});
+
+onUnmounted(() => {
+  if (timerId !== null) {
+    clearTimeout(timerId);
+    timerId = null;
+  }
 });
 </script>
 
