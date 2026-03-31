@@ -217,7 +217,9 @@ onMounted(() => {
         >
           <el-avatar size="large" :src="avatar" @click="handleAvatarClick" />
         </el-tooltip>
-        <div v-if="formattedUserId" class="user-id">ID：{{ formattedUserId }}</div>
+        <div v-if="formattedUserId" class="user-id">
+          ID：{{ formattedUserId }}
+        </div>
       </div>
       <div class="form-item">
         <el-tooltip

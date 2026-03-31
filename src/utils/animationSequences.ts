@@ -1,4 +1,8 @@
-import { AnimationTask, AnimationType, LoopAnimationType } from "../types/animation";
+import {
+  type AnimationTask,
+  AnimationType,
+  LoopAnimationType
+} from "../types/animation";
 
 export const createCompleteTodoOnTimeAnimationSequence = (
   goodGifPath: string,
@@ -129,6 +133,21 @@ export const createNewTodoAnimationSequence = (
       message: messages.energetic
     });
   }
+
+  sequence.push({
+    gifPath: "",
+    type: AnimationType.LOOP,
+    loopType: isHighMood ? LoopAnimationType.TEA : LoopAnimationType.POINTING,
+    message: undefined
+  });
+
+  return sequence;
+};
+
+export const createTimerEndAnimationSequence = (
+  isHighMood: boolean
+): AnimationTask[] => {
+  const sequence: AnimationTask[] = [];
 
   sequence.push({
     gifPath: "",

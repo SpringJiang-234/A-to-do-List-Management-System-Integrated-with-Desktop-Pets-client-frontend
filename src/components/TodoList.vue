@@ -104,11 +104,13 @@ async function handleClick(activity: Activity) {
       message("完成待办", { type: "success" });
 
       const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf("day"));
-      const isEnergetic = desktopPetStore.vitalityValue === 100 && previousVitality < 100;
+      const isEnergetic =
+        desktopPetStore.vitalityValue === 100 && previousVitality < 100;
       const isUpgrade = desktopPetStore.levelValue > previousLevel;
       const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
-      const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
-      
+      const moodDecreased =
+        desktopPetStore.moodValue < 60 && previousMood >= 60;
+
       if (isOverdue) {
         (window as any).ipcRenderer.send("play-clap-animation");
         (window as any).ipcRenderer.invoke(
@@ -368,13 +370,14 @@ async function handleMenuAction(action: string) {
                 'todo-time',
                 { 'todo-time-overdue': isOverdue(activity.endDate) }
               ]"
-            >{{
-              formatTimestamp(
-                activity.timestamp,
-                activity.startDate,
-                activity.endDate
-              )
-            }}</span>
+              >{{
+                formatTimestamp(
+                  activity.timestamp,
+                  activity.startDate,
+                  activity.endDate
+                )
+              }}</span
+            >
           </div>
         </div>
         <div
@@ -433,13 +436,14 @@ async function handleMenuAction(action: string) {
               'todo-time',
               { 'todo-time-overdue': isOverdue(activity.endDate) }
             ]"
-          >{{
-            formatTimestamp(
-              activity.timestamp,
-              activity.startDate,
-              activity.endDate
-            )
-          }}</span>
+            >{{
+              formatTimestamp(
+                activity.timestamp,
+                activity.startDate,
+                activity.endDate
+              )
+            }}</span
+          >
         </div>
       </div>
       <div
@@ -549,7 +553,7 @@ async function handleMenuAction(action: string) {
 }
 
 .todo-time-overdue {
-  color: #8B0000;
+  color: #8b0000;
 }
 
 .todo-content {

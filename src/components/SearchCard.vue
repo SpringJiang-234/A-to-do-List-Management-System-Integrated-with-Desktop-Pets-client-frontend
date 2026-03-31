@@ -157,7 +157,12 @@ onMounted(() => {
   watch(
     () => tags.value,
     newTags => {
-      if (newTags && newTags.length > 0 && formInline.tags.length === 0 && !savedTags) {
+      if (
+        newTags &&
+        newTags.length > 0 &&
+        formInline.tags.length === 0 &&
+        !savedTags
+      ) {
         formInline.tags = newTags.map(tag => tag.value.toString());
       }
     },
@@ -167,7 +172,12 @@ onMounted(() => {
   watch(
     () => categories.value,
     newCategories => {
-      if (newCategories && newCategories.length > 0 && formInline.categories.length === 0 && !savedCategories) {
+      if (
+        newCategories &&
+        newCategories.length > 0 &&
+        formInline.categories.length === 0 &&
+        !savedCategories
+      ) {
         formInline.categories = newCategories.map(cat => cat.value.toString());
       }
     },
@@ -177,7 +187,11 @@ onMounted(() => {
   watch(
     () => priorities.length,
     newPrioritiesLength => {
-      if (newPrioritiesLength > 0 && formInline.priorities.length === 0 && !savedPriorities) {
+      if (
+        newPrioritiesLength > 0 &&
+        formInline.priorities.length === 0 &&
+        !savedPriorities
+      ) {
         formInline.priorities = priorities.map(prio => prio.value.toString());
       }
     },
@@ -187,8 +201,15 @@ onMounted(() => {
   watch(
     () => statusOptions.length,
     newStatusOptionsLength => {
-      if (newStatusOptionsLength > 0 && formInline.status.length === 0 && !savedStatus && !valueCompleted) {
-        formInline.status = statusOptions.map(status => status.value.toString());
+      if (
+        newStatusOptionsLength > 0 &&
+        formInline.status.length === 0 &&
+        !savedStatus &&
+        !valueCompleted
+      ) {
+        formInline.status = statusOptions.map(status =>
+          status.value.toString()
+        );
       }
     },
     { immediate: true }
@@ -197,7 +218,11 @@ onMounted(() => {
   watch(
     () => topOptions.length,
     newTopOptionsLength => {
-      if (newTopOptionsLength > 0 && formInline.isTop.length === 0 && !savedIsTop) {
+      if (
+        newTopOptionsLength > 0 &&
+        formInline.isTop.length === 0 &&
+        !savedIsTop
+      ) {
         formInline.isTop = topOptions.map(top => top.value.toString());
       }
     },
@@ -413,9 +438,15 @@ const onSubmit = async () => {
 
     localStorage.setItem("searchTime", formInline.time || "");
     localStorage.setItem("searchStatus", JSON.stringify(formInline.status));
-    localStorage.setItem("searchCategories", JSON.stringify(formInline.categories));
+    localStorage.setItem(
+      "searchCategories",
+      JSON.stringify(formInline.categories)
+    );
     localStorage.setItem("searchTags", JSON.stringify(formInline.tags));
-    localStorage.setItem("searchPriorities", JSON.stringify(formInline.priorities));
+    localStorage.setItem(
+      "searchPriorities",
+      JSON.stringify(formInline.priorities)
+    );
     localStorage.setItem("searchIsTop", JSON.stringify(formInline.isTop));
 
     const response = await getTodoList(params);

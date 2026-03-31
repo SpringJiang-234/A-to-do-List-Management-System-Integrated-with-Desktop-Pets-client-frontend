@@ -132,7 +132,8 @@ async function handleClick(activity: Activity) {
         desktopPetStore.vitalityValue === 100 && previousVitality < 100;
       const isUpgrade = desktopPetStore.levelValue > previousLevel;
       const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
-      const moodDecreased = desktopPetStore.moodValue < 60 && previousMood >= 60;
+      const moodDecreased =
+        desktopPetStore.moodValue < 60 && previousMood >= 60;
 
       if (isOverdue) {
         (window as any).ipcRenderer.send("play-clap-animation");

@@ -18,11 +18,16 @@ import otherGifPath from "@/assets/images/丰川祥子-其他循环.gif";
 import sakikoMessages from "@/constants/sakiko-messages.json";
 import handIcon from "@/assets/svg/ooui--hand.svg?url";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
-import { AnimationType, LoopAnimationType, AnimationTask } from "@/types/animation";
+import {
+  AnimationType,
+  LoopAnimationType,
+  AnimationTask
+} from "@/types/animation";
 import {
   createCompleteTodoOnTimeAnimationSequence,
   createCompleteTodoOverdueAnimationSequence,
-  createNewTodoAnimationSequence
+  createNewTodoAnimationSequence,
+  createTimerEndAnimationSequence
 } from "@/utils/animationSequences";
 
 defineOptions({
@@ -83,7 +88,7 @@ const addToQueue = (task: AnimationTask, clearQueue: boolean = true) => {
     });
     animationQueue.value = [];
   }
-  
+
   animationQueue.value.push(task);
   if (!isQueueProcessing.value) {
     processQueue();
@@ -113,9 +118,9 @@ const processQueue = async () => {
       loopType: task.loopType,
       duration: task.duration
     });
-    
+
     await playAnimationTask(task);
-    
+
     console.log("========== 动画任务完成 ==========", {
       remainingQueue: animationQueue.value.length,
       currentState: animationState.value
@@ -126,7 +131,7 @@ const processQueue = async () => {
     finalState: animationState.value,
     finalLoopAnimation: currentLoopAnimation.value
   });
-  
+
   ensureFinalLoopState();
   isQueueProcessing.value = false;
 };
@@ -153,10 +158,15 @@ const playAnimationTask = (task: AnimationTask): Promise<void> => {
         resolve();
       });
     } else {
-      playOneTimeAnimationInternal(task.gifPath, duration, () => {
-        if (task.callback) task.callback();
-        resolve();
-      }, task.message);
+      playOneTimeAnimationInternal(
+        task.gifPath,
+        duration,
+        () => {
+          if (task.callback) task.callback();
+          resolve();
+        },
+        task.message
+      );
     }
   });
 };
@@ -200,7 +210,10 @@ const playOneTimeAnimationInternal = (
   });
 };
 
-const playUpgradeAnimationInternal = (callback: () => void, message?: string) => {
+const playUpgradeAnimationInternal = (
+  callback: () => void,
+  message?: string
+) => {
   isUpgrading.value = true;
   animationState.value = AnimationState.ONE_TIME;
   isFading.value = true;
@@ -258,11 +271,14 @@ const playAnimation = (gifPath: string, callback?: () => void) => {
 };
 
 const playOneTimeAnimation = (gifPath: string, duration?: number) => {
-  addToQueue({
-    gifPath,
-    type: AnimationType.ONE_TIME,
-    duration
-  }, false);
+  addToQueue(
+    {
+      gifPath,
+      type: AnimationType.ONE_TIME,
+      duration
+    },
+    false
+  );
 };
 
 const returnToLoopAnimation = () => {
@@ -274,7 +290,11 @@ const returnToLoopAnimation = () => {
 };
 
 const ensureLoopState = () => {
-  if (!isPlayingOneTimeAnimation.value && !isUpgrading.value && animationState.value !== AnimationState.LOOP) {
+  if (
+    !isPlayingOneTimeAnimation.value &&
+    !isUpgrading.value &&
+    animationState.value !== AnimationState.LOOP
+  ) {
     animationState.value = AnimationState.LOOP;
     console.log("========== 确保循环状态 ==========", {
       wasState: animationState.value,
@@ -286,7 +306,11 @@ const ensureLoopState = () => {
 
 const ensureFinalLoopState = () => {
   setTimeout(() => {
-    if (!isPlayingOneTimeAnimation.value && !isUpgrading.value && !isQueueProcessing.value) {
+    if (
+      !isPlayingOneTimeAnimation.value &&
+      !isUpgrading.value &&
+      !isQueueProcessing.value
+    ) {
       animationState.value = AnimationState.LOOP;
       const loopGif = getLoopAnimationGif(currentLoopAnimation.value);
       if (currentGif.value !== loopGif) {
@@ -344,11 +368,14 @@ const playGoodAnimation = () => {
 
 const playAbandonAnimation = (message?: string) => {
   console.log("========== 收到放弃动画事件 ==========");
-  addToQueue({
-    gifPath: abandonGifPath,
-    type: AnimationType.ONE_TIME,
-    message
-  }, false);
+  addToQueue(
+    {
+      gifPath: abandonGifPath,
+      type: AnimationType.ONE_TIME,
+      message
+    },
+    false
+  );
 };
 
 const playDeleteAnimation = (message?: string) => {
@@ -422,7 +449,7 @@ const playCompleteTodoOnTimeAnimation = (
       onTimeMore: messages.onTimeMore.substring(0, 20)
     }
   });
-  
+
   const sequence = createCompleteTodoOnTimeAnimationSequence(
     goodGifPath,
     energeticGifPath,
@@ -433,7 +460,7 @@ const playCompleteTodoOnTimeAnimation = (
     isMoodIncreased,
     messages
   );
-  
+
   sequence.forEach(task => addToQueue(task));
 };
 
@@ -459,7 +486,7 @@ const playCompleteTodoOverdueAnimation = (
       overdue: messages.overdue.substring(0, 20)
     }
   });
-  
+
   const sequence = createCompleteTodoOverdueAnimationSequence(
     clapGifPath,
     energeticGifPath,
@@ -470,7 +497,7 @@ const playCompleteTodoOverdueAnimation = (
     isMoodDecreased,
     messages
   );
-  
+
   sequence.forEach(task => addToQueue(task));
 };
 
@@ -490,7 +517,7 @@ const playNewTodoAnimation = (
       energetic: messages.energetic.substring(0, 20)
     }
   });
-  
+
   const sequence = createNewTodoAnimationSequence(
     goodGifPath,
     energeticGifPath,
@@ -498,7 +525,16 @@ const playNewTodoAnimation = (
     isHighMood,
     messages
   );
-  
+
+  sequence.forEach(task => addToQueue(task));
+};
+
+const playTimerEndAnimation = (isHighMood: boolean) => {
+  console.log("========== 收到计时器结束动画事件 ==========", {
+    isHighMood
+  });
+
+  const sequence = createTimerEndAnimationSequence(isHighMood);
   sequence.forEach(task => addToQueue(task));
 };
 
@@ -517,7 +553,8 @@ const setIntimacyValue = (value: number) => {
 };
 
 const setInitialLoopAnimation = (moodValue: number) => {
-  const newLoopType = moodValue >= 60 ? LoopAnimationType.TEA : LoopAnimationType.POINTING;
+  const newLoopType =
+    moodValue >= 60 ? LoopAnimationType.TEA : LoopAnimationType.POINTING;
   setCurrentLoopAnimation(newLoopType);
   console.log("========== 设置初始循环动画 ==========", {
     moodValue,
@@ -625,6 +662,12 @@ onMounted(() => {
     }
   );
   (window as any).ipcRenderer.on(
+    "play-timer-end-animation",
+    (event, isHighMood: boolean) => {
+      playTimerEndAnimation(isHighMood);
+    }
+  );
+  (window as any).ipcRenderer.on(
     "set-upgrading",
     (event, upgrading: boolean) => {
       console.log("========== 设置升级状态 ==========", upgrading);
@@ -718,6 +761,10 @@ onUnmounted(() => {
   (window as any).ipcRenderer.removeListener(
     "play-new-todo-animation",
     playNewTodoAnimation
+  );
+  (window as any).ipcRenderer.removeListener(
+    "play-timer-end-animation",
+    playTimerEndAnimation
   );
 });
 </script>

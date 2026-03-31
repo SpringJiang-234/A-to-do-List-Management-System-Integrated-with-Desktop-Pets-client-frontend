@@ -253,16 +253,18 @@ const handleSubmit = async () => {
     submitting.value = true;
     const oldStatus = todoForm.value.status;
     await updateTodo(todoForm.value);
-    
+
     if (todoForm.value.status === 2 && oldStatus !== 2) {
       await desktopPetStore.loadDesktopPetInfo();
-      
-      const isOverdue = todoForm.value.endDate && new Date(todoForm.value.endDate) < new Date();
+
+      const isOverdue =
+        todoForm.value.endDate && new Date(todoForm.value.endDate) < new Date();
       const isEnergetic = desktopPetStore.vitalityValue === 100;
-      const isUpgrade = desktopPetStore.levelValue > (desktopPetStore.levelValue - 1);
+      const isUpgrade =
+        desktopPetStore.levelValue > desktopPetStore.levelValue - 1;
       const moodChanged = desktopPetStore.moodValue >= 60;
       const moodDecreased = desktopPetStore.moodValue < 60;
-      
+
       if (isOverdue) {
         (window as any).ipcRenderer.send("play-clap-animation");
         (window as any).ipcRenderer.invoke(
@@ -278,9 +280,9 @@ const handleSubmit = async () => {
           sakikoMessages.onTime
         );
       }
-      
+
       let animationPromise = Promise.resolve();
-      
+
       if (isUpgrade) {
         animationPromise = animationPromise.then(() => {
           return new Promise<void>(resolve => {
@@ -296,7 +298,7 @@ const handleSubmit = async () => {
           });
         });
       }
-      
+
       if (isEnergetic) {
         animationPromise = animationPromise.then(() => {
           return new Promise<void>(resolve => {
@@ -312,7 +314,7 @@ const handleSubmit = async () => {
           });
         });
       }
-      
+
       if (moodChanged) {
         animationPromise = animationPromise.then(() => {
           return new Promise<void>(resolve => {
@@ -350,7 +352,7 @@ const handleSubmit = async () => {
         sakikoMessages.abandon
       );
     }
-    
+
     message("修改成功", { type: "success" });
     router.back();
   } catch (error) {

@@ -6,12 +6,15 @@ import { updateFocusTime, getTodoDetails } from "@/api/todo";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import sakikoMessages from "@/constants/sakiko-messages.json";
+import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 
 defineOptions({
   name: "CompoundTimer"
 });
 
 const route = useRoute();
+
+const desktopPetStore = useDesktopPetStoreHook();
 
 const valueType = ref((route.query.valueType as string) || "番茄钟");
 const timeValue1 = ref(
@@ -74,15 +77,15 @@ const loadTodoDetail = async () => {
 
         const categoryName = todoCategoryName.value.toLowerCase();
 
-      if (categoryName.includes("工作")) {
-        (window as any).ipcRenderer.send("play-work-animation");
-      } else if (categoryName.includes("学习")) {
-        (window as any).ipcRenderer.send("play-study-animation");
-      } else if (categoryName.includes("娱乐")) {
-        (window as any).ipcRenderer.send("play-entertain-animation");
-      } else {
-        (window as any).ipcRenderer.send("play-other-animation");
-      }
+        if (categoryName.includes("工作")) {
+          (window as any).ipcRenderer.send("play-work-animation");
+        } else if (categoryName.includes("学习")) {
+          (window as any).ipcRenderer.send("play-study-animation");
+        } else if (categoryName.includes("娱乐")) {
+          (window as any).ipcRenderer.send("play-entertain-animation");
+        } else {
+          (window as any).ipcRenderer.send("play-other-animation");
+        }
       }
     } catch (error) {
       console.error("获取待办详情失败:", error);
@@ -91,6 +94,7 @@ const loadTodoDetail = async () => {
 };
 
 onMounted(async () => {
+  await desktopPetStore.loadDesktopPetInfo();
   await loadTodoDetail();
 
   if (valueType.value === "正计时") {
@@ -167,16 +171,13 @@ const stopTimer = () => {
   isRunning.value = false;
   
   if (valueType.value !== "番茄钟") {
-    const categoryName = todoCategoryName.value.toLowerCase();
-    if (categoryName.includes("工作")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else if (categoryName.includes("学习")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else if (categoryName.includes("娱乐")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    }
+    const isHighMood = desktopPetStore.moodValue >= 60;
+    console.log("========== 计时器停止 ==========", {
+      moodValue: desktopPetStore.moodValue,
+      isHighMood,
+      valueType: valueType.value
+    });
+    (window as any).ipcRenderer.send("play-timer-end-animation", isHighMood);
   }
 };
 
@@ -185,20 +186,12 @@ const resetTimer = () => {
   remainingTime.value = 0;
   currentCycle.value = 1;
   isBreak.value = false;
-  
+
   if (valueType.value === "番茄钟") {
-    const categoryName = todoCategoryName.value.toLowerCase();
-    if (categoryName.includes("工作")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else if (categoryName.includes("学习")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else if (categoryName.includes("娱乐")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    }
+    const isHighMood = desktopPetStore.moodValue >= 60;
+    (window as any).ipcRenderer.send("play-timer-end-animation", isHighMood);
   }
-  
+
   window.close();
 };
 
@@ -233,7 +226,7 @@ const completeTimer = async () => {
 
   remainingTime.value = 0;
   isCompleted.value = true;
-  
+
   setTimeout(() => {
     window.close();
   }, 2000);
@@ -289,21 +282,13 @@ const handleTimerComplete = async () => {
       currentCycle.value++;
       startTimer();
     } else {
-    message(`所有番茄钟完成！`, { type: "success" });
-    remainingTime.value = 0;
-    isCompleted.value = true;
-    
-    const categoryName = todoCategoryName.value.toLowerCase();
-    if (categoryName.includes("工作")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else if (categoryName.includes("学习")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else if (categoryName.includes("娱乐")) {
-      (window as any).ipcRenderer.send("play-tea-animation");
-    } else {
-      (window as any).ipcRenderer.send("play-tea-animation");
+      message(`所有番茄钟完成！`, { type: "success" });
+      remainingTime.value = 0;
+      isCompleted.value = true;
+
+      const isHighMood = desktopPetStore.moodValue >= 60;
+      (window as any).ipcRenderer.send("play-timer-end-animation", isHighMood);
     }
-  }
   } else if (valueType.value === "倒计时") {
     const countdownSeconds =
       timeValue1.value.getHours() * 3600 +

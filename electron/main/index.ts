@@ -226,6 +226,18 @@ ipcMain.on('play-new-todo-animation', (event, isEnergetic: boolean, isHighMood: 
   }
 });
 
+ipcMain.on('play-timer-end-animation', (event, isHighMood: boolean) => {
+  const windows = BrowserWindow.getAllWindows();
+  const desktopPetWindow = windows.find(w => {
+    const url = w.webContents.getURL();
+    return url && (url.includes('new-windows') || url.includes('#/new-windows'));
+  });
+  
+  if (desktopPetWindow) {
+    desktopPetWindow.webContents.send('play-timer-end-animation', isHighMood);
+  }
+});
+
 ipcMain.on('play-entertain-animation', () => {
   const windows = BrowserWindow.getAllWindows();
   const desktopPetWindow = windows.find(w => {
@@ -319,11 +331,6 @@ ipcMain.on('play-complete-todo-overdue-animation', (event, isEnergetic: boolean,
   
   if (desktopPetWindow) {
     desktopPetWindow.webContents.send('play-complete-todo-overdue-animation', isEnergetic, isUpgrade, isMoodDecreased, messages);
-  }
-});
-  
-  if (desktopPetWindow) {
-    desktopPetWindow.webContents.send('play-pointing-animation');
   }
 });
 

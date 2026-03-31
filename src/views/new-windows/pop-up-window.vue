@@ -12,13 +12,13 @@ const message = ref("这是一个弹窗提示");
 onMounted(() => {
   const messageParam = route.query.message as string;
   const durationParam = route.query.duration as string;
-  
+
   if (messageParam) {
     message.value = decodeURIComponent(messageParam);
   }
 
   const duration = durationParam ? parseInt(durationParam) : 3000;
-  
+
   setTimeout(() => {
     window.close();
   }, duration);
