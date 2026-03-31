@@ -129,22 +129,6 @@ async function handleClick(activity: Activity) {
 
       let animationPromise = Promise.resolve();
 
-      if (isUpgrade) {
-        animationPromise = animationPromise.then(() => {
-          return new Promise<void>(resolve => {
-            setTimeout(() => {
-              (window as any).ipcRenderer.send("play-upgrade-animation");
-              (window as any).ipcRenderer.invoke(
-                "open-win",
-                "pop-up-window",
-                sakikoMessages.upgrade
-              );
-              setTimeout(resolve, 3500);
-            }, 0);
-          });
-        });
-      }
-
       if (isEnergetic) {
         animationPromise = animationPromise.then(() => {
           return new Promise<void>(resolve => {
@@ -161,29 +145,15 @@ async function handleClick(activity: Activity) {
         });
       }
 
-      if (moodChanged) {
+      if (isUpgrade) {
         animationPromise = animationPromise.then(() => {
           return new Promise<void>(resolve => {
             setTimeout(() => {
-              (window as any).ipcRenderer.send("play-tea-animation");
+              (window as any).ipcRenderer.send("play-upgrade-animation");
               (window as any).ipcRenderer.invoke(
                 "open-win",
                 "pop-up-window",
-                sakikoMessages.onTimeMore
-              );
-              setTimeout(resolve, 3500);
-            }, 0);
-          });
-        });
-      } else if (moodDecreased) {
-        animationPromise = animationPromise.then(() => {
-          return new Promise<void>(resolve => {
-            setTimeout(() => {
-              (window as any).ipcRenderer.send("play-pointing-animation");
-              (window as any).ipcRenderer.invoke(
-                "open-win",
-                "pop-up-window",
-                sakikoMessages.overdue
+                sakikoMessages.upgrade
               );
               setTimeout(resolve, 3500);
             }, 0);
