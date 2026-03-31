@@ -82,6 +82,11 @@ const formatTimestamp = (
   return formatDate(timestamp);
 };
 
+const isOverdue = (endDate?: string) => {
+  if (!endDate) return false;
+  return dayjs().isAfter(dayjs(endDate).endOf("day"));
+};
+
 async function handleClick(activity: Activity) {
   try {
     const previousLevel = desktopPetStore.levelValue;
@@ -358,7 +363,12 @@ async function handleMenuAction(action: string) {
                 {{ activity.title }}
               </span>
             </el-tooltip>
-            <span class="todo-time">{{
+            <span
+              :class="[
+                'todo-time',
+                { 'todo-time-overdue': isOverdue(activity.endDate) }
+              ]"
+            >{{
               formatTimestamp(
                 activity.timestamp,
                 activity.startDate,
@@ -418,7 +428,12 @@ async function handleMenuAction(action: string) {
               {{ activity.title }}
             </span>
           </el-tooltip>
-          <span class="todo-time">{{
+          <span
+            :class="[
+              'todo-time',
+              { 'todo-time-overdue': isOverdue(activity.endDate) }
+            ]"
+          >{{
             formatTimestamp(
               activity.timestamp,
               activity.startDate,
@@ -531,6 +546,10 @@ async function handleMenuAction(action: string) {
   font-size: 12px;
   color: var(--el-text-color-secondary);
   cursor: pointer;
+}
+
+.todo-time-overdue {
+  color: #8B0000;
 }
 
 .todo-content {
