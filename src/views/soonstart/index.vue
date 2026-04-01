@@ -6,6 +6,7 @@ import StreamlineSharpResetClockSolid from "~icons/streamline-sharp/reset-clock-
 import MeteorIconsClockRotate from "~icons/meteor-icons/clock-rotate?width=16px&height=16px";
 import { userKey, type DataInfo } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
+import { http } from "@/utils/http";
 
 defineOptions({
   name: "Soonstart"
@@ -23,22 +24,15 @@ const loadSearchResults = async () => {
   }
 
   try {
-    const response = await fetch("http://localhost:8848/api/todo/list", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`
-      },
-      body: JSON.stringify({
-        userId: userInfo.id,
+    const response: any = await http.request("post", "/api/todo/list", {
+      data: {
         statusList: [1]
-      })
+      }
     });
-    const data = await response.json();
-    if (data.code === 200) {
-      searchResults.value = data.data || [];
+    if (response.code === 200) {
+      searchResults.value = response.data || [];
     } else {
-      console.error("API 返回错误:", data.msg);
+      console.error("API 返回错误:", response.msg);
     }
   } catch (error) {
     console.error("加载搜索结果失败:", error);

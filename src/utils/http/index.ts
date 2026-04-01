@@ -74,15 +74,22 @@ class PureHttp {
           "/api/security/register",
           "/api/security/accountExist"
         ];
-        return whiteList.some(url => config.url.endsWith(url))
-          ? config
-          : new Promise(resolve => {
-              const data = getToken();
-              if (data && data.token) {
-                config.headers["Authorization"] = formatToken(data.token);
-              }
-              resolve(config);
-            });
+        // 检查当前请求是否在白名单中
+        const isInWhiteList = whiteList.some(url => {
+          // 检查config.url是否以白名单中的路径结尾
+          return config.url && config.url.endsWith(url);
+        });
+        if (isInWhiteList) {
+          return config;
+        } else {
+          return new Promise(resolve => {
+            const data = getToken();
+            if (data && data.token) {
+              config.headers["Authorization"] = formatToken(data.token);
+            }
+            resolve(config);
+          });
+        }
       },
       error => {
         return Promise.reject(error);

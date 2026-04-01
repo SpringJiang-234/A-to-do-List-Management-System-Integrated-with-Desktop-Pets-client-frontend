@@ -99,12 +99,16 @@ export const getTodoDetails = (id: number) => {
   );
 };
 
-export const insertTodo = (data: ClientTodoDTO) => {
-  return http.request<Result<void>>("post", "/api/todo/insert", { data });
+export const insertTodo = (data: ClientTodoDTO, enablePetGrowth: boolean = true) => {
+  return http.request<Result<void>>("post", "/api/todo/insert", { 
+    data: { ...data, enablePetGrowth } 
+  });
 };
 
-export const completeTodo = (id: number) => {
-  return http.request<Result<void>>("get", `/api/todo/complete/${id}`);
+export const completeTodo = (id: number, enablePetGrowth: boolean = true) => {
+  return http.request<Result<void>>("get", `/api/todo/complete/${id}`, {
+    params: { enablePetGrowth }
+  });
 };
 
 export const cancelCompleteTodo = (id: number) => {

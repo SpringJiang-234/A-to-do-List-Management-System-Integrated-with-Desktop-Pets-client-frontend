@@ -36,6 +36,7 @@ const showStudy = ref(localStorage.getItem("showStudy") !== "false");
 const showEntertainment = ref(
   localStorage.getItem("showEntertainment") !== "false"
 );
+const enablePetGrowth = ref(localStorage.getItem("enablePetGrowth") !== "false");
 
 const categoryList = ref<any[]>([]);
 const tagList = ref<any[]>([]);
@@ -425,6 +426,15 @@ watch(showEntertainment, newVal => {
   localStorage.setItem("showEntertainment", String(newVal));
   updateRouteShowLink();
 });
+
+watch(enablePetGrowth, newVal => {
+  localStorage.setItem("enablePetGrowth", String(newVal));
+  window.dispatchEvent(
+    new CustomEvent("petGrowthSettingsChanged", {
+      detail: { enabled: newVal }
+    })
+  );
+});
 </script>
 
 <template>
@@ -491,6 +501,14 @@ watch(showEntertainment, newVal => {
           </div>
         </div>
       </template>
+      <div class="switch-container">
+        <el-switch
+          v-model="enablePetGrowth"
+          class="mb-2"
+          active-text="启用桌宠养成数据"
+          inactive-text="锁定桌宠养成数据"
+        />
+      </div>
       <!-- 
       桌宠模式（单选）：标准、mini、隐藏
   1. 标准模式（标准、弹对话框、有语音或提示音）

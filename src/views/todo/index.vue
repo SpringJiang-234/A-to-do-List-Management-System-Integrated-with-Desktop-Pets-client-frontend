@@ -248,11 +248,17 @@ const loadTodoList = async () => {
       }
 
       if (todoStore.filter.startDate) {
-        params.startDate = todoStore.filter.startDate;
+        params.startDate = {
+          start: todoStore.filter.startDate,
+          end: todoStore.filter.startDate
+        };
       }
 
       if (todoStore.filter.endDate) {
-        params.endDate = todoStore.filter.endDate;
+        params.endDate = {
+          start: todoStore.filter.endDate,
+          end: todoStore.filter.endDate
+        };
       }
 
       if (

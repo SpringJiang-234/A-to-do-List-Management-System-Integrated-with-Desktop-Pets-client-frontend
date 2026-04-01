@@ -173,6 +173,7 @@ const handleSubmit = async () => {
       return;
     }
 
+    const enablePetGrowth = localStorage.getItem("enablePetGrowth") !== "false";
     const previousVitality = desktopPetStore.vitalityValue;
 
     await insertTodo({
@@ -185,24 +186,28 @@ const handleSubmit = async () => {
       endDate: todoForm.value.endDate,
       isTop: todoForm.value.isTop,
       tagIdList: todoForm.value.tagIdList
-    });
-    await desktopPetStore.loadDesktopPetInfo();
+    }, enablePetGrowth);
+    if (enablePetGrowth) {
+      await desktopPetStore.loadDesktopPetInfo();
+    }
 
-    const isEnergetic =
-      desktopPetStore.vitalityValue === 100 && previousVitality < 100;
-    const isHighMood = desktopPetStore.moodValue >= 60;
+    if (enablePetGrowth) {
+      const isEnergetic =
+        desktopPetStore.vitalityValue === 100 && previousVitality < 100;
+      const isHighMood = desktopPetStore.moodValue >= 60;
 
-    setTimeout(() => {
-      (window as any).ipcRenderer.send(
-        "play-new-todo-animation",
-        isEnergetic,
-        isHighMood,
-        {
-          newTodo: sakikoMessages.newTodo,
-          energetic: sakikoMessages.energetic
-        }
-      );
-    }, 500);
+      setTimeout(() => {
+        (window as any).ipcRenderer.send(
+          "play-new-todo-animation",
+          isEnergetic,
+          isHighMood,
+          {
+            newTodo: sakikoMessages.newTodo,
+            energetic: sakikoMessages.energetic
+          }
+        );
+      }, 500);
+    }
 
     message("添加成功", { type: "success" });
     router.back();

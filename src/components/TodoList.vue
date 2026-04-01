@@ -89,6 +89,7 @@ const isOverdue = (endDate?: string) => {
 
 async function handleClick(activity: Activity) {
   try {
+    const enablePetGrowth = localStorage.getItem("enablePetGrowth") !== "false";
     const previousLevel = desktopPetStore.levelValue;
     const previousMood = desktopPetStore.moodValue;
     const previousVitality = desktopPetStore.vitalityValue;
@@ -98,69 +99,73 @@ async function handleClick(activity: Activity) {
       activity.status = 1;
       message("取消完成待办", { type: "success" });
     } else {
-      await completeTodo(activity.id);
-      activity.status = 2;
-      await desktopPetStore.loadDesktopPetInfo();
-      message("完成待办", { type: "success" });
+            await completeTodo(activity.id, enablePetGrowth);
+            activity.status = 2;
+            if (enablePetGrowth) {
+                await desktopPetStore.loadDesktopPetInfo();
+            }
+            message("完成待办", { type: "success" });
 
-      const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf("day"));
-      const isEnergetic =
-        desktopPetStore.vitalityValue === 100 && previousVitality < 100;
-      const isUpgrade = desktopPetStore.levelValue > previousLevel;
-      const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
-      const moodDecreased =
-        desktopPetStore.moodValue < 60 && previousMood >= 60;
+      if (enablePetGrowth) {
+        const isOverdue = dayjs().isAfter(dayjs(activity.endDate).endOf("day"));
+        const isEnergetic =
+          desktopPetStore.vitalityValue === 100 && previousVitality < 100;
+        const isUpgrade = desktopPetStore.levelValue > previousLevel;
+        const moodChanged = desktopPetStore.moodValue >= 60 && previousMood < 60;
+        const moodDecreased =
+          desktopPetStore.moodValue < 60 && previousMood >= 60;
 
-      console.log("========== TodoList 完成待办动画参数 ==========", {
-        previousVitality,
-        currentVitality: desktopPetStore.vitalityValue,
-        isEnergetic,
-        previousLevel,
-        currentLevel: desktopPetStore.levelValue,
-        isUpgrade,
-        previousMood,
-        currentMood: desktopPetStore.moodValue,
-        moodChanged,
-        moodDecreased,
-        isOverdue
-      });
-
-      if (isOverdue) {
-        (window as any).ipcRenderer.invoke(
-          "open-win",
-          "pop-up-window",
-          sakikoMessages.complete
-        );
-        (window as any).ipcRenderer.send(
-          "play-complete-todo-overdue-animation",
+        console.log("========== TodoList 完成待办动画参数 ==========", {
+          previousVitality,
+          currentVitality: desktopPetStore.vitalityValue,
           isEnergetic,
+          previousLevel,
+          currentLevel: desktopPetStore.levelValue,
           isUpgrade,
-          moodDecreased,
-          {
-            complete: sakikoMessages.complete,
-            energetic: sakikoMessages.energetic,
-            upgrade: sakikoMessages.upgrade,
-            overdue: sakikoMessages.overdue
-          }
-        );
-      } else {
-        (window as any).ipcRenderer.invoke(
-          "open-win",
-          "pop-up-window",
-          sakikoMessages.onTime
-        );
-        (window as any).ipcRenderer.send(
-          "play-complete-todo-on-time-animation",
-          isEnergetic,
-          isUpgrade,
+          previousMood,
+          currentMood: desktopPetStore.moodValue,
           moodChanged,
-          {
-            complete: sakikoMessages.onTime,
-            energetic: sakikoMessages.energetic,
-            upgrade: sakikoMessages.upgrade,
-            onTimeMore: sakikoMessages.onTimeMore
-          }
-        );
+          moodDecreased,
+          isOverdue
+        });
+
+        if (isOverdue) {
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.complete
+          );
+          (window as any).ipcRenderer.send(
+            "play-complete-todo-overdue-animation",
+            isEnergetic,
+            isUpgrade,
+            moodDecreased,
+            {
+              complete: sakikoMessages.complete,
+              energetic: sakikoMessages.energetic,
+              upgrade: sakikoMessages.upgrade,
+              overdue: sakikoMessages.overdue
+            }
+          );
+        } else {
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.onTime
+          );
+          (window as any).ipcRenderer.send(
+            "play-complete-todo-on-time-animation",
+            isEnergetic,
+            isUpgrade,
+            moodChanged,
+            {
+              complete: sakikoMessages.onTime,
+              energetic: sakikoMessages.energetic,
+              upgrade: sakikoMessages.upgrade,
+              onTimeMore: sakikoMessages.onTimeMore
+            }
+          );
+        }
       }
     }
     emit("click", activity);
