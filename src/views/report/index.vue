@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import Select from "@/components/Select.vue";
 import { getCategoryList } from "@/api/category";
+import { getTodoCountByCategory, getTodoCountByCategoryAndDate } from "@/api/report";
 import { storageLocal } from "@pureadmin/utils";
 import { userKey, type DataInfo } from "@/utils/auth";
 
@@ -80,6 +81,12 @@ const chartTypes = [
   { value: "line", label: "折线图" }
 ];
 
+const chartTypeMap: Record<string, string> = {
+  pie: "饼图",
+  bar: "条形图",
+  line: "折线图"
+};
+
 const categories = ref<any[]>([]);
 
 const loadCategories = async () => {
@@ -125,44 +132,64 @@ onMounted(() => {
   );
 });
 
-const generateReport = () => {
-  const dateRange = userDefinedDateRange.value.length === 2
-    ? `${formatDate(userDefinedDateRange.value[0])} 至 ${formatDate(userDefinedDateRange.value[1])}`
-    : "未选择";
-
-  const chartTypeMap: Record<string, string> = {
-    pie: "饼图",
-    bar: "条形图",
-    line: "折线图"
-  };
-
-  const chartType = chartTypeMap[formInline.value.chartType] || "未选择";
-
-  const categoryNames = formInline.value.categories.length > 0
-    ? categories.value
-        .filter(cat => formInline.value.categories.includes(cat.value.toString()))
-        .map(cat => cat.label)
-        .join("、")
-    : "未选择";
-
-  message(`生成报表：${dateRange}，图表类型：${chartType}，类别：${categoryNames}`);
-
-  const query: any = {};
-  if (userDefinedDateRange.value.length === 2) {
-    query.startDate = formatDate(userDefinedDateRange.value[0]);
-    query.endDate = formatDate(userDefinedDateRange.value[1]);
-  }
-  if (formInline.value.chartType) {
-    query.chartType = formInline.value.chartType;
-  }
-  if (formInline.value.categories.length > 0) {
-    query.categories = formInline.value.categories.join(",");
+const generateReport = async () => {
+  if (userDefinedDateRange.value.length !== 2) {
+    message("请选择日期范围", { type: "error" });
+    return;
   }
 
-  router.push({
-    name: "CustomReport",
-    query
-  });
+  const startDate = formatDate(userDefinedDateRange.value[0]);
+  const endDate = formatDate(userDefinedDateRange.value[1]);
+  const categoryIdList = formInline.value.categories.map(id => parseInt(id, 10));
+
+  try {
+    let reportData;
+    if (formInline.value.chartType === "pie") {
+      // 饼图使用 getTodoCountByCategory API
+      const response = await getTodoCountByCategory({
+        startDate,
+        endDate,
+        categoryIdList
+      });
+      if (response.code === 200) {
+        reportData = response.data;
+      } else {
+        message(`获取饼图数据失败: ${response.msg}`, { type: "error" });
+        return;
+      }
+    } else {
+      // 折线图和条形图使用 getTodoCountByCategoryAndDate API
+      const response = await getTodoCountByCategoryAndDate({
+        startDate,
+        endDate,
+        categoryIdList
+      });
+      if (response.code === 200) {
+        reportData = response.data;
+      } else {
+        message(`获取图表数据失败: ${response.msg}`, { type: "error" });
+        return;
+      }
+    }
+
+    message(`生成报表：${startDate} 至 ${endDate}，图表类型：${chartTypeMap[formInline.value.chartType]}`);
+
+    const query: any = {
+      startDate,
+      endDate,
+      chartType: formInline.value.chartType,
+      categories: formInline.value.categories.join(","),
+      reportData: JSON.stringify(reportData)
+    };
+
+    router.push({
+      name: "CustomReport",
+      query
+    });
+  } catch (error) {
+    console.error("生成报表失败:", error);
+    message("生成报表失败，请稍后重试", { type: "error" });
+  }
 };
 </script>
 

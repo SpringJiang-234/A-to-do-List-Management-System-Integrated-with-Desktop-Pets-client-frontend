@@ -26,13 +26,13 @@ type ReportQuery = {
 };
 
 export const getTodoCountByCategory = (params: ReportQuery) => {
-  return http.request<Result<CategoryCount[]>>("post", "/client/statistics/todo-count-by-category", {
+  return http.request<Result<CategoryCount[]>>("post", "/api/statistics/todo-count-by-category", {
     data: params
   });
 };
 
 export const getTodoCountByCategoryAndDate = (params: ReportQuery) => {
-  return http.request<Result<CategoryDateCount[]>>("post", "/client/statistics/todo-count-by-category-and-date", {
+  return http.request<Result<CategoryDateCount[]>>("post", "/api/statistics/todo-count-by-category-and-date", {
     data: params
   });
 };
