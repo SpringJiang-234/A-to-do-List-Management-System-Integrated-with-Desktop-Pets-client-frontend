@@ -19,6 +19,11 @@ type CategoryDateCount = {
   sum: number;
 };
 
+type DateCount = {
+  date: string;
+  sum: number;
+};
+
 type ReportQuery = {
   startDate: string;
   endDate: string;
@@ -33,6 +38,12 @@ export const getTodoCountByCategory = (params: ReportQuery) => {
 
 export const getTodoCountByCategoryAndDate = (params: ReportQuery) => {
   return http.request<Result<CategoryDateCount[]>>("post", "/api/statistics/todo-count-by-category-and-date", {
+    data: params
+  });
+};
+
+export const getTodoCountByDate = (params: ReportQuery) => {
+  return http.request<Result<DateCount[]>>("post", "/api/statistics/todo-count-by-date", {
     data: params
   });
 };

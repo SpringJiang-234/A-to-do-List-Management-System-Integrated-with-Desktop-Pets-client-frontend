@@ -5,7 +5,8 @@ import * as echarts from "echarts/core";
 import {
   BarChart,
   LineChart,
-  PieChart
+  PieChart,
+  HeatmapChart
 } from "echarts/charts";
 
 // 导入组件
@@ -13,7 +14,9 @@ import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
+  GridComponent,
+  VisualMapComponent,
+  CalendarComponent
 } from "echarts/components";
 
 // 导入特性与渲染器
@@ -26,9 +29,12 @@ echarts.use([
   TooltipComponent,
   LegendComponent,
   GridComponent,
+  VisualMapComponent,
+  CalendarComponent,
   BarChart,
   LineChart,
   PieChart,
+  HeatmapChart,
   LabelLayout,
   UniversalTransition,
   CanvasRenderer
@@ -42,13 +48,16 @@ import type { ComposeOption } from "echarts/core";
 import type {
   BarSeriesOption,
   LineSeriesOption,
-  PieSeriesOption
+  PieSeriesOption,
+  HeatmapSeriesOption
 } from "echarts/charts";
 import type {
   TitleComponentOption,
   TooltipComponentOption,
   LegendComponentOption,
-  GridComponentOption
+  GridComponentOption,
+  VisualMapComponentOption,
+  CalendarComponentOption
 } from "echarts/components";
 
 // 组合所有可能的配置项类型
@@ -56,8 +65,11 @@ export type ECOption = ComposeOption<
   | BarSeriesOption
   | LineSeriesOption
   | PieSeriesOption
+  | HeatmapSeriesOption
   | TitleComponentOption
   | TooltipComponentOption
   | LegendComponentOption
   | GridComponentOption
+  | VisualMapComponentOption
+  | CalendarComponentOption
 >;

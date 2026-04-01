@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import Select from "@/components/Select.vue";
 import { getCategoryList } from "@/api/category";
-import { getTodoCountByCategory, getTodoCountByCategoryAndDate } from "@/api/report";
+import { getTodoCountByCategory, getTodoCountByCategoryAndDate, getTodoCountByDate } from "@/api/report";
 import { storageLocal } from "@pureadmin/utils";
 import { userKey, type DataInfo } from "@/utils/auth";
 
@@ -169,13 +169,27 @@ const setThisMonth = async () => {
   }
 };
 
-const setThisYear = () => {
+const setThisYear = async () => {
   const today = new Date();
   const startOfYear = new Date(today.getFullYear(), 0, 1);
   const endOfYear = new Date(today.getFullYear(), 11, 31);
-  systemDateRange.value = [formatDate(startOfYear), formatDate(endOfYear)];
+  const startDate = formatDate(startOfYear);
+  const endDate = formatDate(endOfYear);
+  systemDateRange.value = [startDate, endDate];
   message(`本年：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
-  router.push({ name: "YearlyReport" });
+  
+  // 获取所有类别
+  const categoryIdList = formInline.value.categories.map(id => parseInt(id, 10));
+  
+  // 跳转到 YearlyReport 页面并传递日期范围和类别列表
+  router.push({
+    name: "YearlyReport",
+    query: {
+      startDate,
+      endDate,
+      categoryIdList: JSON.stringify(categoryIdList)
+    }
+  });
 };
 
 const formInline = ref({
