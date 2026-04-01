@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import Select from "@/components/Select.vue";
 import { getCategoryList } from "@/api/category";
@@ -10,6 +11,7 @@ defineOptions({
   name: "Welcome"
 });
 
+const router = useRouter();
 const userDefinedDateRange = ref<any[]>([]);
 const systemDateRange = ref<string[]>([]);
 
@@ -34,6 +36,7 @@ const setToday = () => {
   const today = new Date();
   systemDateRange.value = [formatDate(today), formatDate(today)];
   message(`本日：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
+  router.push({ name: "DailyReport" });
 };
 
 const setThisWeek = () => {
@@ -45,6 +48,7 @@ const setThisWeek = () => {
   endOfWeek.setDate(startOfWeek.getDate() + 6);
   systemDateRange.value = [formatDate(startOfWeek), formatDate(endOfWeek)];
   message(`本周：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
+  router.push({ name: "WeeklyReport" });
 };
 
 const setThisMonth = () => {
@@ -53,6 +57,7 @@ const setThisMonth = () => {
   const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   systemDateRange.value = [formatDate(startOfMonth), formatDate(endOfMonth)];
   message(`本月：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
+  router.push({ name: "MonthlyReport" });
 };
 
 const setThisYear = () => {
@@ -61,6 +66,7 @@ const setThisYear = () => {
   const endOfYear = new Date(today.getFullYear(), 11, 31);
   systemDateRange.value = [formatDate(startOfYear), formatDate(endOfYear)];
   message(`本年：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
+  router.push({ name: "YearlyReport" });
 };
 
 const formInline = ref({
@@ -140,6 +146,23 @@ const generateReport = () => {
     : "未选择";
 
   message(`生成报表：${dateRange}，图表类型：${chartType}，类别：${categoryNames}`);
+
+  const query: any = {};
+  if (userDefinedDateRange.value.length === 2) {
+    query.startDate = formatDate(userDefinedDateRange.value[0]);
+    query.endDate = formatDate(userDefinedDateRange.value[1]);
+  }
+  if (formInline.value.chartType) {
+    query.chartType = formInline.value.chartType;
+  }
+  if (formInline.value.categories.length > 0) {
+    query.categories = formInline.value.categories.join(",");
+  }
+
+  router.push({
+    name: "CustomReport",
+    query
+  });
 };
 </script>
 
