@@ -9,7 +9,7 @@ import type { ECOption } from "@/utils/echarts";
 import { getSeriesColor } from "./color";
 
 const props = defineProps<{
-  data: Array<{ category: string; value: number }>;
+  data: Array<Record<string, any>>;
   title?: string;
   width?: string;
   height?: string;
@@ -32,28 +32,39 @@ const chartOptions = computed<ECOption>(() => {
     };
   }
 
+  // 获取所有类别名称（排除 category 和 value 字段）
+  const categoryNames = new Set<string>();
+  props.data.forEach(item => {
+    Object.keys(item).forEach(key => {
+      if (key !== "category" && key !== "value") {
+        categoryNames.add(key);
+      }
+    });
+  });
+
+  const categories = Array.from(categoryNames);
+
   return {
     title: props.title ? { text: props.title, left: "center" } : undefined,
     tooltip: { trigger: "axis" },
+    legend: {
+      data: categories,
+      bottom: 0
+    },
     xAxis: {
       type: "category",
       data: props.data.map(item => item.category)
     },
     yAxis: { type: "value" },
-    series: [
-      {
-        name: props.title || "柱状图",
-        type: "bar",
-        data: props.data.map((item, index) => ({
-          value: item.value,
-          itemStyle: {
-            color: getSeriesColor("light", index)
-          }
-        })),
-        barWidth: "60%"
+    series: categories.map((category, index) => ({
+      name: category,
+      type: "bar",
+      data: props.data.map(item => item[category] || 0),
+      itemStyle: {
+        color: getSeriesColor("light", index)
       }
-    ],
-    grid: { containLabel: true }
+    })),
+    grid: { containLabel: true, bottom: 60 }
   };
 });
 </script>

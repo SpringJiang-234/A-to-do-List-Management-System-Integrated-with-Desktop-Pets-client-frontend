@@ -162,11 +162,17 @@ watch(
           <!-- 条形图 -->
           <BarChart
             v-else-if="chartType === 'bar'"
-            :data="lineChartData.map(series => ({
-              category: series.name,
-              value: series.data.reduce((sum, val) => sum + val, 0)
-            }))"
-            :title="'按类别分布'"
+            :data="xAxisData.map(date => {
+              const item = { category: date, value: 0 };
+              lineChartData.forEach(series => {
+                const seriesValue = series.data[xAxisData.indexOf(date)];
+                if (seriesValue) {
+                  item[series.name] = seriesValue;
+                }
+              });
+              return item;
+            })"
+            :title="'按类别和日期分布'"
             width="100%"
             height="400px"
           />
