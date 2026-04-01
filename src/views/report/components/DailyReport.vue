@@ -1,19 +1,45 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { Close } from "@element-plus/icons-vue";
+import PieChart from "./PieChart.vue";
 
 defineOptions({
   name: "DailyReport"
 });
 
 const router = useRouter();
+const route = useRoute();
 const loading = ref(false);
-const reportData = ref<any>(null);
+const reportData = ref<any[]>([]);
+const startDate = ref("");
+const endDate = ref("");
 
 const loadReport = async () => {
   loading.value = true;
   try {
+    // 从路由参数中获取数据
+    const startDateParam = route.query.startDate as string;
+    const endDateParam = route.query.endDate as string;
+    const reportDataParam = route.query.reportData as string;
+    
+    if (startDateParam && endDateParam) {
+      startDate.value = startDateParam;
+      endDate.value = endDateParam;
+    }
+    
+    if (reportDataParam) {
+      try {
+        const rawData = JSON.parse(reportDataParam);
+        // 转换数据格式为 PieChart 组件期望的格式
+        reportData.value = rawData.map((item: any) => ({
+          name: item.categoryName,
+          value: item.sum
+        }));
+      } catch (error) {
+        console.error("解析报表数据失败:", error);
+      }
+    }
   } catch (error) {
     console.error("加载本日报表失败:", error);
   } finally {
@@ -50,7 +76,21 @@ onMounted(() => {
         </div>
       </template>
       <div v-loading="loading">
-        <el-empty description="暂无数据" />
+        <div v-if="reportData && reportData.length > 0">
+          <div class="date-info">
+            <span>{{ startDate }} 至 {{ endDate }}</span>
+          </div>
+          <div class="chart-container">
+            <!-- 饼图 -->
+            <PieChart
+              :data="reportData"
+              :title="'按类别分布'"
+              width="100%"
+              height="400px"
+            />
+          </div>
+        </div>
+        <el-empty v-else description="暂无报表数据" />
       </div>
     </el-card>
   </div>
@@ -81,5 +121,15 @@ onMounted(() => {
 
 .close-button {
   padding: 4px;
+}
+
+.date-info {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #606266;
+}
+
+.chart-container {
+  margin-top: 20px;
 }
 </style>

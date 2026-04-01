@@ -33,11 +33,47 @@ const formatDate = (date: Date | string): string => {
   return `${year}-${month}-${day}`;
 };
 
-const setToday = () => {
+const setToday = async () => {
   const today = new Date();
-  systemDateRange.value = [formatDate(today), formatDate(today)];
+  const startDate = formatDate(today);
+  const endDate = formatDate(today);
+  systemDateRange.value = [startDate, endDate];
   message(`本日：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
-  router.push({ name: "DailyReport" });
+  
+  // 获取所有类别
+  const categoryIdList = formInline.value.categories.map(id => parseInt(id, 10));
+  
+  try {
+    // 调用 API 获取饼图数据
+    const response = await getTodoCountByCategory({
+      startDate,
+      endDate,
+      categoryIdList
+    });
+    
+    if (response.code === 200) {
+      const reportData = response.data;
+      
+      // 跳转到 DailyReport 页面并传递数据
+      router.push({
+        name: "DailyReport",
+        query: {
+          startDate,
+          endDate,
+          reportData: JSON.stringify(reportData)
+        }
+      });
+    } else {
+      message("获取本日报表数据失败: " + response.msg, { type: "error" });
+      // 即使获取数据失败，也要跳转到页面
+      router.push({ name: "DailyReport" });
+    }
+  } catch (error) {
+    console.error("获取本日报表数据失败:", error);
+    message("获取本日报表数据失败，请稍后重试", { type: "error" });
+    // 即使获取数据失败，也要跳转到页面
+    router.push({ name: "DailyReport" });
+  }
 };
 
 const setThisWeek = () => {
