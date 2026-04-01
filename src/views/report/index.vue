@@ -76,25 +76,97 @@ const setToday = async () => {
   }
 };
 
-const setThisWeek = () => {
+const setThisWeek = async () => {
   const today = new Date();
   const dayOfWeek = today.getDay();
   const startOfWeek = new Date(today);
   startOfWeek.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
-  systemDateRange.value = [formatDate(startOfWeek), formatDate(endOfWeek)];
+  const startDate = formatDate(startOfWeek);
+  const endDate = formatDate(endOfWeek);
+  systemDateRange.value = [startDate, endDate];
   message(`本周：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
-  router.push({ name: "WeeklyReport" });
+  
+  // 获取所有类别
+  const categoryIdList = formInline.value.categories.map(id => parseInt(id, 10));
+  
+  try {
+    // 调用 API 获取条形图数据（按类别和日期分组）
+    const response = await getTodoCountByCategoryAndDate({
+      startDate,
+      endDate,
+      categoryIdList
+    });
+    
+    if (response.code === 200) {
+      const reportData = response.data;
+      
+      // 跳转到 WeeklyReport 页面并传递数据
+      router.push({
+        name: "WeeklyReport",
+        query: {
+          startDate,
+          endDate,
+          reportData: JSON.stringify(reportData)
+        }
+      });
+    } else {
+      message("获取本周报表数据失败: " + response.msg, { type: "error" });
+      // 即使获取数据失败，也要跳转到页面
+      router.push({ name: "WeeklyReport" });
+    }
+  } catch (error) {
+    console.error("获取本周报表数据失败:", error);
+    message("获取本周报表数据失败，请稍后重试", { type: "error" });
+    // 即使获取数据失败，也要跳转到页面
+    router.push({ name: "WeeklyReport" });
+  }
 };
 
-const setThisMonth = () => {
+const setThisMonth = async () => {
   const today = new Date();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  systemDateRange.value = [formatDate(startOfMonth), formatDate(endOfMonth)];
+  const startDate = formatDate(startOfMonth);
+  const endDate = formatDate(endOfMonth);
+  systemDateRange.value = [startDate, endDate];
   message(`本月：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
-  router.push({ name: "MonthlyReport" });
+  
+  // 获取所有类别
+  const categoryIdList = formInline.value.categories.map(id => parseInt(id, 10));
+  
+  try {
+    // 调用 API 获取折线图数据（按类别和日期分组）
+    const response = await getTodoCountByCategoryAndDate({
+      startDate,
+      endDate,
+      categoryIdList
+    });
+    
+    if (response.code === 200) {
+      const reportData = response.data;
+      
+      // 跳转到 MonthlyReport 页面并传递数据
+      router.push({
+        name: "MonthlyReport",
+        query: {
+          startDate,
+          endDate,
+          reportData: JSON.stringify(reportData)
+        }
+      });
+    } else {
+      message("获取本月报表数据失败: " + response.msg, { type: "error" });
+      // 即使获取数据失败，也要跳转到页面
+      router.push({ name: "MonthlyReport" });
+    }
+  } catch (error) {
+    console.error("获取本月报表数据失败:", error);
+    message("获取本月报表数据失败，请稍后重试", { type: "error" });
+    // 即使获取数据失败，也要跳转到页面
+    router.push({ name: "MonthlyReport" });
+  }
 };
 
 const setThisYear = () => {

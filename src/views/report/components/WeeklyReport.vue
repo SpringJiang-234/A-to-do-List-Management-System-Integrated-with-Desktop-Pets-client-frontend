@@ -1,19 +1,67 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { Close } from "@element-plus/icons-vue";
+import BarChart from "./BarChart.vue";
 
 defineOptions({
   name: "WeeklyReport"
 });
 
 const router = useRouter();
+const route = useRoute();
 const loading = ref(false);
-const reportData = ref<any>(null);
+const reportData = ref<any[]>([]);
+const startDate = ref("");
+const endDate = ref("");
+const barChartData = computed(() => {
+  if (!reportData.value || reportData.value.length === 0) {
+    return [];
+  }
+  
+  // 按日期分组
+  const dateMap: Record<string, Record<string, number>> = {};
+  reportData.value.forEach(item => {
+    const date = item.date;
+    const categoryName = item.categoryName;
+    const sum = item.sum || 0;
+    
+    if (!dateMap[date]) {
+      dateMap[date] = {};
+    }
+    dateMap[date][categoryName] = sum;
+  });
+  
+  // 转换为 BarChart 组件期望的格式
+  return Object.keys(dateMap).map(date => {
+    const item: Record<string, any> = { category: date };
+    Object.keys(dateMap[date]).forEach(category => {
+      item[category] = dateMap[date][category];
+    });
+    return item;
+  });
+});
 
 const loadReport = async () => {
   loading.value = true;
   try {
+    // 从路由参数中获取数据
+    const startDateParam = route.query.startDate as string;
+    const endDateParam = route.query.endDate as string;
+    const reportDataParam = route.query.reportData as string;
+    
+    if (startDateParam && endDateParam) {
+      startDate.value = startDateParam;
+      endDate.value = endDateParam;
+    }
+    
+    if (reportDataParam) {
+      try {
+        reportData.value = JSON.parse(reportDataParam);
+      } catch (error) {
+        console.error("解析报表数据失败:", error);
+      }
+    }
   } catch (error) {
     console.error("加载本周报表失败:", error);
   } finally {
@@ -50,7 +98,21 @@ onMounted(() => {
         </div>
       </template>
       <div v-loading="loading">
-        <el-empty description="暂无数据" />
+        <div v-if="barChartData && barChartData.length > 0">
+          <div class="date-info">
+            <span>{{ startDate }} 至 {{ endDate }}</span>
+          </div>
+          <div class="chart-container">
+            <!-- 条形图 -->
+            <BarChart
+              :data="barChartData"
+              :title="'按类别和日期分布'"
+              width="100%"
+              height="400px"
+            />
+          </div>
+        </div>
+        <el-empty v-else description="暂无报表数据" />
       </div>
     </el-card>
   </div>
@@ -81,5 +143,15 @@ onMounted(() => {
 
 .close-button {
   padding: 4px;
+}
+
+.date-info {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #606266;
+}
+
+.chart-container {
+  margin-top: 20px;
 }
 </style>
