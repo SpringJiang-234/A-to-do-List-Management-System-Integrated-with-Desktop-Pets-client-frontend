@@ -187,9 +187,8 @@ const handleSubmit = async () => {
       isTop: todoForm.value.isTop,
       tagIdList: todoForm.value.tagIdList
     }, enablePetGrowth);
-    if (enablePetGrowth) {
-      await desktopPetStore.loadDesktopPetInfo();
-    }
+    // 无论是否启用养成数据，都重新加载桌宠信息，因为等级不受开关控制
+    await desktopPetStore.loadDesktopPetInfo();
 
     if (enablePetGrowth) {
       const isEnergetic =

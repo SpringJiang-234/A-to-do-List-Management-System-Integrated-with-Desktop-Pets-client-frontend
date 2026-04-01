@@ -101,9 +101,8 @@ async function handleClick(activity: Activity) {
     } else {
             await completeTodo(activity.id, enablePetGrowth);
             activity.status = 2;
-            if (enablePetGrowth) {
-                await desktopPetStore.loadDesktopPetInfo();
-            }
+            // 无论是否启用养成数据，都重新加载桌宠信息，因为等级不受开关控制
+            await desktopPetStore.loadDesktopPetInfo();
             message("完成待办", { type: "success" });
 
       if (enablePetGrowth) {
