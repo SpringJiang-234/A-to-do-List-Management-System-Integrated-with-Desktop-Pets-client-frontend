@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { message } from "@/utils/message";
+import Select from "@/components/Select.vue";
+import { getCategoryList } from "@/api/category";
+import { storageLocal } from "@pureadmin/utils";
+import { userKey, type DataInfo } from "@/utils/auth";
 
 defineOptions({
   name: "Welcome"
@@ -51,6 +55,50 @@ const setThisYear = () => {
   dateRange.value = [formatDate(startOfYear), formatDate(endOfYear)];
   message(`本年：${dateRange.value[0]} 至 ${dateRange.value[1]}`);
 };
+
+const formInline = ref({
+  chartType: "",
+  categories: []
+});
+
+const chartTypes = [
+  { value: "pie", label: "饼图" },
+  { value: "bar", label: "条形图" },
+  { value: "line", label: "折线图" }
+];
+
+const categories = ref<any[]>([]);
+
+const loadCategories = async () => {
+  try {
+    const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+    if (!userInfo?.id) {
+      console.warn("用户信息不存在，跳过加载分类");
+      return;
+    }
+
+    const systemCategoryResponse = await getCategoryList(0);
+    const userCategoryResponse = await getCategoryList(userInfo.id);
+
+    const systemCategories =
+      systemCategoryResponse.code === 200 ? systemCategoryResponse.data : [];
+    const userCategories =
+      userCategoryResponse.code === 200 ? userCategoryResponse.data : [];
+
+    categories.value = [...systemCategories, ...userCategories].map(
+      (item: any) => ({
+        value: item.id.toString(),
+        label: item.name
+      })
+    );
+  } catch (error) {
+    console.error("加载分类失败:", error);
+  }
+};
+
+onMounted(() => {
+  loadCategories();
+});
 </script>
 
 <template>
@@ -62,7 +110,7 @@ const setThisYear = () => {
       <template #header>
         <div class="card-header">
           <div class="header-content">
-            <h3>报表</h3>
+            <h3>快速生成报表</h3>
           </div>
         </div>
       </template>
@@ -74,19 +122,32 @@ const setThisYear = () => {
           <el-button @click="setThisMonth">本月</el-button>
           <el-button @click="setThisYear">本年</el-button>
         </el-button-group>
-        <span class="font-small">自定义：</span
-        ><el-date-picker
-          v-model="dateRange"
-          type="daterange"
-          value-format="yyyy-MM-dd"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        />
       </div>
     </el-card>
 
-    <el-card shadow="never"> 放内容 </el-card>
+    <el-card shadow="never">
+      <template #header>
+        <div class="card-header">
+          <div class="header-content">
+            <span>自定义报表</span>
+          </div>
+        </div>
+      </template>
+      <div class="form-item">
+        <span class="font-small">日期范围：</span><el-date-picker v-model="dateRange" type="daterange"
+          value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
+      </div>
+      <div class="form-item">
+        <span class="font-small">报表类型：</span>
+        <Select v-model="formInline.chartType" :options="chartTypes" placeholder="请选择图表类型" :multiple="false"
+          width="240px" />
+      </div>
+      <div class="form-item">
+        <span class="font-small">类别：</span>
+        <Select v-model="formInline.categories" :options="categories" placeholder="请选择类别" all-text="全选"
+          :max-collapse-tags="1" width="240px" />
+      </div>
+    </el-card>
   </div>
 </template>
 
@@ -97,8 +158,11 @@ const setThisYear = () => {
 
 .font-small {
   display: inline-block;
-  margin-left: 50px;
   font-size: 14px;
   font-weight: 400;
+}
+
+.form-item {
+  margin-bottom: 20px;
 }
 </style>
