@@ -10,17 +10,23 @@ defineOptions({
   name: "Welcome"
 });
 
-const userDefinedDateRange = ref<string[]>([]);
+const userDefinedDateRange = ref<any[]>([]);
 const systemDateRange = ref<string[]>([]);
 
 watch(userDefinedDateRange, newVal => {
-  message(`日期范围：${newVal[0]} 至 ${newVal[1]}`);
+  console.log("userDefinedDateRange changed:", newVal);
+  if (newVal && Array.isArray(newVal) && newVal.length === 2 && newVal[0] && newVal[1]) {
+    const startDate = formatDate(newVal[0]);
+    const endDate = formatDate(newVal[1]);
+    message(`自定义日期范围：${startDate} 至 ${endDate}`);
+  }
 });
 
-const formatDate = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+const formatDate = (date: Date | string): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
@@ -147,7 +153,7 @@ onMounted(() => {
       </template>
       <div class="form-item">
         <span class="font-small">日期范围：</span><el-date-picker v-model="userDefinedDateRange" type="daterange"
-          value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
+          range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
       </div>
       <div class="form-item">
         <span class="font-small">报表类型：</span>
