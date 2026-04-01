@@ -18,6 +18,8 @@ import otherGifPath from "@/assets/images/丰川祥子-其他循环.gif";
 import sakikoMessages from "@/constants/sakiko-messages.json";
 import handIcon from "@/assets/svg/ooui--hand.svg?url";
 import bellIcon from "@/assets/svg/tabler--bell-filled.svg?url";
+import { getTodoListTodayEnd } from "@/api/deskpet";
+import { getToken } from "@/utils/auth";
 import { useDesktopPetStoreHook } from "@/store/modules/desktopPet";
 import {
   AnimationType,
@@ -549,6 +551,41 @@ const handleIntimateClick = () => {
   });
 };
 
+const handleBellClick = async () => {
+  console.log("========== 点击铃铛按钮 ==========");
+  const userInfo = getToken();
+  if (!userInfo) {
+    showPopupMessage("请先登录");
+    return;
+  }
+  
+  try {
+    const res = await getTodoListTodayEnd({ userId: userInfo.id });
+    if (res.code === 200) {
+      const todos = res.data || [];
+      const count = todos.length;
+      let message = `今天有${count}项待办已经是结束日期：`;
+      
+      if (count > 0) {
+        const displayTodos = todos.slice(0, 5);
+        const serialNumbers = ['①', '②', '③', '④', '⑤'];
+        displayTodos.forEach((todo, index) => {
+          message += `\n${serialNumbers[index]} ${todo.title}`;
+        });
+        
+        if (count > 5) {
+          message += "\n……";
+        }
+      }
+      
+      showPopupMessage(message);
+    }
+  } catch (error) {
+    console.error("获取今日待办事项失败:", error);
+    showPopupMessage("获取今日待办事项失败");
+  }
+};
+
 const setIntimacyValue = (value: number) => {
   intimacyValue.value = value;
 };
@@ -780,7 +817,7 @@ onUnmounted(() => {
         alt="动画"
         draggable="false"
       />
-      <div class="bell-icon" @click="showPopupMessage('通知内容')">
+      <div class="bell-icon" @click="handleBellClick">
         <img :src="bellIcon" alt="通知" draggable="false" />
       </div>
       <div class="hand-icon" @click="handleIntimateClick">

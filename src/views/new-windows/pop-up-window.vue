@@ -36,7 +36,7 @@ onUnmounted(() => {
 <template>
   <div class="pop-up-container">
     <div class="pop-up-content">
-      <p>{{ message }}</p>
+      <p v-html="message.replace(/\n/g, '<br>')"></p>
     </div>
   </div>
 </template>
@@ -56,7 +56,7 @@ onUnmounted(() => {
   padding: 30px 40px;
   border-radius: 15px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  text-align: center;
+  text-align: left;
   max-width: 360px;
   border: 2px solid rgba(255, 255, 255, 0.8);
 }
