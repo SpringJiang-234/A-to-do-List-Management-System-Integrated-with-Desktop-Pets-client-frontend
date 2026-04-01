@@ -216,11 +216,14 @@ const handleDelete = async () => {
   try {
     await deleteTodo(todoForm.value.id);
     (window as any).ipcRenderer.send("play-delete-animation");
-    (window as any).ipcRenderer.invoke(
-      "open-win",
-      "pop-up-window",
-      sakikoMessages.delete
-    );
+    const enableDialog = localStorage.getItem("enableDialog") !== "false";
+    if (enableDialog) {
+      (window as any).ipcRenderer.invoke(
+        "open-win",
+        "pop-up-window",
+        sakikoMessages.delete
+      );
+    }
     message("删除成功", { type: "success" });
     router.back();
   } catch (error) {
@@ -270,11 +273,14 @@ const handleSubmit = async () => {
         desktopPetStore.moodValue < 60 && previousMood >= 60;
 
       if (isOverdue) {
-        (window as any).ipcRenderer.invoke(
-          "open-win",
-          "pop-up-window",
-          sakikoMessages.complete
-        );
+        const enableDialog = localStorage.getItem("enableDialog") !== "false";
+        if (enableDialog) {
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.complete
+          );
+        }
         (window as any).ipcRenderer.send(
           "play-complete-todo-overdue-animation",
           isEnergetic,
@@ -288,11 +294,14 @@ const handleSubmit = async () => {
           }
         );
       } else {
-        (window as any).ipcRenderer.invoke(
-          "open-win",
-          "pop-up-window",
-          sakikoMessages.onTime
-        );
+        const enableDialog = localStorage.getItem("enableDialog") !== "false";
+        if (enableDialog) {
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.onTime
+          );
+        }
         (window as any).ipcRenderer.send(
           "play-complete-todo-on-time-animation",
           isEnergetic,
@@ -308,11 +317,14 @@ const handleSubmit = async () => {
       }
     } else if (todoForm.value.status === 3 && oldStatus !== 3) {
       (window as any).ipcRenderer.send("play-abandon-animation");
-      (window as any).ipcRenderer.invoke(
-        "open-win",
-        "pop-up-window",
-        sakikoMessages.abandon
-      );
+      const enableDialog = localStorage.getItem("enableDialog") !== "false";
+      if (enableDialog) {
+        (window as any).ipcRenderer.invoke(
+          "open-win",
+          "pop-up-window",
+          sakikoMessages.abandon
+        );
+      }
     }
 
     message("修改成功", { type: "success" });

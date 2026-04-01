@@ -39,11 +39,14 @@ const openDeskPetWindow = async () => {
     await (window as any).ipcRenderer.invoke("open-win", "new-windows");
 
     setTimeout(() => {
-      const message =
-        desktopPetStore.intimacyValue >= 60
-          ? sakikoMessages.meet
-          : sakikoMessages.meetUnhappy;
-      (window as any).ipcRenderer.invoke("open-win", "pop-up-window", message);
+      const enableDialog = localStorage.getItem("enableDialog") !== "false";
+      if (enableDialog) {
+        const message = 
+          desktopPetStore.intimacyValue >= 60
+            ? sakikoMessages.meet
+            : sakikoMessages.meetUnhappy;
+        (window as any).ipcRenderer.invoke("open-win", "pop-up-window", message);
+      }
 
       (window as any).ipcRenderer.send(
         "set-intimacy-value",

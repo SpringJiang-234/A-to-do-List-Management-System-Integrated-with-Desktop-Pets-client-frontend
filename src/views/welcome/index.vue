@@ -7,7 +7,10 @@ defineOptions({
 
 const openPopUpWindow = async () => {
   try {
-    await (window as any).ipcRenderer.invoke("open-win", "pop-up-window");
+    const enableDialog = localStorage.getItem("enableDialog") !== "false";
+    if (enableDialog) {
+      await (window as any).ipcRenderer.invoke("open-win", "pop-up-window");
+    }
   } catch (error) {
     console.error("打开弹窗窗口失败:", error);
   }

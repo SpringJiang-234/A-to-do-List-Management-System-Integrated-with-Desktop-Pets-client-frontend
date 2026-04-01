@@ -129,11 +129,14 @@ async function handleClick(activity: Activity) {
         });
 
         if (isOverdue) {
-          (window as any).ipcRenderer.invoke(
-            "open-win",
-            "pop-up-window",
-            sakikoMessages.complete
-          );
+          const enableDialog = localStorage.getItem("enableDialog") !== "false";
+          if (enableDialog) {
+            (window as any).ipcRenderer.invoke(
+              "open-win",
+              "pop-up-window",
+              sakikoMessages.complete
+            );
+          }
           (window as any).ipcRenderer.send(
             "play-complete-todo-overdue-animation",
             isEnergetic,
@@ -147,11 +150,14 @@ async function handleClick(activity: Activity) {
             }
           );
         } else {
-          (window as any).ipcRenderer.invoke(
-            "open-win",
-            "pop-up-window",
-            sakikoMessages.onTime
-          );
+          const enableDialog = localStorage.getItem("enableDialog") !== "false";
+          if (enableDialog) {
+            (window as any).ipcRenderer.invoke(
+              "open-win",
+              "pop-up-window",
+              sakikoMessages.onTime
+            );
+          }
           (window as any).ipcRenderer.send(
             "play-complete-todo-on-time-animation",
             isEnergetic,
@@ -204,11 +210,14 @@ async function handleMenuAction(action: string) {
         activity.status = 3;
         message("放弃待办", { type: "warning" });
         (window as any).ipcRenderer.send("play-abandon-animation");
-        (window as any).ipcRenderer.invoke(
-          "open-win",
-          "pop-up-window",
-          sakikoMessages.abandon
-        );
+        const enableDialog1 = localStorage.getItem("enableDialog") !== "false";
+        if (enableDialog1) {
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.abandon
+          );
+        }
         emit("click", activity);
         break;
       case "delete":
@@ -216,11 +225,14 @@ async function handleMenuAction(action: string) {
         await deleteTodo(activity.id);
         message("删除待办成功", { type: "success" });
         (window as any).ipcRenderer.send("play-delete-animation");
-        (window as any).ipcRenderer.invoke(
-          "open-win",
-          "pop-up-window",
-          sakikoMessages.delete
-        );
+        const enableDialog2 = localStorage.getItem("enableDialog") !== "false";
+        if (enableDialog2) {
+          (window as any).ipcRenderer.invoke(
+            "open-win",
+            "pop-up-window",
+            sakikoMessages.delete
+          );
+        }
         console.log("========== TodoList emit refresh 事件 ==========");
         emit("refresh");
         break;

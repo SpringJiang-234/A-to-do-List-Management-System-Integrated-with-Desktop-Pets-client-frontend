@@ -37,6 +37,7 @@ const showEntertainment = ref(
   localStorage.getItem("showEntertainment") !== "false"
 );
 const enablePetGrowth = ref(localStorage.getItem("enablePetGrowth") !== "false");
+const enableDialog = ref(localStorage.getItem("enableDialog") !== "false");
 
 const categoryList = ref<any[]>([]);
 const tagList = ref<any[]>([]);
@@ -435,6 +436,15 @@ watch(enablePetGrowth, newVal => {
     })
   );
 });
+
+watch(enableDialog, newVal => {
+  localStorage.setItem("enableDialog", String(newVal));
+  window.dispatchEvent(
+    new CustomEvent("dialogSettingsChanged", {
+      detail: { enabled: newVal }
+    })
+  );
+});
 </script>
 
 <template>
@@ -524,6 +534,14 @@ watch(enablePetGrowth, newVal => {
           </div>
         </div>
       </template>
+      <div class="switch-container">
+        <el-switch
+          v-model="enableDialog"
+          class="mb-2"
+          active-text="开启对话"
+          inactive-text="关闭对话"
+        />
+      </div>
       <!-- - 提示方式（多选）：弹对话框、通知、语音或提示音（如果桌宠选4则亮起，否则灰色不可动）-->
     </el-card>
     <el-card shadow="never">

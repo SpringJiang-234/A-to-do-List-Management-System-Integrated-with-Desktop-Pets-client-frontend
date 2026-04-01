@@ -180,12 +180,15 @@ const showPopupMessage = (message: string, duration: number = 3000) => {
     duration,
     timestamp: new Date().toISOString()
   });
-  (window as any).ipcRenderer.invoke(
-    "open-win",
-    "pop-up-window",
-    message,
-    duration
-  );
+  const enableDialog = localStorage.getItem("enableDialog") !== "false";
+  if (enableDialog) {
+    (window as any).ipcRenderer.invoke(
+      "open-win",
+      "pop-up-window",
+      message,
+      duration
+    );
+  }
 };
 
 const playOneTimeAnimationInternal = (
