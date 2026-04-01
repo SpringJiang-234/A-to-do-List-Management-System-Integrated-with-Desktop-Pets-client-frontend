@@ -10,9 +10,10 @@ defineOptions({
   name: "Welcome"
 });
 
-const dateRange = ref<string[]>([]);
+const userDefinedDateRange = ref<string[]>([]);
+const systemDateRange = ref<string[]>([]);
 
-watch(dateRange, newVal => {
+watch(userDefinedDateRange, newVal => {
   message(`日期范围：${newVal[0]} 至 ${newVal[1]}`);
 });
 
@@ -25,8 +26,8 @@ const formatDate = (date: Date): string => {
 
 const setToday = () => {
   const today = new Date();
-  dateRange.value = [formatDate(today), formatDate(today)];
-  message(`本日：${dateRange.value[0]} 至 ${dateRange.value[1]}`);
+  systemDateRange.value = [formatDate(today), formatDate(today)];
+  message(`本日：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
 };
 
 const setThisWeek = () => {
@@ -36,28 +37,28 @@ const setThisWeek = () => {
   startOfWeek.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
-  dateRange.value = [formatDate(startOfWeek), formatDate(endOfWeek)];
-  message(`本周：${dateRange.value[0]} 至 ${dateRange.value[1]}`);
+  systemDateRange.value = [formatDate(startOfWeek), formatDate(endOfWeek)];
+  message(`本周：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
 };
 
 const setThisMonth = () => {
   const today = new Date();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  dateRange.value = [formatDate(startOfMonth), formatDate(endOfMonth)];
-  message(`本月：${dateRange.value[0]} 至 ${dateRange.value[1]}`);
+  systemDateRange.value = [formatDate(startOfMonth), formatDate(endOfMonth)];
+  message(`本月：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
 };
 
 const setThisYear = () => {
   const today = new Date();
   const startOfYear = new Date(today.getFullYear(), 0, 1);
   const endOfYear = new Date(today.getFullYear(), 11, 31);
-  dateRange.value = [formatDate(startOfYear), formatDate(endOfYear)];
-  message(`本年：${dateRange.value[0]} 至 ${dateRange.value[1]}`);
+  systemDateRange.value = [formatDate(startOfYear), formatDate(endOfYear)];
+  message(`本年：${systemDateRange.value[0]} 至 ${systemDateRange.value[1]}`);
 };
 
 const formInline = ref({
-  chartType: "",
+  chartType: "pie",
   categories: []
 });
 
@@ -97,7 +98,18 @@ const loadCategories = async () => {
 };
 
 onMounted(() => {
+  setToday();
   loadCategories();
+
+  watch(
+    () => categories.value,
+    newCategories => {
+      if (newCategories && newCategories.length > 0) {
+        formInline.value.categories = newCategories.map(cat => cat.value.toString());
+      }
+    },
+    { immediate: true }
+  );
 });
 </script>
 
@@ -134,7 +146,7 @@ onMounted(() => {
         </div>
       </template>
       <div class="form-item">
-        <span class="font-small">日期范围：</span><el-date-picker v-model="dateRange" type="daterange"
+        <span class="font-small">日期范围：</span><el-date-picker v-model="userDefinedDateRange" type="daterange"
           value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
       </div>
       <div class="form-item">
