@@ -429,7 +429,6 @@ watch(showEntertainment, newVal => {
 
 <template>
   <div class="settings-container">
-    <div>临时区域</div>
     <!-- 细节看一下思考笔记 -->
     <el-card shadow="never">
       <template #header>
