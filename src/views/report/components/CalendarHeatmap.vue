@@ -7,6 +7,7 @@ import { computed } from "vue";
 import BaseChart from "./BaseChart.vue";
 import type { ECOption } from "@/utils/echarts";
 import { getHeatmapColors, ThemeType } from "./color";
+import { useEpThemeStoreHook } from "@/store/modules/epTheme";
 
 const props = defineProps<{
   data: Array<[string, number]>;
@@ -16,6 +17,11 @@ const props = defineProps<{
   height?: string;
   backgroundColor?: string;
 }>();
+
+const epThemeStore = useEpThemeStoreHook();
+const currentTheme = computed<ThemeType>(() => {
+  return epThemeStore.epTheme as ThemeType;
+});
 
 const chartOptions = computed<ECOption>(() => {
   const currentYear = new Date().getFullYear();
@@ -30,7 +36,7 @@ const chartOptions = computed<ECOption>(() => {
     ? dates.reduce((a, b) => (a > b ? a : b))
     : yearEnd;
 
-  const colors = getHeatmapColors("light");
+  const colors = getHeatmapColors(currentTheme.value);
 
   return {
     title: props.title ? { text: props.title, left: "center" } : undefined,
