@@ -104,7 +104,8 @@ const loadCategories = async () => {
 };
 
 onMounted(() => {
-  setToday();
+  const today = new Date();
+  systemDateRange.value = [formatDate(today), formatDate(today)];
   loadCategories();
 
   watch(
@@ -117,6 +118,29 @@ onMounted(() => {
     { immediate: true }
   );
 });
+
+const generateReport = () => {
+  const dateRange = userDefinedDateRange.value.length === 2
+    ? `${formatDate(userDefinedDateRange.value[0])} 至 ${formatDate(userDefinedDateRange.value[1])}`
+    : "未选择";
+
+  const chartTypeMap: Record<string, string> = {
+    pie: "饼图",
+    bar: "条形图",
+    line: "折线图"
+  };
+
+  const chartType = chartTypeMap[formInline.value.chartType] || "未选择";
+
+  const categoryNames = formInline.value.categories.length > 0
+    ? categories.value
+        .filter(cat => formInline.value.categories.includes(cat.value.toString()))
+        .map(cat => cat.label)
+        .join("、")
+    : "未选择";
+
+  message(`生成报表：${dateRange}，图表类型：${chartType}，类别：${categoryNames}`);
+};
 </script>
 
 <template>
@@ -164,6 +188,9 @@ onMounted(() => {
         <span class="font-small">类别：</span>
         <Select v-model="formInline.categories" :options="categories" placeholder="请选择类别" all-text="全选"
           :max-collapse-tags="1" width="240px" />
+      </div>
+      <div class="form-item">
+        <el-button type="primary" @click="generateReport">生成报表</el-button>
       </div>
     </el-card>
   </div>
