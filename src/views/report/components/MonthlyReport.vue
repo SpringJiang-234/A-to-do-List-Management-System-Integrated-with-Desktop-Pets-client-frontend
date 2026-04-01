@@ -124,7 +124,6 @@ onMounted(() => {
             <LineChart
               :xAxisData="xAxisData"
               :series="lineChartData"
-              :title="'按类别和日期趋势'"
               width="100%"
               height="400px"
             />

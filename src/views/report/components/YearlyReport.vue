@@ -112,7 +112,6 @@ onMounted(() => {
             <CalendarHeatmap
               :data="heatmapData"
               :range="[startDate, endDate]"
-              :title="'年度待办热力图'"
               width="100%"
               height="300px"
             />

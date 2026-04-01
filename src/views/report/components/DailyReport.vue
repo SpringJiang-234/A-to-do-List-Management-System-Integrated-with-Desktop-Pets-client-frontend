@@ -78,13 +78,12 @@ onMounted(() => {
       <div v-loading="loading">
         <div v-if="reportData && reportData.length > 0">
           <div class="date-info">
-            <span>{{ startDate }} 至 {{ endDate }}</span>
+            <span>{{ startDate }}</span>
           </div>
           <div class="chart-container">
             <!-- 饼图 -->
             <PieChart
               :data="reportData"
-              :title="'按类别分布'"
               width="100%"
               height="400px"
             />

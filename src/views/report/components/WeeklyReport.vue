@@ -106,7 +106,6 @@ onMounted(() => {
             <!-- 条形图 -->
             <BarChart
               :data="barChartData"
-              :title="'按类别和日期分布'"
               width="100%"
               height="400px"
             />
